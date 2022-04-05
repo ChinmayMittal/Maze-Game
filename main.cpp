@@ -205,7 +205,7 @@ int main(int argc, char *args[])
 			// Handle input for the dot
 			dots[0].handleEvent(e);
 		}
-
+		camera = {camera.x, camera.y , window.getWidth(), window.getHeight() };
 		// Move the dot
 		dots[0].move();
 		dots[0].setCamera(camera);
