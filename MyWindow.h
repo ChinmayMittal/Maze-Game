@@ -45,7 +45,7 @@ public:
 
     void cleanUp();
     void setParams(int tilesX, int tilesY, int tileWidth, int tileHeight);
-
+    SDL_Renderer * getRenderer( ) ; 
 private:
     // Window data
     SDL_Window *mWindow;

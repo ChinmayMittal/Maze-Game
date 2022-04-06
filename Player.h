@@ -7,23 +7,30 @@
 #include "MyTexture.h"
 #include "Renderable.h"
 #include "MyWindow.h"
+#include<string>
 
 class Dot : public Renderable
 {
 public:
-    // The dimensions of the dot
-    static const int DOT_WIDTH = 20;
-    static const int DOT_HEIGHT = 20;
-
+    
+    int playerHeight , playerWidth ;
+    int right , top , left  , bottom ; 
+    int mframes ;  
+    char direction ; 
+    int numOfAnimationImages ; 
+    int animationSpeed = 8 ; 
+    std::vector<SDL_Rect> playerImages ; 
     // Maximum axis velocity of the dot
-    static const int DOT_VEL = 10;
+    int DOT_VEL = 10;
 
     // Initializes the variables
-    Dot(LTexture &myTexture, LWindow &window);
+    // Dot(LTexture &myTexture, LWindow &window);
+
+    Dot( LTexture &myTexture , LWindow &window , int playerHeight , int playerWidth  , int right , int left , int top , int bottom , int setVelocity) ; 
 
     // Takes key presses and adjusts the dot's velocity
     void handleEvent(SDL_Event &e);
-
+    // void handleEventMoving(SDL_Event &e) ; 
     // Moves the dot and check collision against tiles
     void move();
 
@@ -32,6 +39,7 @@ public:
 
     // Shows the dot on the screen
     int render(SDL_Renderer *renderer, SDL_Rect &camera);
+    // int renderMoving(SDL_Renderer *renderer, SDL_Rect &camera);
 
     void cleanUp();
 

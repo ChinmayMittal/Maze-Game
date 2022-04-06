@@ -75,7 +75,9 @@ int LWindow::render(std::vector<Renderable *> objects, SDL_Rect &camera)
 
     return 0;
 }
-
+SDL_Renderer* LWindow :: getRenderer( ){
+    return mRenderer ; 
+}
 void LWindow::handleEvent(SDL_Event &e)
 {
     // Window event occured

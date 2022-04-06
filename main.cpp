@@ -17,11 +17,12 @@ const int SCREEN_WIDTH = 720;
 const int SCREEN_HEIGHT = 480;
 
 std::vector<Tile> tiles;
-std::vector<Dot> dots;
+std::vector<Dot> players ;
 SDL_Rect camera;
 
-LTexture dotTexture;
 LTexture tilesTexture;
+LTexture ashTexture ; 
+ 
 
 bool initLibs();
 LWindow initWin();
@@ -69,18 +70,18 @@ LWindow initWin()
 
 bool initObjs(LWindow &window)
 {
-	if (!window.loadTexture(dotTexture, "dot.bmp"))
+
+	if (!window.loadTexture(ashTexture, "resources/ash.bmp"))
 	{
-		printf("Failed to load dot texture!\n");
+		printf("Failed to load ash texture!\n");
 		return false;
 	}
-
-	Dot dot(dotTexture, window);
-	dots.push_back(dot);
+	Dot ash( ashTexture , window , 32 , 32 , 3 , 1 , 2 , 0 , 10 ) ; 
+	players.push_back(ash) ; 
 
 	camera = {0, 0, SCREEN_WIDTH, SCREEN_HEIGHT};
 
-	if (!window.loadTexture(tilesTexture, "tiles2.png"))
+	if (!window.loadTexture(tilesTexture, "resources/tiles2.png"))
 	{
 		printf("Failed to load tile set texture!\n");
 		return false;
@@ -104,7 +105,7 @@ bool initObjs(LWindow &window)
 bool setTiles(LTexture &tilesTexture, LWindow &window)
 {
 	// Open the map
-	std::ifstream mapStream("map2.tmx");
+	std::ifstream mapStream("resources/map2.tmx");
 
 	// If the map couldn't be loaded
 	if (mapStream.fail())
@@ -161,7 +162,8 @@ bool setTiles(LTexture &tilesTexture, LWindow &window)
 void cleanUpObjs()
 {
 	// Free loaded images
-	dots[0].cleanUp();
+	// dots[0].cleanUp();
+	players[0].cleanUp() ; 
 	tiles[0].cleanUp();
 }
 
@@ -177,9 +179,9 @@ int main(int argc, char *args[])
 	{
 		renderables.push_back(&tiles[i]);
 	}
-	for (int i = 0; i < dots.size(); i++)
+	for (int i = 0; i < players.size(); i++)
 	{
-		renderables.push_back(&dots[i]);
+		renderables.push_back(&players[i]);
 	}
 	// Main loop flag
 	bool quit = false;
@@ -203,19 +205,18 @@ int main(int argc, char *args[])
 
 			window.handleEvent(e);
 			// Handle input for the dot
-			dots[0].handleEvent(e);
+			players[0].handleEvent(e) ; 
 		}
+		// change camera dimensions to screen dimensions if resized 
 		camera = {camera.x, camera.y , window.getWidth(), window.getHeight() };
 		// Move the dot
-		dots[0].move();
-		dots[0].setCamera(camera);
-
+		players[0].move() ; 
+		players[0].setCamera(camera) ; 
 		if (!window.isMinimized())
 		{
-			// Dot *d = dynamic_cast<Dot *>(renderables[0]);
-			// std::cout << d->mTexture.getWidth() << std::endl;
 
-			window.render(renderables, camera);
+			window.render(renderables, camera); 
+			SDL_RenderPresent(window.getRenderer()); 
 		}
 	}
 
