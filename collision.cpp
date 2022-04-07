@@ -1,4 +1,4 @@
-#include <SDL.h>
+#include <SDL2/SDL.h>
 
 bool checkCollision(SDL_Rect a, SDL_Rect b)
 {

@@ -1,26 +1,30 @@
-#include <SDL.h>
-#include <SDL_image.h>
+#include <SDL2/SDL.h>
+#include <SDL2/SDL_image.h>
 #include <vector>
 #include <sstream>
 #include <string>
 
 #include "MyWindow.h"
 #include "Renderable.h"
+#include "Screen.h"
 
-LWindow::LWindow()
-{
-    // Initialize non-existant window
-    mWindow = NULL;
-    mMouseFocus = false;
-    mKeyboardFocus = false;
-    mFullScreen = false;
-    mMinimized = false;
-    mWidth = 0;
-    mHeight = 0;
-}
+#include "Timer.h"
+// LWindow::LWindow()
+// {
+//     // Initialize non-existant window
+//     mWindow = NULL;
+//     mMouseFocus = false;
+//     mKeyboardFocus = false;
+//     mFullScreen = false;
+//     mMinimized = false;
+//     mWidth = 0;
+//     mHeight = 0;
+// }
 
-bool LWindow::init(int width, int height)
+LWindow::LWindow(int width, int height)
 {
+    initLibs();
+
     // Create window
     mWindow = SDL_CreateWindow("SDL Tutorial", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, width, height, SDL_WINDOW_SHOWN | SDL_WINDOW_RESIZABLE);
     if (mWindow != NULL)
@@ -33,7 +37,6 @@ bool LWindow::init(int width, int height)
         if (mRenderer == NULL)
         {
             printf("Renderer could not be created! SDL Error: %s\n", SDL_GetError());
-            return false;
         }
         else
         {
@@ -41,43 +44,77 @@ bool LWindow::init(int width, int height)
             SDL_SetRenderDrawColor(mRenderer, 0xFF, 0xFF, 0xFF, 0xFF);
         }
     }
-    mTilesX = 0;
-    mTilesY = 0;
-    mTileWidth = 0;
-    mTileHeight = 0;
-    return mWindow != NULL;
+    mCurrScreen = NULL;
 }
 
-void LWindow::setParams(int tilesX, int tilesY, int tileWidth, int tileHeight)
+void LWindow::begin()
 {
-    mTilesX = tilesX;
-    mTilesY = tilesY;
-    mTileWidth = tileWidth;
-    mTileHeight = tileHeight;
-}
+    bool quit = false;
 
-int LWindow::render(std::vector<Renderable *> objects, SDL_Rect &camera)
-{
-    SDL_SetRenderDrawColor(mRenderer, 0xFF, 0xFF, 0xFF, 0xFF);
-    SDL_RenderClear(mRenderer);
+    // Event handler
+    SDL_Event e;
 
-    for (size_t i = 0; i < objects.size(); i++)
+    LTimer updateTimer;
+    int MILLIS_PER_FRAME = 1000 / 60;
+
+    // While application is running
+    while (!quit)
     {
-        int res = objects[i]->render(mRenderer, camera);
-
-        if (res != 0)
+        // Handle events on queue
+        while (SDL_PollEvent(&e) != 0)
         {
-            return -1;
+            updateTimer.start();
+
+            // User requests quit
+            if (e.type == SDL_QUIT)
+            {
+                quit = true;
+            }
+
+            handleEvent(e);
+            // Handle input for the dot
+            // players[0].handleEvent(e);
+            if (mCurrScreen != NULL)
+            {
+                mCurrScreen->handleEvent(e);
+            }
+        }
+
+        // camera = {camera.x, camera.y, window.getWidth(), window.getHeight()};
+        // // Move the dot
+        // players[0].move();
+        // players[0].setCamera(camera);
+        if (mCurrScreen != NULL)
+        {
+
+            mCurrScreen->update();
+        }
+
+        if (!isMinimized())
+        {
+            SDL_SetRenderDrawColor(mRenderer, 0xFF, 0xFF, 0xFF, 0xFF);
+            SDL_RenderClear(mRenderer);
+            // window.render(renderables, camera);
+            if (mCurrScreen != NULL)
+            {
+                mCurrScreen->render(mRenderer);
+            }
+            SDL_RenderPresent(mRenderer);
+        }
+        int frameTicks = updateTimer.getTicks();
+        if (frameTicks < MILLIS_PER_FRAME)
+        {
+            // Wait remaining time
+            SDL_Delay(MILLIS_PER_FRAME - frameTicks);
         }
     }
 
-    SDL_RenderPresent(mRenderer);
+    mCurrScreen->cleanUp();
+    cleanUp();
+    IMG_Quit();
+    SDL_Quit();
+}
 
-    return 0;
-}
-SDL_Renderer* LWindow :: getRenderer( ){
-    return mRenderer ; 
-}
 void LWindow::handleEvent(SDL_Event &e)
 {
     // Window event occured
@@ -165,17 +202,40 @@ void LWindow::handleEvent(SDL_Event &e)
     }
 }
 
-void LWindow::free()
+bool LWindow::initLibs()
 {
-    if (mWindow != NULL)
+    // Initialization flag
+
+    // Initialize SDL
+    if (SDL_Init(SDL_INIT_VIDEO) < 0)
     {
-        SDL_DestroyWindow(mWindow);
+        printf("SDL could not initialize! SDL Error: %s\n", SDL_GetError());
+        return false;
     }
 
-    mMouseFocus = false;
-    mKeyboardFocus = false;
-    mWidth = 0;
-    mHeight = 0;
+    // Set texture filtering to linear
+    if (!SDL_SetHint(SDL_HINT_RENDER_SCALE_QUALITY, "1"))
+    {
+        printf("Warning: Linear texture filtering not enabled!");
+        return false;
+    }
+
+    int imgFlags = IMG_INIT_PNG;
+    if (!(IMG_Init(imgFlags) & imgFlags))
+    {
+        printf("SDL_image could not initialize! SDL_image Error: %s\n", IMG_GetError());
+        return false;
+    }
+    return true;
+}
+
+void LWindow::setCurrScreen(LScreen *screen)
+{
+    if (mCurrScreen != NULL)
+    {
+        mCurrScreen->cleanUp();
+    }
+    mCurrScreen = screen;
 }
 
 bool LWindow::loadTexture(LTexture &texture, std::string path)
@@ -191,16 +251,6 @@ int LWindow::getWidth()
 int LWindow::getHeight()
 {
     return mHeight;
-}
-
-int LWindow::getLevelWidth()
-{
-    return mTilesX * mTileWidth;
-}
-
-int LWindow::getLevelHeight()
-{
-    return mTilesY * mTileHeight;
 }
 
 bool LWindow::hasMouseFocus()
@@ -221,5 +271,13 @@ bool LWindow::isMinimized()
 void LWindow::cleanUp()
 {
     SDL_DestroyRenderer(mRenderer);
-    SDL_DestroyWindow(mWindow);
+    if (mWindow != NULL)
+    {
+        SDL_DestroyWindow(mWindow);
+    }
+
+    mMouseFocus = false;
+    mKeyboardFocus = false;
+    mWidth = 0;
+    mHeight = 0;
 }

@@ -1,36 +1,37 @@
 #ifndef PLAYER_H
 #define PLAYER_H
 
-#include <SDL.h>
-#include <SDL_image.h>
+#include <SDL2/SDL.h>
+#include <SDL2/SDL_image.h>
 #include "Tile.h"
 #include "MyTexture.h"
 #include "Renderable.h"
 #include "MyWindow.h"
-#include<string>
+#include <string>
+
+class LGame;
 
 class Dot : public Renderable
 {
 public:
-    
-    int playerHeight , playerWidth ;
-    int right , top , left  , bottom ; 
-    int mframes ;  
-    char direction ; 
-    int numOfAnimationImages ; 
-    int animationSpeed = 8 ; 
-    std::vector<SDL_Rect> playerImages ; 
+    int playerHeight, playerWidth;
+    int right, top, left, bottom;
+    int mframes;
+    char direction;
+    int numOfAnimationImages;
+    int animationSpeed = 12;
+    std::vector<SDL_Rect> playerImages;
     // Maximum axis velocity of the dot
     int DOT_VEL = 10;
 
     // Initializes the variables
     // Dot(LTexture &myTexture, LWindow &window);
 
-    Dot( LTexture &myTexture , LWindow &window , int playerHeight , int playerWidth  , int right , int left , int top , int bottom , int setVelocity) ; 
+    Dot(LTexture &myTexture, LGame &game, int playerHeight, int playerWidth, int right, int left, int top, int bottom, int setVelocity);
 
     // Takes key presses and adjusts the dot's velocity
     void handleEvent(SDL_Event &e);
-    // void handleEventMoving(SDL_Event &e) ; 
+    // void handleEventMoving(SDL_Event &e) ;
     // Moves the dot and check collision against tiles
     void move();
 
@@ -49,7 +50,7 @@ public:
 private:
     // Collision box of the dot
 
-    LWindow &mWindow;
+    LGame &mGame;
 
     // bool touchesWall(std::vector<Tile> tiles);
 

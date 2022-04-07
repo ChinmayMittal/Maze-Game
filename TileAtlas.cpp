@@ -1,9 +1,7 @@
 #include <vector>
-#include <SDL.h>
+#include <SDL2/SDL.h>
 
 #include "TileAtlas.h"
-
-std::vector<SDL_Rect> TileAtlas::tileClips;
 
 void TileAtlas::init(int uniqueTilesX, int uniqueTilesY, int tileWidth, int tileHeight)
 {

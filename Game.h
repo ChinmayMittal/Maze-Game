@@ -1,0 +1,50 @@
+#ifndef GAME_H
+#define GAME_H
+
+#include "Screen.h"
+
+#include <vector>
+
+#include <SDL2/SDL.h>
+#include "Tile.h"
+#include "Player.h"
+#include "MyTexture.h"
+#include "TileAtlas.h"
+#include "Renderable.h"
+
+class LGame : public LScreen
+{
+private:
+    std::vector<Tile> tiles;
+    std::vector<Dot> players;
+    SDL_Rect camera;
+
+    std::vector<Renderable *> renderables;
+
+    LTexture tilesTexture;
+    LTexture ashTexture;
+
+    TileAtlas tileAtlas;
+
+    int mTilesX;
+    int mTilesY;
+    int mTileWidth;
+    int mTileHeight;
+
+    bool initObjs();
+    bool setTiles();
+
+public:
+    LGame(LWindow &window);
+    void handleEvent(SDL_Event &e);
+    void update();
+    void render(SDL_Renderer *renderer);
+    void cleanUp();
+    SDL_Rect getTileClip(int tileType);
+    int getLevelWidth();
+    int getLevelHeight();
+    int getWindowWidth();
+    int getWindowHeight();
+};
+
+#endif

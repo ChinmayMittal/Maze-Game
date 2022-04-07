@@ -1,19 +1,20 @@
 #ifndef TILE_H
 #define TILE_H
 
-#include <SDL.h>
-#include <SDL_image.h>
+#include <SDL2/SDL.h>
+#include <SDL2/SDL_image.h>
 
 #include "MyTexture.h"
-#include "MyWindow.h"
 #include "Renderable.h"
+
+class LGame;
 
 // The tile
 class Tile : public Renderable
 {
 public:
     // Initializes position and type
-    Tile(LTexture &myTexture, LWindow &window, int x, int y, int width, int height, int tileType);
+    Tile(LTexture &myTexture, LGame &game, int x, int y, int width, int height, int tileType);
 
     // Shows the tile
     int render(SDL_Renderer *renderer, SDL_Rect &camera);
@@ -32,7 +33,7 @@ private:
 
     LTexture &mTexture;
 
-    LWindow &mWindow;
+    LGame &mGame;
 
     // The tile type
     int mType;

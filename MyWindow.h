@@ -1,40 +1,30 @@
 #ifndef WINDOW_H
 #define WINDOW_H
 
-#include <SDL.h>
-#include <SDL_image.h>
+#include <SDL2/SDL.h>
+#include <SDL2/SDL_image.h>
 #include <vector>
 #include <string>
 
 #include "MyTexture.h"
 #include "Renderable.h"
 
+class LScreen;
+
 class LWindow
 {
 public:
     // Intializes internals
-    LWindow();
+    LWindow(int width, int height);
 
-    // Creates window
-    bool init(int width, int height);
-    bool loadTileset(std::string path);
-    bool initGameObjs();
-
-    // Creates renderer from internal window
-    int render(std::vector<Renderable *> objects, SDL_Rect &camera);
+    void begin();
 
     // Handles window events
     void handleEvent(SDL_Event &e);
 
-    // Deallocates internals
-    void free();
-
     // Window dimensions
     int getWidth();
     int getHeight();
-
-    int getLevelWidth();
-    int getLevelHeight();
 
     // Window focii
     bool hasMouseFocus();
@@ -43,13 +33,17 @@ public:
 
     bool loadTexture(LTexture &texture, std::string path);
 
-    void cleanUp();
-    void setParams(int tilesX, int tilesY, int tileWidth, int tileHeight);
-    SDL_Renderer * getRenderer( ) ; 
+    void setCurrScreen(LScreen *screen);
+
 private:
+    bool initLibs();
+    void cleanUp();
+
     // Window data
     SDL_Window *mWindow;
     SDL_Renderer *mRenderer;
+
+    LScreen *mCurrScreen;
 
     // Window dimensions
     int mWidth;
@@ -60,11 +54,6 @@ private:
     bool mKeyboardFocus;
     bool mFullScreen;
     bool mMinimized;
-
-    int mTilesX;
-    int mTilesY;
-    int mTileWidth;
-    int mTileHeight;
 };
 
 #endif
