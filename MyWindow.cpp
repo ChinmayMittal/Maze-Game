@@ -1,12 +1,15 @@
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_image.h>
+#include <SDL2/SDL_ttf.h>
 #include <vector>
 #include <sstream>
 #include <string>
+#include <iostream>
 
 #include "MyWindow.h"
 #include "Renderable.h"
 #include "Screen.h"
+#include "Text.h"
 
 #include "Timer.h"
 // LWindow::LWindow()
@@ -79,17 +82,14 @@ void LWindow::begin()
                 mCurrScreen->handleEvent(e);
             }
         }
-
         // camera = {camera.x, camera.y, window.getWidth(), window.getHeight()};
         // // Move the dot
         // players[0].move();
         // players[0].setCamera(camera);
         if (mCurrScreen != NULL)
         {
-
             mCurrScreen->update();
         }
-
         if (!isMinimized())
         {
             SDL_SetRenderDrawColor(mRenderer, 0xFF, 0xFF, 0xFF, 0xFF);
@@ -226,6 +226,13 @@ bool LWindow::initLibs()
         printf("SDL_image could not initialize! SDL_image Error: %s\n", IMG_GetError());
         return false;
     }
+
+    if (TTF_Init() == -1)
+    {
+        printf("SDL_ttf could not initialize! SDL_ttf Error: %s\n", TTF_GetError());
+        return false;
+    }
+
     return true;
 }
 
@@ -235,12 +242,18 @@ void LWindow::setCurrScreen(LScreen *screen)
     {
         mCurrScreen->cleanUp();
     }
+    delete mCurrScreen;
     mCurrScreen = screen;
 }
 
 bool LWindow::loadTexture(LTexture &texture, std::string path)
 {
     return texture.loadFromFile(mRenderer, path);
+}
+
+bool LWindow::loadText(LTexture &texture, std::string txt, TTF_Font *font, SDL_Color textColor)
+{
+    return texture.loadFromRenderedText(mRenderer, txt, font, textColor);
 }
 
 int LWindow::getWidth()
@@ -270,6 +283,8 @@ bool LWindow::isMinimized()
 
 void LWindow::cleanUp()
 {
+    delete mCurrScreen;
+
     SDL_DestroyRenderer(mRenderer);
     if (mWindow != NULL)
     {

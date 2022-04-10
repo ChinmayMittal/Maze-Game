@@ -44,13 +44,12 @@ public:
 
     void cleanUp();
 
-    SDL_Rect mBox;
-    LTexture &mTexture;
-
 private:
     // Collision box of the dot
 
     LGame &mGame;
+    SDL_Rect mBox;
+    LTexture &mTexture;
 
     // bool touchesWall(std::vector<Tile> tiles);
 

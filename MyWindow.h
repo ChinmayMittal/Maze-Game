@@ -8,6 +8,7 @@
 
 #include "MyTexture.h"
 #include "Renderable.h"
+#include "Text.h"
 
 class LScreen;
 
@@ -32,6 +33,7 @@ public:
     bool isMinimized();
 
     bool loadTexture(LTexture &texture, std::string path);
+    bool loadText(LTexture &texture, std::string txt, TTF_Font *font, SDL_Color textColor);
 
     void setCurrScreen(LScreen *screen);
 
