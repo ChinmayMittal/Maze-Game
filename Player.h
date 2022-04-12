@@ -7,6 +7,7 @@
 #include "MyTexture.h"
 #include "Renderable.h"
 #include "MyWindow.h"
+#include"SoundEffect.h"
 #include <string>
 
 class LGame;
@@ -49,7 +50,7 @@ private:
     LGame &mGame;
     SDL_Rect mBox;
     LTexture &mTexture;
-
+    SoundEffect wallCollisionMusic ; 
     // bool touchesWall(std::vector<Tile> tiles);
 
     // The velocity of the dot

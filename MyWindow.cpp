@@ -1,6 +1,7 @@
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_image.h>
 #include <SDL2/SDL_ttf.h>
+#include <SDL2/SDL_mixer.h>
 #include <vector>
 #include <sstream>
 #include <string>
@@ -75,17 +76,13 @@ void LWindow::begin()
             }
 
             handleEvent(e);
-            // Handle input for the dot
-            // players[0].handleEvent(e);
+
             if (mCurrScreen != NULL)
             {
                 mCurrScreen->handleEvent(e);
             }
         }
-        // camera = {camera.x, camera.y, window.getWidth(), window.getHeight()};
-        // // Move the dot
-        // players[0].move();
-        // players[0].setCamera(camera);
+
         if (mCurrScreen != NULL)
         {
             mCurrScreen->update();
@@ -94,7 +91,7 @@ void LWindow::begin()
         {
             SDL_SetRenderDrawColor(mRenderer, 0xFF, 0xFF, 0xFF, 0xFF);
             SDL_RenderClear(mRenderer);
-            // window.render(renderables, camera);
+
             if (mCurrScreen != NULL)
             {
                 mCurrScreen->render(mRenderer);
@@ -111,6 +108,7 @@ void LWindow::begin()
 
     mCurrScreen->cleanUp();
     cleanUp();
+    Mix_Quit();
     IMG_Quit();
     SDL_Quit();
 }
@@ -207,7 +205,7 @@ bool LWindow::initLibs()
     // Initialization flag
 
     // Initialize SDL
-    if (SDL_Init(SDL_INIT_VIDEO) < 0)
+    if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_AUDIO ) < 0)
     {
         printf("SDL could not initialize! SDL Error: %s\n", SDL_GetError());
         return false;
@@ -232,6 +230,14 @@ bool LWindow::initLibs()
         printf("SDL_ttf could not initialize! SDL_ttf Error: %s\n", TTF_GetError());
         return false;
     }
+
+    //Initialize SDL_mixer
+    if( Mix_OpenAudio( 44100, MIX_DEFAULT_FORMAT, 2, 1024 ) < 0 )
+    {
+        printf( "SDL_mixer could not initialize! SDL_mixer Error: %s\n", Mix_GetError() );
+        return false ; 
+    }
+    Mix_AllocateChannels(32);
 
     return true;
 }

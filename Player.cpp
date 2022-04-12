@@ -5,8 +5,9 @@
 #include "MyTexture.h"
 #include "Game.h"
 #include <iostream>
+#include<string>
 
-Player ::Player(LTexture &myTexture, LGame &game, int playerHeight, int playerWidth, int right, int left, int top, int bottom, int setVelocity) : mTexture(myTexture), mGame(game)
+Player ::Player(LTexture &myTexture, LGame &game, int playerHeight, int playerWidth, int right, int left, int top, int bottom, int setVelocity) : mTexture(myTexture), mGame(game) ,   wallCollisionMusic(std::string("collision.wav") ) 
 {
     // Initialize the collision box
     mBox.x = 0;
@@ -17,7 +18,12 @@ Player ::Player(LTexture &myTexture, LGame &game, int playerHeight, int playerWi
     // Initialize the velocity
     mVelX = 0;
     mVelY = 0;
-
+    // std::cout << "here1\n" ;  
+    // std::cout << "here2\n" ;    
+    // wallCollisionMusic.play() ; 
+    // SDL_Delay(1000) ; 
+    // wallCollisionMusic.play() ; 
+    // SDL_Delay(2000) ; 
     this->DOT_VEL = setVelocity;
     this->direction = 'D';
     this->playerHeight = playerHeight;
@@ -156,6 +162,7 @@ void Player::move()
     {
         // move back
         mBox.x -= mVelX;
+        // wallCollisionMusic.play() ; 
     }
 
     // Move the dot up or down
@@ -166,6 +173,7 @@ void Player::move()
     {
         // move back
         mBox.y -= mVelY;
+        // wallCollisionMusic.play() ; 
     }
       
       
