@@ -54,7 +54,7 @@ bool LGame::initObjs()
         return false;
     }
 
-    Dot ash(ashTexture, *this, 32, 32, 3, 1, 2, 0, 1);
+    Player ash(ashTexture, *this, 32, 32, 3, 1, 2, 0, 5);
     players.push_back(ash);
 
     camera = {0, 0, window.getWidth(), window.getHeight()};

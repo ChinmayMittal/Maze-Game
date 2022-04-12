@@ -16,7 +16,7 @@ class LGame : public LScreen
 {
 private:
     std::vector<Tile> tiles;
-    std::vector<Dot> players;
+    std::vector<Player> players;
     SDL_Rect camera;
 
     std::vector<Renderable *> renderables;

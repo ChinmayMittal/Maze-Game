@@ -6,7 +6,7 @@
 #include "Game.h"
 #include <iostream>
 
-Dot ::Dot(LTexture &myTexture, LGame &game, int playerHeight, int playerWidth, int right, int left, int top, int bottom, int setVelocity) : mTexture(myTexture), mGame(game)
+Player ::Player(LTexture &myTexture, LGame &game, int playerHeight, int playerWidth, int right, int left, int top, int bottom, int setVelocity) : mTexture(myTexture), mGame(game)
 {
     // Initialize the collision box
     mBox.x = 0;
@@ -78,7 +78,7 @@ Dot ::Dot(LTexture &myTexture, LGame &game, int playerHeight, int playerWidth, i
 //     // If no wall tiles were touched
 //     return false;
 // }
-void Dot::handleEvent(SDL_Event &e)
+void Player::handleEvent(SDL_Event &e)
 {
     // If a key was pressed
     if (e.type == SDL_KEYDOWN && e.key.repeat == 0)
@@ -145,51 +145,8 @@ void Dot::handleEvent(SDL_Event &e)
         }
     }
 }
-// void Dot::handleEvent(SDL_Event &e)
-// {
-//     // If a key was pressed
-//     if (e.type == SDL_KEYDOWN && e.key.repeat == 0)
-//     {
-//         // Adjust the velocity
-//         switch (e.key.keysym.sym)
-//         {
-//         case SDLK_UP:
-//             mVelY -= DOT_VEL;
-//             break;
-//         case SDLK_DOWN:
-//             mVelY += DOT_VEL;
-//             break;
-//         case SDLK_LEFT:
-//             mVelX -= DOT_VEL;
-//             break;
-//         case SDLK_RIGHT:
-//             mVelX += DOT_VEL;
-//             break;
-//         }
-//     }
-//     // If a key was released
-//     else if (e.type == SDL_KEYUP && e.key.repeat == 0)
-//     {
-//         // Adjust the velocity
-//         switch (e.key.keysym.sym)
-//         {
-//         case SDLK_UP:
-//             mVelY += DOT_VEL;
-//             break;
-//         case SDLK_DOWN:
-//             mVelY -= DOT_VEL;
-//             break;
-//         case SDLK_LEFT:
-//             mVelX += DOT_VEL;
-//             break;
-//         case SDLK_RIGHT:
-//             mVelX -= DOT_VEL;
-//             break;
-//         }
-//     }
-// }
 
-void Dot::move()
+void Player::move()
 {
     // Move the dot left or right
     mBox.x += mVelX;
@@ -210,9 +167,11 @@ void Dot::move()
         // move back
         mBox.y -= mVelY;
     }
+      
+      
 }
 
-void Dot::setCamera(SDL_Rect &camera)
+void Player::setCamera(SDL_Rect &camera)
 {
     // Center the camera over the dot
     camera.x = (mBox.x + playerWidth / 2) - mGame.getWindowWidth() / 2;
@@ -247,7 +206,7 @@ void Dot::setCamera(SDL_Rect &camera)
 //     return 0;
 // }
 
-int Dot::render(SDL_Renderer *renderer, SDL_Rect &camera)
+int Player::render(SDL_Renderer *renderer, SDL_Rect &camera)
 {
     int dimension = 0;
     switch (direction)
@@ -278,7 +237,7 @@ int Dot::render(SDL_Renderer *renderer, SDL_Rect &camera)
     return 0;
 }
 
-void Dot::cleanUp()
+void Player::cleanUp()
 {
     mTexture.free();
 }

@@ -11,7 +11,7 @@
 
 class LGame;
 
-class Dot : public Renderable
+class Player : public Renderable
 {
 public:
     int playerHeight, playerWidth;
@@ -25,9 +25,8 @@ public:
     int DOT_VEL = 10;
 
     // Initializes the variables
-    // Dot(LTexture &myTexture, LWindow &window);
 
-    Dot(LTexture &myTexture, LGame &game, int playerHeight, int playerWidth, int right, int left, int top, int bottom, int setVelocity);
+    Player(LTexture &myTexture, LGame &game, int playerHeight, int playerWidth, int right, int left, int top, int bottom, int setVelocity);
 
     // Takes key presses and adjusts the dot's velocity
     void handleEvent(SDL_Event &e);
