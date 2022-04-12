@@ -59,7 +59,7 @@ bool LGame::initObjs()
 
     camera = {0, 0, window.getWidth(), window.getHeight()};
 
-    if (!window.loadTexture(tilesTexture, "resources/tiles2.png"))
+    if (!window.loadTexture(tilesTexture, "resources/tileset.png"))
     {
         printf("Failed to load tile set texture!\n");
         return false;
@@ -91,10 +91,9 @@ bool LGame::initObjs()
 
 bool LGame::setTiles()
 {
-    // Open the map and the type map 
-    std::ifstream mapStream("resources/map2.tmx");
-    std:: ifstream mapTypeStream("resources/mapTypes.tmx") ; 
-
+    // Open the map
+    std::ifstream mapStream("resources/mapFinal.tmx");
+    std::ifstream mapTypeStream("resources/mapTypes.tmx");
     // If the map couldn't be loaded
     if (mapStream.fail())
     {
@@ -107,16 +106,16 @@ bool LGame::setTiles()
         return false;
     }
 
-    std::stringstream buffer , mapTypeBuffer ;
+    std::stringstream buffer, mapTypeBuffer;
     buffer << mapStream.rdbuf();
-    mapTypeBuffer << mapTypeStream.rdbuf() ; 
+    mapTypeBuffer << mapTypeStream.rdbuf();
 
     std::string xmlText = buffer.str();
-    std :: string mapTypeXMLText = mapTypeBuffer.str() ;
+    std ::string mapTypeXMLText = mapTypeBuffer.str();
 
-    rapidxml::xml_document<> doc , typedoc; // character type defaults to char
+    rapidxml::xml_document<> doc, typedoc; // character type defaults to char
     doc.parse<0>(const_cast<char *>(xmlText.c_str()));
-    typedoc.parse<0>( const_cast < char * >(mapTypeXMLText.c_str())) ; 
+    typedoc.parse<0>(const_cast<char *>(mapTypeXMLText.c_str()));
 
     rapidxml::xml_node<> *mapNode = doc.first_node("map");
     rapidxml::xml_node<> *typeMapNode = typedoc.first_node("map");
@@ -128,13 +127,13 @@ bool LGame::setTiles()
     int numTilesY = std::stoi(mapNode->first_attribute("height")->value());
 
     std::string tilesData = mapNode->first_node("layer")->first_node("data")->value();
-    std :: string tilesTypeData = typeMapNode->first_node("layer")->first_node("data")->value() ; 
-    int j = 0 , k = 0 ;
+    std ::string tilesTypeData = typeMapNode->first_node("layer")->first_node("data")->value();
+    int j = 0, k = 0;
     // Initialize the tiles
     for (int i = 0; i < numTilesX * numTilesY; ++i)
     {
         // Read tile from map file
-        std::string token , typeToken ;
+        std::string token, typeToken;
         while (j < tilesData.size() && tilesData[j] != ',')
         {
             token += tilesData[j];
@@ -146,20 +145,20 @@ bool LGame::setTiles()
             k++;
         }
         j++;
-        k ++ ; 
+        k++;
 
         int tileID = std::stoi(token);
-        int tileType = std::stoi( typeToken ) ; 
+        int tileType = std::stoi(typeToken);
 
         Tile myTile(tilesTexture, *this, (i % numTilesX) * tileWidth, (i / numTilesX) * tileHeight, tileWidth, tileHeight, tileID);
-        myTile.setType( tileType ) ; 
-        std:: cout << myTile.getType() << " " ; 
+        myTile.setType(tileType);
+        std::cout << myTile.getType() << " ";
         tiles.push_back(myTile);
     }
 
     // Close the files
     mapStream.close();
-    mapTypeStream.close() ; 
+    mapTypeStream.close();
 
     mTilesX = numTilesX;
     mTilesY = numTilesY;
