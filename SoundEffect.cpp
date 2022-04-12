@@ -38,14 +38,14 @@ bool SoundEffect::loadMusic( std :: string filename )
 {
     // get rid of pre-existing music 
     free() ; 
-    std::cout << "loading music...\n" ; 
+    // std::cout << "loading music...\n" ; 
     mMusic = Mix_LoadWAV( filename.c_str() ) ; 
     if( mMusic == NULL ) {
         printf( "Failed to load music!\n" );
         std::cout << Mix_GetError() << "\n" ; 
         return false ; 
     }
-    std::cout << "loaded music...\n" ; 
+    // std::cout << "loaded music...\n" ; 
     return true ; 
 
 }

@@ -2,7 +2,7 @@
 CXX = g++
 
 #OBJS specifies which files to compile as part of the project
-OBJS = Button.cpp collision.cpp Game.cpp main.cpp MainMenu.cpp MyTexture.cpp MyWindow.cpp Player.cpp Screen.cpp Text.cpp Tile.cpp TileAtlas.cpp Timer.cpp SoundEffect.cpp
+OBJS = Button.cpp collision.cpp Game.cpp main.cpp MainMenu.cpp MyTexture.cpp MyWindow.cpp Player.cpp Screen.cpp Text.cpp Tile.cpp TileAtlas.cpp Timer.cpp SoundEffect.cpp Entity.cpp
 
 #COMPILER_FLAGS specifies the additional compilation options we're using
 # -w suppresses all warnings

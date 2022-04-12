@@ -91,8 +91,9 @@ bool LGame::initObjs()
 
 bool LGame::setTiles()
 {
-    // Open the map
+    // Open the map and the type map 
     std::ifstream mapStream("resources/map2.tmx");
+    std:: ifstream mapTypeStream("resources/mapTypes.tmx") ; 
 
     // If the map couldn't be loaded
     if (mapStream.fail())
@@ -100,16 +101,26 @@ bool LGame::setTiles()
         printf("Unable to load map file!\n");
         return false;
     }
+    if (mapTypeStream.fail())
+    {
+        printf("Unable to load type map file!\n");
+        return false;
+    }
 
-    std::stringstream buffer;
+    std::stringstream buffer , mapTypeBuffer ;
     buffer << mapStream.rdbuf();
+    mapTypeBuffer << mapTypeStream.rdbuf() ; 
 
     std::string xmlText = buffer.str();
+    std :: string mapTypeXMLText = mapTypeBuffer.str() ;
 
-    rapidxml::xml_document<> doc; // character type defaults to char
+    rapidxml::xml_document<> doc , typedoc; // character type defaults to char
     doc.parse<0>(const_cast<char *>(xmlText.c_str()));
+    typedoc.parse<0>( const_cast < char * >(mapTypeXMLText.c_str())) ; 
 
     rapidxml::xml_node<> *mapNode = doc.first_node("map");
+    rapidxml::xml_node<> *typeMapNode = typedoc.first_node("map");
+
     int tileWidth = std::stoi(mapNode->first_attribute("tilewidth")->value());
     int tileHeight = std::stoi(mapNode->first_attribute("tileheight")->value());
 
@@ -117,28 +128,38 @@ bool LGame::setTiles()
     int numTilesY = std::stoi(mapNode->first_attribute("height")->value());
 
     std::string tilesData = mapNode->first_node("layer")->first_node("data")->value();
-    int j = 0;
-
+    std :: string tilesTypeData = typeMapNode->first_node("layer")->first_node("data")->value() ; 
+    int j = 0 , k = 0 ;
     // Initialize the tiles
     for (int i = 0; i < numTilesX * numTilesY; ++i)
     {
         // Read tile from map file
-        std::string token;
+        std::string token , typeToken ;
         while (j < tilesData.size() && tilesData[j] != ',')
         {
             token += tilesData[j];
             j++;
         }
+        while (k < tilesTypeData.size() && tilesTypeData[k] != ',')
+        {
+            typeToken += tilesTypeData[k];
+            k++;
+        }
         j++;
+        k ++ ; 
 
-        int tileType = std::stoi(token);
+        int tileID = std::stoi(token);
+        int tileType = std::stoi( typeToken ) ; 
 
-        Tile myTile(tilesTexture, *this, (i % numTilesX) * tileWidth, (i / numTilesX) * tileHeight, tileWidth, tileHeight, tileType);
+        Tile myTile(tilesTexture, *this, (i % numTilesX) * tileWidth, (i / numTilesX) * tileHeight, tileWidth, tileHeight, tileID);
+        myTile.setType( tileType ) ; 
+        std:: cout << myTile.getType() << " " ; 
         tiles.push_back(myTile);
     }
 
-    // Close the file
+    // Close the files
     mapStream.close();
+    mapTypeStream.close() ; 
 
     mTilesX = numTilesX;
     mTilesY = numTilesY;
@@ -148,9 +169,9 @@ bool LGame::setTiles()
     return true;
 }
 
-SDL_Rect LGame::getTileClip(int tileType)
+SDL_Rect LGame::getTileClip(int tileID)
 {
-    return tileAtlas.tileClips[tileType - 1];
+    return tileAtlas.tileClips[tileID - 1];
 }
 
 int LGame::getLevelWidth()

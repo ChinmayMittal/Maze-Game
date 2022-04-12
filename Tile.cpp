@@ -5,7 +5,7 @@
 #include "TileAtlas.h"
 #include "Game.h"
 
-Tile::Tile(LTexture &texture, LGame &game, int x, int y, int width, int height, int tileType) : mTexture(texture), mGame(game)
+Tile::Tile(LTexture &texture, LGame &game, int x, int y, int width, int height, int tileID) : mTexture(texture), mGame(game)
 {
     // Get the offsets
     mBox.x = x;
@@ -15,8 +15,9 @@ Tile::Tile(LTexture &texture, LGame &game, int x, int y, int width, int height, 
     mBox.w = width;
     mBox.h = height;
 
-    // Get the tile type
-    mType = tileType;
+    // Get the tile id
+    mID = tileID ;
+    mType = -1 ; 
 }
 
 int Tile::render(SDL_Renderer *renderer, SDL_Rect &camera)
@@ -25,15 +26,23 @@ int Tile::render(SDL_Renderer *renderer, SDL_Rect &camera)
     if (checkCollision(camera, mBox))
     {
         // Show the tile
-        SDL_Rect clipRect = mGame.getTileClip(mType);
+        SDL_Rect clipRect = mGame.getTileClip(mID);
         mTexture.render(renderer, mBox.x - camera.x, mBox.y - camera.y, &clipRect);
     }
     return 0;
 }
-
-int Tile::getType()
+void Tile :: setType( int type ) 
 {
-    return mType;
+    this-> mType = type ; 
+}
+
+int Tile :: getType(  )
+{
+    return mType; 
+}
+int Tile::getID()
+{
+    return mID;
 }
 
 SDL_Rect Tile::getBox()

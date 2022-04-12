@@ -13,15 +13,19 @@ class LGame;
 class Tile : public Renderable
 {
 public:
-    // Initializes position and type
-    Tile(LTexture &myTexture, LGame &game, int x, int y, int width, int height, int tileType);
+    // Initializes position and id
+    Tile(LTexture &myTexture, LGame &game, int x, int y, int width, int height, int tileID);
 
     // Shows the tile
     int render(SDL_Renderer *renderer, SDL_Rect &camera);
 
-    // Get the tile type
-    int getType();
+    // Get the tile id
+    int getID();
+    
+    void setType( int type ) ; 
 
+    int getType( ) ; 
+    // get the tile 
     // Get the collision box
     SDL_Rect getBox();
 
@@ -35,8 +39,10 @@ private:
 
     LGame &mGame;
 
-    // The tile type
-    int mType;
+    // The tile id from map 
+    int mID;
+    // tells the type of each tile ie which entity does it belong to 
+    int mType ; 
 };
 
 #endif
