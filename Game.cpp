@@ -195,22 +195,24 @@ void LGame::initEntities()
     Entity road("Road", [&](Player &player)
                 { player.setVelocity(5); });
     Entity grass("Grass", [&](Player &player)
-                 { 
-                     player.setVelocity(2); 
-                 });
+                 { player.setVelocity(2); });
     Entity pavement("Pavement", [&](Player &player)
-                { 
-                    player.setVelocity(5); 
-                });
-    Entity barrier("Barrier", [&](Player& player){
-        //std::cout << player.getBox().x << std::endl;
-        player.moveBy(-player.getXVel(), -player.getYVel());
-       // std::cout << player.getBox().x << std::endl;
-    });
+                    { player.setVelocity(5); });
+    Entity barrier("Barrier", [&](Player &player)
+                   {
+        // std::cout << player.getBox().x << std::endl;
+        player.moveBy(-player.getXVel(), -player.getYVel()) ; });
+    // std::cout << player.getBox().x << std::endl; });
+
     entities.push_back(road);
     entities.push_back(grass);
     entities.push_back(pavement);
     entities.push_back(barrier);
+    for (int i = 0; i < 100; i++)
+    {
+        entities.push_back(Entity("default", [](Player &player)
+                                  { std ::cout << "default tile\n"; }));
+    }
 }
 
 SDL_Rect LGame::getTileClip(int tileID)
