@@ -198,21 +198,102 @@ void LGame::initEntities()
                  { player.setVelocity(2); });
     Entity pavement("Pavement", [&](Player &player)
                     { player.setVelocity(5); });
-    Entity barrier("Barrier", [&](Player &player)
+    Entity no_movement("no_movement", [&](Player &player)
                    {
         // std::cout << player.getBox().x << std::endl;
         player.moveBy(-player.getXVel(), -player.getYVel()) ; });
     // std::cout << player.getBox().x << std::endl; });
 
-    entities.push_back(road);
-    entities.push_back(grass);
-    entities.push_back(pavement);
-    entities.push_back(barrier);
-    for (int i = 0; i < 100; i++)
-    {
-        entities.push_back(Entity("default", [](Player &player)
-                                  { std ::cout << "default tile\n"; }));
-    }
+        Entity yulu("yulu", [&](Player &player){});
+        Entity nilgiri("nilgiri", [&](Player &player){});
+        Entity kara("kara", [&](Player &player){});
+        Entity aravali("aravali", [&](Player &player){});
+        Entity jwala("jwala", [&](Player &player){});
+        Entity kumaon("kumaon", [&](Player &player){});
+        Entity vindy("vindy", [&](Player &player){});
+        Entity satpura("satpura", [&](Player &player){});
+        Entity udai_girnar("udai_girnar", [&](Player &player){});
+        Entity volleyball("volleyball", [&](Player &player){});
+        Entity tennis("tennis", [&](Player &player){});
+        Entity swimming_pool("swimming_pool", [&](Player &player){});
+        Entity oat("oat", [&](Player &player){});
+        Entity hot_dog("hot_dog", [&](Player &player){});
+        Entity himadri("himadri", [&](Player &player){});
+        Entity kailash("kailash", [&](Player &player){});
+        Entity gas("gas", [&](Player &player){});
+        Entity icecream("icecream", [&](Player &player){});
+        Entity shop("shop", [&](Player &player){});
+        Entity shivalik("shivalik", [&](Player &player){});
+        Entity zanskar("zanskar", [&](Player &player){});
+        Entity sac("sac", [&](Player &player){});
+        Entity foot("foot", [&](Player &player){});
+        Entity basketball("basketball", [&](Player &player){});
+        Entity athletic("athletic", [&](Player &player){});
+        Entity cricket("cricket", [&](Player &player){});
+        Entity lhc("lhc", [&](Player &player){});
+        Entity police("police", [&](Player &player){});
+        Entity main_building("main_building", [&](Player &player){});
+        Entity biotech_dept("biotech_dept", [&](Player &player){});
+        Entity library("library", [&](Player &player){});
+        Entity coffee("coffee", [&](Player &player){});
+        Entity hospital("hospital", [&](Player &player){});
+        Entity burger("burger", [&](Player &player){});
+        Entity vegetable_shop("vegetable_shop", [&](Player &player){});
+        Entity bread_shop("bread_shop", [&](Player &player){});
+        Entity hardware_shop("hardware_shop", [&](Player &player){});
+        Entity barber("barber", [&](Player &player){});
+        Entity pharmacy("pharmacy", [&](Player &player){});
+        Entity beverage_shop("beverage_shop", [&](Player &player){});
+        entities.push_back(road);
+        entities.push_back(grass);
+        entities.push_back(pavement);
+        entities.push_back(no_movement);
+        entities.push_back(yulu);
+        entities.push_back(nilgiri);
+        entities.push_back(kara);
+        entities.push_back(aravali);
+        entities.push_back(jwala);
+        entities.push_back(kumaon);
+        entities.push_back(vindy);
+        entities.push_back(satpura);
+        entities.push_back(udai_girnar);
+        entities.push_back(volleyball);
+        entities.push_back(tennis);
+        entities.push_back(swimming_pool);
+        entities.push_back(oat);
+        entities.push_back(hot_dog);
+        entities.push_back(himadri);
+        entities.push_back(kailash);
+        entities.push_back(gas);
+        entities.push_back(icecream);
+        entities.push_back(shop);
+        entities.push_back(shivalik);
+        entities.push_back(zanskar);
+        entities.push_back(sac);
+        entities.push_back(foot);
+        entities.push_back(basketball);
+        entities.push_back(athletic);
+        entities.push_back(cricket);
+        entities.push_back(lhc);
+        entities.push_back(police);
+        entities.push_back(main_building);
+        entities.push_back(biotech_dept);
+        entities.push_back(library);
+        entities.push_back(coffee);
+        entities.push_back(hospital);
+        entities.push_back(burger);
+        entities.push_back(vegetable_shop);
+        entities.push_back(bread_shop);
+        entities.push_back(hardware_shop);
+        entities.push_back(barber);
+        entities.push_back(pharmacy);
+        entities.push_back(beverage_shop);
+
+    // for (int i = 0; i < 100; i++)
+    // {
+    //     entities.push_back(Entity("default", [](Player &player)
+    //                               { std ::cout << "default tile\n"; }));
+    // }
 }
 
 SDL_Rect LGame::getTileClip(int tileID)
