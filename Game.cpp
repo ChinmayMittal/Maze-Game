@@ -156,7 +156,7 @@ bool LGame::setTiles()
         k++;
 
         int tileID = std::stoi(token);
-        int tileType = std::stoi(typeToken);
+        int tileType = std::stoi(typeToken) - 1;
 
         Tile myTile(tilesTexture, *this, (i % numTilesX) * tileWidth, (i / numTilesX) * tileHeight, tileWidth, tileHeight, tileID);
         myTile.setType(tileType);
@@ -181,6 +181,8 @@ void LGame::initEntities()
                 { player.setVelocity(5); });
     Entity grass("Grass", [&](Player &player)
                  { player.setVelocity(2); });
+    entities.push_back(road);
+    entities.push_back(grass);
 }
 
 SDL_Rect LGame::getTileClip(int tileID)
