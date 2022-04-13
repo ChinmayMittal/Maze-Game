@@ -27,8 +27,8 @@ void LGame::update()
     int tileX = (playerBox.x + playerBox.w / 2) / mTileWidth;
     int tileY = (playerBox.y + playerBox.h / 2) / mTileHeight;
     int tileType = tiles[tileY * mTilesX + tileX].getType();
-    entities[tileType].collided(players[0]);
     players[0].move();
+    entities[tileType].collided(players[0]);
     players[0].setCamera(camera);
 }
 
