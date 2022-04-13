@@ -152,7 +152,6 @@ bool LGame::setTiles()
 
         Tile myTile(tilesTexture, *this, (i % numTilesX) * tileWidth, (i / numTilesX) * tileHeight, tileWidth, tileHeight, tileID);
         myTile.setType(tileType);
-        std::cout << myTile.getType() << " ";
         tiles.push_back(myTile);
     }
 
