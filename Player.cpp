@@ -134,7 +134,7 @@ void Player::handleEvent(SDL_Event &e)
         {
         case SDLK_UP:
             if (mVelY != 0)
-                mVelY += velocity;
+                mVelY = velocity;
             break;
         case SDLK_DOWN:
             if (mVelY != 0)

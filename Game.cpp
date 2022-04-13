@@ -26,7 +26,7 @@ void LGame::update()
     SDL_Rect playerBox = players[0].getBox();
     int tileX = (playerBox.x + playerBox.w / 2) / mTileWidth;
     int tileY = (playerBox.y + playerBox.h / 2) / mTileHeight;
-    int tileType = tiles[tileY * getLevelWidth() + tileX].getType();
+    int tileType = tiles[tileY * mTilesX + tileX].getType();
     entities[tileType].collided(players[0]);
     players[0].move();
     players[0].setCamera(camera);
