@@ -93,19 +93,19 @@ void Player::handleEvent(SDL_Event &e)
         switch (e.key.keysym.sym)
         {
         case SDLK_UP:
-            mVelY -= velocity;
+            mVelY = -velocity;
             mVelX = 0;
             break;
         case SDLK_DOWN:
-            mVelY += velocity;
+            mVelY = velocity;
             mVelX = 0;
             break;
         case SDLK_LEFT:
-            mVelX -= velocity;
+            mVelX = -velocity;
             mVelY = 0;
             break;
         case SDLK_RIGHT:
-            mVelX += velocity;
+            mVelX = velocity;
             mVelY = 0;
             break;
         }
@@ -133,20 +133,12 @@ void Player::handleEvent(SDL_Event &e)
         switch (e.key.keysym.sym)
         {
         case SDLK_UP:
-            if (mVelY != 0)
-                mVelY = velocity;
-            break;
         case SDLK_DOWN:
-            if (mVelY != 0)
-                mVelY -= velocity;
+            mVelY = 0;
             break;
         case SDLK_LEFT:
-            if (mVelX != 0)
-                mVelX += velocity;
-            break;
         case SDLK_RIGHT:
-            if (mVelX != 0)
-                mVelX -= velocity;
+            mVelX = 0;
             break;
         }
     }
@@ -250,7 +242,11 @@ void Player::cleanUp()
 
 void Player::setVelocity(int vel)
 {
+    mVelX = mVelX / velocity;
+    mVelY /= velocity;
     velocity = vel;
+    mVelX *= velocity;
+    mVelY *= velocity;
 }
 
 SDL_Rect Player::getBox()
