@@ -1,0 +1,5 @@
+0 road 
+1 grass
+2 pavement
+3 no-movement
+4 yulu
