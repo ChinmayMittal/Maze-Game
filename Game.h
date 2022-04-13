@@ -12,6 +12,8 @@
 #include "TileAtlas.h"
 #include "Renderable.h"
 #include "Entity.h"
+#include "Timer.h"
+#include "Text.h"
 
 class LGame : public LScreen
 {
@@ -36,6 +38,9 @@ private:
     bool initObjs();
     bool setTiles();
     void initEntities();
+
+    LTimer globalTime;
+    Text* timeText;
 
 public:
     LGame(LWindow &window);

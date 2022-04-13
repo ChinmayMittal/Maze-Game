@@ -30,6 +30,13 @@ void LGame::update()
     int tileType = tiles[tileY * mTilesX + tileX].getType();
     entities[tileType].collided(players[0]);
     players[0].setCamera(camera);
+
+    int secs = globalTime.getTicks()/1000;
+    int mins = 3*(secs%20);
+    int hours = (secs/20);
+
+    timeText->setText(std::to_string(hours) + ":" + std::to_string(mins));
+
 }
 
 void LGame::render(SDL_Renderer *renderer)
@@ -43,12 +50,15 @@ void LGame::render(SDL_Renderer *renderer)
             // Handle Error
         }
     }
+
+    timeText->render(renderer, window.getWidth() - timeText->getWidth() - 32, 32);
 }
 
 void LGame::cleanUp()
 {
     players[0].cleanUp();
     tiles[0].cleanUp();
+    delete timeText;
 }
 
 bool LGame::initObjs()
@@ -85,6 +95,10 @@ bool LGame::initObjs()
 
     initEntities();
 
+    SDL_Color txtColor = {0, 0, 0, 255};
+    TTF_Font *font = TTF_OpenFont("resources/FrostbiteBossFight-dL0Z.ttf", 28);
+    timeText = new Text(window, "00:00", font, txtColor);
+
     for (int i = 0; i < tiles.size(); i++)
     {
         renderables.push_back(&tiles[i]);
@@ -94,6 +108,7 @@ bool LGame::initObjs()
         renderables.push_back(&players[i]);
     }
 
+    globalTime.start();
     return true;
 }
 

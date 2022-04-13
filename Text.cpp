@@ -26,3 +26,9 @@ void Text::cleanUp()
 {
     mTexture.free();
 }
+
+void Text::setText(std::string txt){
+    mText = txt;
+    mTexture.free();
+    mWindow.loadText(mTexture, txt, mFont, mTextColor);
+}

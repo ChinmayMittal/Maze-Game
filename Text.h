@@ -23,6 +23,7 @@ public:
     int getHeight();
     void render(SDL_Renderer *renderer, int x, int y);
     void cleanUp();
+    void setText(std::string txt);
 };
 
 #endif
