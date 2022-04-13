@@ -25,6 +25,8 @@ public:
     // Moves the dot and check collision against tiles
     void move();
 
+    void moveBy(int offsetX, int offsetY);
+
     // Centers the camera over the dot
     void setCamera(SDL_Rect &camera);
 
@@ -37,6 +39,9 @@ public:
     void cleanUp();
 
     SDL_Rect getBox();
+    int getXVel();
+    int getYVel();
+    void setMoveFactor(int factor);
 
 private:
     // Collision box of the dot
@@ -55,6 +60,7 @@ private:
     std::vector<SDL_Rect> playerImages;
     // Maximum axis velocity of the dot
     int velocity;
+    int moveFactor;
     // The velocity of the dot
     int mVelX, mVelY;
 };

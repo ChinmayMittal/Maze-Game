@@ -10,7 +10,7 @@
 Player ::Player(LTexture &myTexture, LGame &game, int playerHeight, int playerWidth, int right, int left, int top, int bottom) : mTexture(myTexture), mGame(game), wallCollisionMusic(std::string("collision.wav"))
 {
     // Initialize the collision box
-    mBox.x = 0;
+    mBox.x = 32*7;
     mBox.y = 0;
     mBox.w = playerWidth;
     mBox.h = playerHeight;
@@ -25,6 +25,7 @@ Player ::Player(LTexture &myTexture, LGame &game, int playerHeight, int playerWi
     // wallCollisionMusic.play() ;
     // SDL_Delay(2000) ;
     this->velocity = 10;
+    this->moveFactor = 1;
     this->direction = 'D';
     this->playerHeight = playerHeight;
     this->playerWidth = playerWidth;
@@ -147,26 +148,32 @@ void Player::handleEvent(SDL_Event &e)
 void Player::move()
 {
     // Move the dot left or right
-    mBox.x += mVelX;
+    mBox.x += mVelX * moveFactor;
+    //std::cout << "After move: " << mBox.x << std::endl;
 
     // If the dot went too far to the left or right or touched a wall
     if ((mBox.x < 0) || (mBox.x + playerWidth > mGame.getLevelWidth()) /* || touchesWall(mBox, tiles) */)
     {
         // move back
-        mBox.x -= mVelX;
+        mBox.x -= mVelX*moveFactor;
         // wallCollisionMusic.play() ;
     }
 
     // Move the dot up or down
-    mBox.y += mVelY;
+    mBox.y += mVelY*moveFactor;
 
     // If the dot went too far up or down or touched a wall
     if ((mBox.y < 0) || (mBox.y + playerHeight > mGame.getLevelHeight()) /* || touchesWall(mBox, tiles) */)
     {
         // move back
-        mBox.y -= mVelY;
+        mBox.y -= mVelY*moveFactor;
         // wallCollisionMusic.play() ;
     }
+}
+
+void Player::moveBy(int offsetX, int offsetY){
+    mBox.x += offsetX;
+    mBox.y += offsetY;
 }
 
 void Player::setCamera(SDL_Rect &camera)
@@ -242,14 +249,26 @@ void Player::cleanUp()
 
 void Player::setVelocity(int vel)
 {
-    mVelX = mVelX / velocity;
+    mVelX /= velocity;
     mVelY /= velocity;
     velocity = vel;
     mVelX *= velocity;
     mVelY *= velocity;
 }
 
+void Player::setMoveFactor(int factor){
+    moveFactor = factor;
+}
+
 SDL_Rect Player::getBox()
 {
     return mBox;
+}
+
+int Player::getXVel(){
+    return mVelX * moveFactor;
+}
+
+int Player::getYVel(){
+    return mVelY * moveFactor;
 }

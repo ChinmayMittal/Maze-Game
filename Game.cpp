@@ -23,11 +23,11 @@ void LGame::update()
 {
     camera = {camera.x, camera.y, window.getWidth(), window.getHeight()};
     // Move the dot
+    players[0].move();
     SDL_Rect playerBox = players[0].getBox();
     int tileX = (playerBox.x + playerBox.w / 2) / mTileWidth;
     int tileY = (playerBox.y + playerBox.h / 2) / mTileHeight;
     int tileType = tiles[tileY * mTilesX + tileX].getType();
-    players[0].move();
     entities[tileType].collided(players[0]);
     players[0].setCamera(camera);
 }
@@ -180,9 +180,22 @@ void LGame::initEntities()
     Entity road("Road", [&](Player &player)
                 { player.setVelocity(5); });
     Entity grass("Grass", [&](Player &player)
-                 { player.setVelocity(2); });
+                 { 
+                     player.setVelocity(2); 
+                 });
+    Entity pavement("Pavement", [&](Player &player)
+                { 
+                    player.setVelocity(5); 
+                });
+    Entity barrier("Barrier", [&](Player& player){
+        //std::cout << player.getBox().x << std::endl;
+        player.moveBy(-player.getXVel(), -player.getYVel());
+       // std::cout << player.getBox().x << std::endl;
+    });
     entities.push_back(road);
     entities.push_back(grass);
+    entities.push_back(pavement);
+    entities.push_back(barrier);
 }
 
 SDL_Rect LGame::getTileClip(int tileID)
