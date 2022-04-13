@@ -11,12 +11,14 @@
 #include "MyTexture.h"
 #include "TileAtlas.h"
 #include "Renderable.h"
+#include "Entity.h"
 
 class LGame : public LScreen
 {
 private:
     std::vector<Tile> tiles;
     std::vector<Player> players;
+    std::vector<Entity> entities;
     SDL_Rect camera;
 
     std::vector<Renderable *> renderables;
@@ -33,6 +35,7 @@ private:
 
     bool initObjs();
     bool setTiles();
+    void initEntities();
 
 public:
     LGame(LWindow &window);

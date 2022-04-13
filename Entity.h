@@ -1,17 +1,22 @@
-#include<string>
-#include<functional>
+#ifndef ENTITY_H
+#define ENTITY_H
 
-class Entity{
+#include <string>
+#include <functional>
 
-    public : 
+#include "Player.h"
 
-        Entity( std::string nameOfEntity , std:: function<void(void)> onCollidefunciton ) ; 
-        std::string getName() ; 
-        
+class Entity
+{
 
-    private : 
+public:
+    Entity(std::string nameOfEntity, std::function<void(Player &player)> onCollidefunciton);
+    std::string getName();
+    void collided(Player &player);
 
-        std::string name ; 
-        std::function<void(void)> onCollide ; 
+private:
+    std::string name;
+    std::function<void(Player &player)> onCollide;
+};
 
-} ; 
+#endif

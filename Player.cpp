@@ -5,9 +5,9 @@
 #include "MyTexture.h"
 #include "Game.h"
 #include <iostream>
-#include<string>
+#include <string>
 
-Player ::Player(LTexture &myTexture, LGame &game, int playerHeight, int playerWidth, int right, int left, int top, int bottom, int setVelocity) : mTexture(myTexture), mGame(game) ,   wallCollisionMusic(std::string("collision.wav") ) 
+Player ::Player(LTexture &myTexture, LGame &game, int playerHeight, int playerWidth, int right, int left, int top, int bottom) : mTexture(myTexture), mGame(game), wallCollisionMusic(std::string("collision.wav"))
 {
     // Initialize the collision box
     mBox.x = 0;
@@ -18,13 +18,13 @@ Player ::Player(LTexture &myTexture, LGame &game, int playerHeight, int playerWi
     // Initialize the velocity
     mVelX = 0;
     mVelY = 0;
-    // std::cout << "here1\n" ;  
-    // std::cout << "here2\n" ;    
-    // wallCollisionMusic.play() ; 
-    // SDL_Delay(1000) ; 
-    // wallCollisionMusic.play() ; 
-    // SDL_Delay(2000) ; 
-    this->DOT_VEL = setVelocity;
+    // std::cout << "here1\n" ;
+    // std::cout << "here2\n" ;
+    // wallCollisionMusic.play() ;
+    // SDL_Delay(1000) ;
+    // wallCollisionMusic.play() ;
+    // SDL_Delay(2000) ;
+    this->velocity = 10;
     this->direction = 'D';
     this->playerHeight = playerHeight;
     this->playerWidth = playerWidth;
@@ -93,19 +93,19 @@ void Player::handleEvent(SDL_Event &e)
         switch (e.key.keysym.sym)
         {
         case SDLK_UP:
-            mVelY -= DOT_VEL;
+            mVelY -= velocity;
             mVelX = 0;
             break;
         case SDLK_DOWN:
-            mVelY += DOT_VEL;
+            mVelY += velocity;
             mVelX = 0;
             break;
         case SDLK_LEFT:
-            mVelX -= DOT_VEL;
+            mVelX -= velocity;
             mVelY = 0;
             break;
         case SDLK_RIGHT:
-            mVelX += DOT_VEL;
+            mVelX += velocity;
             mVelY = 0;
             break;
         }
@@ -134,19 +134,19 @@ void Player::handleEvent(SDL_Event &e)
         {
         case SDLK_UP:
             if (mVelY != 0)
-                mVelY += DOT_VEL;
+                mVelY += velocity;
             break;
         case SDLK_DOWN:
             if (mVelY != 0)
-                mVelY -= DOT_VEL;
+                mVelY -= velocity;
             break;
         case SDLK_LEFT:
             if (mVelX != 0)
-                mVelX += DOT_VEL;
+                mVelX += velocity;
             break;
         case SDLK_RIGHT:
             if (mVelX != 0)
-                mVelX -= DOT_VEL;
+                mVelX -= velocity;
             break;
         }
     }
@@ -162,7 +162,7 @@ void Player::move()
     {
         // move back
         mBox.x -= mVelX;
-        // wallCollisionMusic.play() ; 
+        // wallCollisionMusic.play() ;
     }
 
     // Move the dot up or down
@@ -173,10 +173,8 @@ void Player::move()
     {
         // move back
         mBox.y -= mVelY;
-        // wallCollisionMusic.play() ; 
+        // wallCollisionMusic.play() ;
     }
-      
-      
 }
 
 void Player::setCamera(SDL_Rect &camera)
@@ -248,4 +246,14 @@ int Player::render(SDL_Renderer *renderer, SDL_Rect &camera)
 void Player::cleanUp()
 {
     mTexture.free();
+}
+
+void Player::setVelocity(int vel)
+{
+    velocity = vel;
+}
+
+SDL_Rect Player::getBox()
+{
+    return mBox;
 }
