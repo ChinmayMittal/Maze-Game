@@ -45,7 +45,7 @@ void SearchOpponent::handleEvent(SDL_Event &e)
     switch (e.type)
     {
     case SDL_KEYUP:
-        if (e.key.keysym.sym == SDLK_RETURN)
+        if (e.key.keysym.sym == SDLK_s)
         {
             LGame *myGame = new LGame(window);
             window.setCurrScreen(myGame);

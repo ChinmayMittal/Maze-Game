@@ -23,11 +23,14 @@ MainMenu::MainMenu(LWindow &window) : LScreen(window)
     playButton->setHighlightTexture(buttonBgHighlighted);
     playButton->setClickTexture(buttonBgClicked);
     playButton->setOnClickListener([&](LWindow &window)
-                                   { 
-                                    LScreen* currScreen = window.getCurrScreen();
-                                    MainMenu* menuScreen = dynamic_cast<MainMenu*>(currScreen);
-                                    SearchOpponent *searchOpponent = new SearchOpponent(window, menuScreen->getName());
-                                    window.setCurrScreen(searchOpponent); });
+                                   {
+        LScreen *currScreen = window.getCurrScreen();
+        MainMenu *menuScreen = dynamic_cast<MainMenu *>(currScreen);
+        SearchOpponent *searchOpponent = new SearchOpponent(window, menuScreen->getName());
+        window.setCurrScreen(searchOpponent);
+        // LGame* game = new LGame(window);
+        // window.setCurrScreen(game); 
+        });
     buttons.push_back(playButton);
 
     txtColor = {0, 0, 0, 255};
