@@ -246,45 +246,124 @@ void LGame::initEntities()
                         //std::cout << "Toggled" << std::endl;
                     } });
 
-    Entity nilgiri("nilgiri", [&](Player &player) {});
-    Entity kara("kara", [&](Player &player) {});
-    Entity aravali("aravali", [&](Player &player) {});
-    Entity jwala("jwala", [&](Player &player) {});
-    Entity kumaon("kumaon", [&](Player &player) {});
-    Entity vindy("vindy", [&](Player &player) {});
-    Entity satpura("satpura", [&](Player &player) {});
-    Entity udai_girnar("udai_girnar", [&](Player &player) {});
-    Entity volleyball("volleyball", [&](Player &player) {});
-    Entity tennis("tennis", [&](Player &player) {});
-    Entity swimming_pool("swimming_pool", [&](Player &player) {});
-    Entity oat("oat", [&](Player &player) {});
-    Entity hot_dog("hot_dog", [&](Player &player) {});
-    Entity himadri("himadri", [&](Player &player) {});
-    Entity kailash("kailash", [&](Player &player) {});
-    Entity gas("gas", [&](Player &player) {});
-    Entity icecream("icecream", [&](Player &player) {});
-    Entity shop("shop", [&](Player &player) {});
-    Entity shivalik("shivalik", [&](Player &player) {});
-    Entity zanskar("zanskar", [&](Player &player) {});
-    Entity sac("sac", [&](Player &player) {});
-    Entity foot("foot", [&](Player &player) {});
-    Entity basketball("basketball", [&](Player &player) {});
-    Entity athletic("athletic", [&](Player &player) {});
-    Entity cricket("cricket", [&](Player &player) {});
-    Entity lhc("lhc", [&](Player &player) {});
-    Entity police("police", [&](Player &player) {});
-    Entity main_building("main_building", [&](Player &player) {});
-    Entity biotech_dept("biotech_dept", [&](Player &player) {});
-    Entity library("library", [&](Player &player) {});
-    Entity coffee("coffee", [&](Player &player) {});
-    Entity hospital("hospital", [&](Player &player) {});
-    Entity burger("burger", [&](Player &player) {});
-    Entity vegetable_shop("vegetable_shop", [&](Player &player) {});
-    Entity bread_shop("bread_shop", [&](Player &player) {});
-    Entity hardware_shop("hardware_shop", [&](Player &player) {});
-    Entity barber("barber", [&](Player &player) {});
-    Entity pharmacy("pharmacy", [&](Player &player) {});
-    Entity beverage_shop("beverage_shop", [&](Player &player) {});
+    Entity nilgiri("nilgiri", [&](Player &player)
+                   { std ::cout << "nilgiri"
+                                << " \n  "; });
+    Entity kara("kara", [&](Player &player)
+                { std ::cout << "kara"
+                             << " \n  "; });
+    Entity aravali("aravali", [&](Player &player)
+                   { std ::cout << "aravali"
+                                << " \n  "; });
+    Entity jwala("jwala", [&](Player &player)
+                 { std ::cout << "jwala"
+                              << " \n  "; });
+    Entity kumaon("kumaon", [&](Player &player)
+                  { std ::cout << "kumaon"
+                               << " \n  "; });
+    Entity vindy("vindy", [&](Player &player)
+                 { std ::cout << "vindy"
+                              << " \n  "; });
+    Entity satpura("satpura", [&](Player &player)
+                   { std ::cout << "satpura"
+                                << " \n  "; });
+    Entity udai_girnar("udai_girnar", [&](Player &player)
+                       { std ::cout << "udai_girnar"
+                                    << " \n  "; });
+    Entity volleyball("volleyball", [&](Player &player)
+                      { std ::cout << "volleyball"
+                                   << " \n  "; });
+    Entity tennis("tennis", [&](Player &player)
+                  { std ::cout << "tennis"
+                               << " \n  "; });
+    Entity swimming_pool("swimming_pool", [&](Player &player)
+                         { std ::cout << "swimming_pool"
+                                      << " \n  "; });
+    Entity oat("oat", [&](Player &player)
+               { std ::cout << "oat"
+                            << " \n  "; });
+    Entity hot_dog("hot_dog", [&](Player &player)
+                   { std ::cout << "hot_dog"
+                                << " \n  "; });
+    Entity himadri("himadri", [&](Player &player)
+                   { std ::cout << "himadri"
+                                << " \n  "; });
+    Entity kailash("kailash", [&](Player &player)
+                   { std ::cout << "kailash"
+                                << " \n  "; });
+    Entity gas("gas", [&](Player &player)
+               { std ::cout << "gas"
+                            << " \n  "; });
+    Entity icecream("icecream", [&](Player &player)
+                    { std ::cout << "icecream"
+                                 << " \n  "; });
+    Entity shop("shop", [&](Player &player)
+                { std ::cout << "shop"
+                             << " \n  "; });
+    Entity shivalik("shivalik", [&](Player &player)
+                    { std ::cout << "shivalik"
+                                 << " \n  "; });
+    Entity zanskar("zanskar", [&](Player &player)
+                   { std ::cout << "zanskar"
+                                << " \n  "; });
+    Entity sac("sac", [&](Player &player)
+               { std ::cout << "sac"
+                            << " \n  "; });
+    Entity foot("foot", [&](Player &player)
+                { std ::cout << "foot"
+                             << " \n  "; });
+    Entity basketball("basketball", [&](Player &player)
+                      { std ::cout << "basketball"
+                                   << " \n  "; });
+    Entity athletic("athletic", [&](Player &player)
+                    { std ::cout << "athletic"
+                                 << " \n  "; });
+    Entity cricket("cricket", [&](Player &player)
+                   { std ::cout << "cricket"
+                                << " \n  "; });
+    Entity lhc("lhc", [&](Player &player)
+               { std ::cout << "lhc"
+                            << " \n  "; });
+    Entity police("police", [&](Player &player)
+                  { std ::cout << "police"
+                               << " \n  "; });
+    Entity main_building("main_building", [&](Player &player)
+                         { std ::cout << "main_building"
+                                      << " \n  "; });
+    Entity biotech_dept("biotech_dept", [&](Player &player)
+                        { std ::cout << "biotech_dept"
+                                     << " \n  "; });
+    Entity library("library", [&](Player &player)
+                   { std ::cout << "library"
+                                << " \n  "; });
+    Entity coffee("coffee", [&](Player &player)
+                  { std ::cout << "coffee"
+                               << " \n  "; });
+    Entity hospital("hospital", [&](Player &player)
+                    { std ::cout << "hospital"
+                                 << " \n  "; });
+    Entity burger("burger", [&](Player &player)
+                  { std ::cout << "burger"
+                               << " \n  "; });
+    Entity vegetable_shop("vegetable_shop", [&](Player &player)
+                          { std ::cout << "vegetable_shop"
+                                       << " \n  "; });
+    Entity bread_shop("bread_shop", [&](Player &player)
+                      { std ::cout << "bread_shop"
+                                   << " \n  "; });
+    Entity hardware_shop("hardware_shop", [&](Player &player)
+                         { std ::cout << "hardware_shop"
+                                      << " \n  "; });
+    Entity barber("barber", [&](Player &player)
+                  { std ::cout << "barber"
+                               << " \n  "; });
+    Entity pharmacy("pharmacy", [&](Player &player)
+                    { std ::cout << "pharmacy"
+                                 << " \n  "; });
+    Entity beverage_shop("beverage_shop", [&](Player &player)
+                         { std ::cout << "beverage_shop"
+                                      << " \n  "; });
+
     entities.push_back(road);
     entities.push_back(grass);
     entities.push_back(pavement);
