@@ -11,26 +11,17 @@
 #include "Renderable.h"
 #include "Screen.h"
 #include "Text.h"
+#include "constants.h"
 
 #include "Timer.h"
-// LWindow::LWindow()
-// {
-//     // Initialize non-existant window
-//     mWindow = NULL;
-//     mMouseFocus = false;
-//     mKeyboardFocus = false;
-//     mFullScreen = false;
-//     mMinimized = false;
-//     mWidth = 0;
-//     mHeight = 0;
-// }
+
 
 LWindow::LWindow(int width, int height)
 {
     initLibs();
 
     // Create window
-    mWindow = SDL_CreateWindow("SDL Tutorial", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, width, height, SDL_WINDOW_SHOWN | SDL_WINDOW_RESIZABLE);
+    mWindow = SDL_CreateWindow("MAZE GAME", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, width, height, SDL_WINDOW_SHOWN | SDL_WINDOW_RESIZABLE);
     if (mWindow != NULL)
     {
         mMouseFocus = true;
@@ -60,6 +51,7 @@ void LWindow::begin()
 
     LTimer updateTimer;
     int MILLIS_PER_FRAME = 1000 / 60;
+    int loopTimes = 0 ; 
 
     // While application is running
     while (!quit)
@@ -105,7 +97,13 @@ void LWindow::begin()
             // Wait remaining time
             SDL_Delay(MILLIS_PER_FRAME - frameTicks);
         }
-        std::cout << "FPS: " << 1000 / updateTimer.getTicks() << std::endl;
+        FPS =  1000 / updateTimer.getTicks(); 
+        std::stringstream caption;
+        loopTimes = (loopTimes + 1 )%FPSupdatespeed ;  
+        if(loopTimes == 0 ){
+            caption << "MAZEGAME FPS:" << std::to_string(FPS);
+            SDL_SetWindowTitle(mWindow, caption.str().c_str());
+        }
     }
 
     mCurrScreen->cleanUp();
@@ -177,13 +175,7 @@ void LWindow::handleEvent(SDL_Event &e)
             break;
         }
 
-        // Update window caption with new data
-        if (updateCaption)
-        {
-            std::stringstream caption;
-            caption << "SDL Tutorial - MouseFocus:" << ((mMouseFocus) ? "On" : "Off") << " KeyboardFocus:" << ((mKeyboardFocus) ? "On" : "Off");
-            SDL_SetWindowTitle(mWindow, caption.str().c_str());
-        }
+    
     }
     // Enter exit full screen on return key
     else if (e.type == SDL_KEYDOWN && e.key.keysym.sym == SDLK_RETURN)

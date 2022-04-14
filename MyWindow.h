@@ -50,6 +50,7 @@ private:
     // Window dimensions
     int mWidth;
     int mHeight;
+    int FPS ; 
 
     // Window focus
     bool mMouseFocus;

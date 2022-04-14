@@ -35,7 +35,7 @@ private:
     int mTilesY;
     int mTileWidth;
     int mTileHeight;
-    int mMaxPlayerHealth ; 
+    int mMaxPlayerHealth ;
     bool initObjs();
     bool setTiles();
     void initEntities();
