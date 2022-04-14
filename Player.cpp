@@ -296,7 +296,7 @@ void Player::update()
             money -= 2;
             yuluTimer.stop();
             yuluTimer.start();
-            std::cout << money << std::endl;
+            // std::cout << money << std::endl;
         }
     }
     else
