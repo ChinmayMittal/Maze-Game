@@ -22,7 +22,8 @@ private:
     std::vector<Player> players;
     std::vector<Entity> entities;
     SDL_Rect camera;
-
+    // for instructions on object collision 
+    std:: string displayText ; 
     std::vector<Renderable *> renderables;
 
     LTexture tilesTexture;
@@ -43,7 +44,9 @@ private:
     Text* timeText;
     Text* healthText ; 
     Text* moneyText ; 
-    Text* pointsText ; 
+    Text* pointsText ;
+    // for instructions on object collision 
+    Text* prompText ;  
 
 public:
     LGame(LWindow &window);

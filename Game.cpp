@@ -31,7 +31,10 @@ void LGame::update()
     int tileY = (playerBox.y + playerBox.h / 2) / mTileHeight;
     int tileType = tiles[tileY * mTilesX + tileX].getType();
     // std::cout << "Tiletype " << tileType << std::endl;
-    entities[tileType].collided(players[0]);
+    // stores the prompt text to be displayed 
+
+    entities[tileType].collided(players[0] , displayText );
+
     // std::cout << "After collide " << playerBox.y << std::endl;
     players[0].setCamera(camera);
 
@@ -52,16 +55,18 @@ void LGame::update()
     pointsText->setText("POINTS: " + std::to_string(players[0].getPoints()));
     moneyText->setText("MONEY: " + std::to_string(players[0].getMoney()));
     healthText->setText("HEALTH:");
+    if(displayText == "") displayText = "INSTRUCTIONS WILL APPEAR HERE " ; 
+    prompText -> setText(displayText) ; 
 }
 
 void LGame::render(SDL_Renderer *renderer)
 {
-    SDL_Rect topLeftViewport;
-    topLeftViewport.x = 0;
-    topLeftViewport.y = gyRenderOffset;
-    topLeftViewport.w = window.getWidth();
-    topLeftViewport.h = window.getHeight() -  gyRenderOffset;
-    SDL_RenderSetViewport( renderer, &topLeftViewport );
+    SDL_Rect viewport;
+    viewport.x = 0;
+    viewport.y = gyRenderOffset;
+    viewport.w = window.getWidth();
+    viewport.h = window.getHeight() -  gyRenderOffset - gyRenderOffset;
+    SDL_RenderSetViewport( renderer, &viewport );
 
     for (size_t i = 0; i < renderables.size(); i++)
     {
@@ -74,11 +79,11 @@ void LGame::render(SDL_Renderer *renderer)
         }
     }
 
-    topLeftViewport.x = 0;
-    topLeftViewport.y = 0;
-    topLeftViewport.w = window.getWidth();
-    topLeftViewport.h = gyRenderOffset;
-    SDL_RenderSetViewport( renderer, &topLeftViewport );
+    viewport.x = 0;
+    viewport.y = 0;
+    viewport.w = window.getWidth();
+    viewport.h = gyRenderOffset;
+    SDL_RenderSetViewport( renderer, &viewport );
     SDL_SetRenderDrawColor(renderer, 0xFF, 0x00, 0x00, 0xFF);
 
     int offset = timeText->getWidth() + 32;
@@ -100,6 +105,12 @@ void LGame::render(SDL_Renderer *renderer)
     pointsText->render(renderer, window.getWidth() - offset, gyTextOffset);
     players[0].setHealth((players[0].getHealth() + 10) % 100);
 
+    viewport.x = 0;
+    viewport.y = window.getHeight() -  gyRenderOffset ;
+    viewport.w = window.getWidth();
+    viewport.h = gyRenderOffset;
+    SDL_RenderSetViewport( renderer, &viewport );
+    prompText -> render( renderer , 0 , 0 ) ; 
 
 
 }
@@ -151,6 +162,8 @@ bool LGame::initObjs()
     healthText = new Text(window, "HEALTH :: ", font, txtColor);
     moneyText = new Text(window, "MONEY:: ", font, txtColor);
     pointsText = new Text(window, "POINTS:: ", font, txtColor);
+    displayText = "INSTRUCTIONS WILL APPEAR HERE" ; 
+    prompText =  new Text( window , displayText , font , txtColor ) ; 
 
     for (int i = 0; i < tiles.size(); i++)
     {
@@ -246,140 +259,117 @@ bool LGame::setTiles()
 
 void LGame::initEntities()
 {
-    Entity road("Road", [&](Player &player)
-                { player.setVelocity(2); });
-    Entity grass("Grass", [&](Player &player)
-                 { player.setVelocity(1); });
-    Entity pavement("Pavement", [&](Player &player)
-                    { player.setVelocity(2); });
-    Entity no_movement("no_movement", [&](Player &player)
-                       { player.moveBy(-player.getXVel(), -player.getYVel()); });
+    Entity road("Road", [&](Player &player , std::string &displayText)
+                { 
+                    player.setVelocity(2); 
+                    displayText = "" ; 
+                
+                });
+    Entity grass("Grass", [&](Player &player , std::string &displayText)
+                 { 
+                     player.setVelocity(1); 
+                     displayText = "" ; 
+                });
+    Entity pavement("Pavement", [&](Player &player , std::string &displayText)
+                { 
+                    player.setVelocity(2); 
+                    displayText = "" ; 
+                });
+    Entity no_movement("no_movement", [&](Player &player , std::string &displayText)
+                       { 
+                           player.moveBy(-player.getXVel(), -player.getYVel());
+                           displayText = "" ; 
+                        });
 
-    Entity yulu("yulu", [&](Player &player)
+    Entity yulu("yulu", [&](Player &player, std::string &displayText)
                 { 
                     if (player.getLastTileType() != 4)
                     {
                         player.toggleYulu();
                         //std::cout << "Toggled" << std::endl;
-                    } });
+                        
+                    }
+                    displayText = "yulu" ; 
+                 });
 
-    Entity nilgiri("nilgiri", [&](Player &player)
-                   { std ::cout << "nilgiri"
-                                << " \n  "; });
-    Entity kara("kara", [&](Player &player)
-                { std ::cout << "kara"
-                             << " \n  "; });
-    Entity aravali("aravali", [&](Player &player)
-                   { std ::cout << "aravali"
-                                << " \n  "; });
-    Entity jwala("jwala", [&](Player &player)
-                 { std ::cout << "jwala"
-                              << " \n  "; });
-    Entity kumaon("kumaon", [&](Player &player)
-                  { std ::cout << "kumaon"
-                               << " \n  "; });
-    Entity vindy("vindy", [&](Player &player)
-                 { std ::cout << "vindy"
-                              << " \n  "; });
-    Entity satpura("satpura", [&](Player &player)
-                   { std ::cout << "satpura"
-                                << " \n  "; });
-    Entity udai_girnar("udai_girnar", [&](Player &player)
-                       { std ::cout << "udai_girnar"
-                                    << " \n  "; });
-    Entity volleyball("volleyball", [&](Player &player)
-                      { std ::cout << "volleyball"
-                                   << " \n  "; });
-    Entity tennis("tennis", [&](Player &player)
-                  { std ::cout << "tennis"
-                               << " \n  "; });
-    Entity swimming_pool("swimming_pool", [&](Player &player)
-                         { std ::cout << "swimming_pool"
-                                      << " \n  "; });
-    Entity oat("oat", [&](Player &player)
-               { std ::cout << "oat"
-                            << " \n  "; });
-    Entity hot_dog("hot_dog", [&](Player &player)
-                   { std ::cout << "hot_dog"
-                                << " \n  "; });
-    Entity himadri("himadri", [&](Player &player)
-                   { std ::cout << "himadri"
-                                << " \n  "; });
-    Entity kailash("kailash", [&](Player &player)
-                   { std ::cout << "kailash"
-                                << " \n  "; });
-    Entity gas("gas", [&](Player &player)
-               { std ::cout << "gas"
-                            << " \n  "; });
-    Entity icecream("icecream", [&](Player &player)
-                    { std ::cout << "icecream"
-                                 << " \n  "; });
-    Entity shop("shop", [&](Player &player)
-                { std ::cout << "shop"
-                             << " \n  "; });
-    Entity shivalik("shivalik", [&](Player &player)
-                    { std ::cout << "shivalik"
-                                 << " \n  "; });
-    Entity zanskar("zanskar", [&](Player &player)
-                   { std ::cout << "zanskar"
-                                << " \n  "; });
-    Entity sac("sac", [&](Player &player)
-               { std ::cout << "sac"
-                            << " \n  "; });
-    Entity foot("foot", [&](Player &player)
-                { std ::cout << "foot"
-                             << " \n  "; });
-    Entity basketball("basketball", [&](Player &player)
-                      { std ::cout << "basketball"
-                                   << " \n  "; });
-    Entity athletic("athletic", [&](Player &player)
-                    { std ::cout << "athletic"
-                                 << " \n  "; });
-    Entity cricket("cricket", [&](Player &player)
-                   { std ::cout << "cricket"
-                                << " \n  "; });
-    Entity lhc("lhc", [&](Player &player)
-               { std ::cout << "lhc"
-                            << " \n  "; });
-    Entity police("police", [&](Player &player)
-                  { std ::cout << "police"
-                               << " \n  "; });
-    Entity main_building("main_building", [&](Player &player)
-                         { std ::cout << "main_building"
-                                      << " \n  "; });
-    Entity biotech_dept("biotech_dept", [&](Player &player)
-                        { std ::cout << "biotech_dept"
-                                     << " \n  "; });
-    Entity library("library", [&](Player &player)
-                   { std ::cout << "library"
-                                << " \n  "; });
-    Entity coffee("coffee", [&](Player &player)
-                  { std ::cout << "coffee"
-                               << " \n  "; });
-    Entity hospital("hospital", [&](Player &player)
-                    { std ::cout << "hospital"
-                                 << " \n  "; });
-    Entity burger("burger", [&](Player &player)
-                  { std ::cout << "burger"
-                               << " \n  "; });
-    Entity vegetable_shop("vegetable_shop", [&](Player &player)
-                          { std ::cout << "vegetable_shop"
-                                       << " \n  "; });
-    Entity bread_shop("bread_shop", [&](Player &player)
-                      { std ::cout << "bread_shop"
-                                   << " \n  "; });
-    Entity hardware_shop("hardware_shop", [&](Player &player)
-                         { std ::cout << "hardware_shop"
-                                      << " \n  "; });
-    Entity barber("barber", [&](Player &player)
-                  { std ::cout << "barber"
-                               << " \n  "; });
-    Entity pharmacy("pharmacy", [&](Player &player)
-                    { std ::cout << "pharmacy"
-                                 << " \n  "; });
-    Entity beverage_shop("beverage_shop", [&](Player &player)
-                         { std ::cout << "beverage_shop"
-                                      << " \n  "; });
+    Entity nilgiri("nilgiri", [&](Player &player, std::string &displayText)
+                   { displayText =  "nilgiri"; });
+    Entity kara("kara", [&](Player &player, std::string &displayText)
+                { displayText =  "kara" ; });
+    Entity aravali("aravali", [&](Player &player, std::string &displayText)
+                   { displayText =  "aravali"  ; });
+    Entity jwala("jwala", [&](Player &player, std::string &displayText)
+                 { displayText =  "jwala" ; });
+    Entity kumaon("kumaon", [&](Player &player, std::string &displayText)
+                  { displayText =  "kumaon"   ; });
+    Entity vindy("vindy", [&](Player &player, std::string &displayText)
+                 { displayText =  "vindy" ; });
+    Entity satpura("satpura", [&](Player &player, std::string &displayText)
+                   { displayText =  "satpura"; });
+    Entity udai_girnar("udai_girnar", [&](Player &player, std::string &displayText)
+                       { displayText =  "udai_girnar" ; });
+    Entity volleyball("volleyball", [&](Player &player, std::string &displayText)
+                      { displayText =  "volleyball" ; });
+    Entity tennis("tennis", [&](Player &player, std::string &displayText)
+                  { displayText =  "tennis"  ; });
+    Entity swimming_pool("swimming_pool", [&](Player &player, std::string &displayText)
+                         { displayText =  "swimming_pool"; });
+    Entity oat("oat", [&](Player &player, std::string &displayText)
+               { displayText =  "oat"; });
+    Entity hot_dog("hot_dog", [&](Player &player, std::string &displayText)
+                   { displayText =  "hot_dog"; });
+    Entity himadri("himadri", [&](Player &player, std::string &displayText)
+                   { displayText =  "himadri"; });
+    Entity kailash("kailash", [&](Player &player, std::string &displayText)
+                   { displayText =  "kailash"; });
+    Entity gas("gas", [&](Player &player, std::string &displayText)
+               { displayText =  "gas" ; });
+    Entity icecream("icecream", [&](Player &player, std::string &displayText)
+                    { displayText =  "icecream" ; });
+    Entity shop("shop", [&](Player &player, std::string &displayText)
+                { displayText =  "shop"; });
+    Entity shivalik("shivalik", [&](Player &player, std::string &displayText)
+                    { displayText =  "shivalik"; });
+    Entity zanskar("zanskar", [&](Player &player, std::string &displayText)
+                   { displayText =  "zanskar"; });
+    Entity sac("sac", [&](Player &player, std::string &displayText)
+               { displayText =  "sac"; });
+    Entity foot("foot", [&](Player &player, std::string &displayText)
+                { displayText =  "foot"; });
+    Entity basketball("basketball", [&](Player &player, std::string &displayText)
+                      { displayText =  "basketball"  ; });
+    Entity athletic("athletic", [&](Player &player, std::string &displayText)
+                    { displayText =  "athletic" ; });
+    Entity cricket("cricket", [&](Player &player, std::string &displayText)
+                   { displayText =  "cricket"  ; });
+    Entity lhc("lhc", [&](Player &player, std::string &displayText)
+               { displayText =  "lhc"; });
+    Entity police("police", [&](Player &player, std::string &displayText)
+                  { displayText =  "police" ; });
+    Entity main_building("main_building", [&](Player &player, std::string &displayText)
+                         { displayText =  "main_building" ; });
+    Entity biotech_dept("biotech_dept", [&](Player &player, std::string &displayText)
+                        { displayText =  "biotech_dept"   ; });
+    Entity library("library", [&](Player &player, std::string &displayText)
+                   { displayText =  "library" ; });
+    Entity coffee("coffee", [&](Player &player, std::string &displayText)
+                  { displayText =  "coffee"; });
+    Entity hospital("hospital", [&](Player &player, std::string &displayText)
+                    { displayText =  "hospital" ; });
+    Entity burger("burger", [&](Player &player, std::string &displayText)
+                  { displayText =  "burger"; });
+    Entity vegetable_shop("vegetable_shop", [&](Player &player, std::string &displayText)
+                          { displayText =  "vegetable_shop"   ; });
+    Entity bread_shop("bread_shop", [&](Player &player, std::string &displayText)
+                      { displayText =  "bread_shop"  ; });
+    Entity hardware_shop("hardware_shop", [&](Player &player, std::string &displayText)
+                         { displayText =  "hardware_shop" ; });
+    Entity barber("barber", [&](Player &player, std::string &displayText)
+                  { displayText =  "barber" ; });
+    Entity pharmacy("pharmacy", [&](Player &player, std::string &displayText)
+                    { displayText =  "pharmacy" ; });
+    Entity beverage_shop("beverage_shop", [&](Player &player, std::string &displayText)
+                         { displayText =  "beverage_shop"  ; });
 
     entities.push_back(road);
     entities.push_back(grass);

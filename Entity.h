@@ -10,13 +10,13 @@ class Entity
 {
 
 public:
-    Entity(std::string nameOfEntity, std::function<void(Player &player)> onCollidefunciton);
+    Entity(std::string nameOfEntity, std::function<void(Player &player , std::string &displayText)> onCollidefunciton);
     std::string getName();
-    void collided(Player &player);
+    void collided(Player &player , std::string &displayText );
 
 private:
     std::string name;
-    std::function<void(Player &player)> onCollide;
+    std::function<void(Player &player , std::string &displayText)> onCollide;
 };
 
 #endif
