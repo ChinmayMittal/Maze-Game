@@ -3,7 +3,7 @@
 #include <iostream>
 #include <sstream>
 #include "rapidxml.hpp"
-
+#include "constants.h"
 #include "Game.h"
 #include "MyWindow.h"
 #include "Screen.h"
@@ -44,10 +44,11 @@ void LGame::update()
     players[0].setLastTileType(newTileType);
 
     int secs = globalTime.getTicks() / 1000;
-    int mins = 3 * (secs % 20);
-    int hours = (secs / 20);
-
-    timeText->setText("TIME: " + std::to_string(hours) + ":" + std::to_string(mins));
+    std::string mins = std::to_string ( 3 * (secs % 20) ) ;
+    std::string hours = std::to_string ( (secs / 20) ) ;
+    if( mins.size() <=1  ) mins = "0" + mins ; 
+    if( hours.size() <=1 ) hours = "0" + hours ; 
+    timeText->setText("TIME: " + hours + ":" + mins);
     pointsText->setText("POINTS: " + std::to_string(players[0].getPoints()));
     moneyText->setText("MONEY: " + std::to_string(players[0].getMoney()));
     healthText->setText("HEALTH:");
@@ -57,7 +58,8 @@ void LGame::render(SDL_Renderer *renderer)
 {
     for (size_t i = 0; i < renderables.size(); i++)
     {
-        int res = renderables[i]->render(renderer, camera);
+        SDL_Rect tempCamera = {camera.x , camera.y - gyRenderOffset, camera.w , camera.h} ; 
+        int res = renderables[i]->render(renderer, tempCamera);
 
         if (res != 0)
         {
@@ -68,22 +70,22 @@ void LGame::render(SDL_Renderer *renderer)
     SDL_SetRenderDrawColor(renderer, 0xFF, 0x00, 0x00, 0xFF);
 
     int offset = timeText->getWidth() + 32;
-    timeText->render(renderer, window.getWidth() - offset, 32);
-    offset += 100 + 10;
-    SDL_Rect fillRect = {window.getWidth() - offset, 32, (players[0].getHealth() * (100) / mMaxPlayerHealth), 32};
+    timeText->render(renderer, window.getWidth() - offset, gyTextOffset);
+    offset += gMaxPlayerHealth + gxTextSpacing ;
+    SDL_Rect fillRect = {window.getWidth() - offset, gyTextOffset, (players[0].getHealth() * (gMaxPlayerHealth) / mMaxPlayerHealth), 32};
     SDL_RenderFillRect(renderer, &fillRect);
-    SDL_Rect outlineRect = {window.getWidth() - offset, 32, 100, 32};
+    SDL_Rect outlineRect = {window.getWidth() - offset, gyTextOffset, gMaxPlayerHealth, 32};
 
     SDL_RenderDrawRect(renderer, &outlineRect);
 
     offset += healthText->getWidth() + 10;
-    healthText->render(renderer, window.getWidth() - offset, 32);
+    healthText->render(renderer, window.getWidth() - offset, gyTextOffset);
 
-    offset += moneyText->getWidth() + 30;
-    moneyText->render(renderer, window.getWidth() - offset, 32);
+    offset += moneyText->getWidth() + gxTextSpacing ;
+    moneyText->render(renderer, window.getWidth() - offset, gyTextOffset);
 
-    offset += pointsText->getWidth() + 30;
-    pointsText->render(renderer, window.getWidth() - offset, 32);
+    offset += pointsText->getWidth() + gxTextSpacing;
+    pointsText->render(renderer, window.getWidth() - offset, gyTextOffset);
     players[0].setHealth((players[0].getHealth() + 10) % 100);
 }
 
@@ -222,7 +224,7 @@ bool LGame::setTiles()
     mTilesY = numTilesY;
     mTileWidth = tileWidth;
     mTileHeight = tileHeight;
-    mMaxPlayerHealth = 100;
+    mMaxPlayerHealth = gMaxPlayerHealth ;
 
     return true;
 }
