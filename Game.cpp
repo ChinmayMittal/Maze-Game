@@ -56,10 +56,17 @@ void LGame::update()
 
 void LGame::render(SDL_Renderer *renderer)
 {
+    SDL_Rect topLeftViewport;
+    topLeftViewport.x = 0;
+    topLeftViewport.y = gyRenderOffset;
+    topLeftViewport.w = window.getWidth();
+    topLeftViewport.h = window.getHeight() -  gyRenderOffset;
+    SDL_RenderSetViewport( renderer, &topLeftViewport );
+
     for (size_t i = 0; i < renderables.size(); i++)
     {
-        SDL_Rect tempCamera = {camera.x , camera.y - gyRenderOffset, camera.w , camera.h} ; 
-        int res = renderables[i]->render(renderer, tempCamera);
+
+        int res = renderables[i]->render(renderer,camera);
 
         if (res != 0)
         {
@@ -67,6 +74,11 @@ void LGame::render(SDL_Renderer *renderer)
         }
     }
 
+    topLeftViewport.x = 0;
+    topLeftViewport.y = 0;
+    topLeftViewport.w = window.getWidth();
+    topLeftViewport.h = gyRenderOffset;
+    SDL_RenderSetViewport( renderer, &topLeftViewport );
     SDL_SetRenderDrawColor(renderer, 0xFF, 0x00, 0x00, 0xFF);
 
     int offset = timeText->getWidth() + 32;
@@ -87,6 +99,9 @@ void LGame::render(SDL_Renderer *renderer)
     offset += pointsText->getWidth() + gxTextSpacing;
     pointsText->render(renderer, window.getWidth() - offset, gyTextOffset);
     players[0].setHealth((players[0].getHealth() + 10) % 100);
+
+
+
 }
 
 void LGame::cleanUp()
