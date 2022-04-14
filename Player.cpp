@@ -10,7 +10,7 @@
 Player ::Player(LTexture &myTexture, LGame &game, int playerHeight, int playerWidth, int right, int left, int top, int bottom) : mTexture(myTexture), mGame(game), wallCollisionMusic(std::string("collision.wav"))
 {
     // Initialize the collision box
-    mBox.x = 32*7;
+    mBox.x = 32 * 7;
     mBox.y = 0;
     mBox.w = playerWidth;
     mBox.h = playerHeight;
@@ -34,9 +34,9 @@ Player ::Player(LTexture &myTexture, LGame &game, int playerHeight, int playerWi
     this->top = top;
     this->bottom = bottom;
     this->mframes = 0;
-    this -> health = 80 ; 
-    this -> money = 100 ; 
-    this -> points = 0 ; 
+    this->health = 80;
+    this->money = 100;
+    this->points = 0;
     int numberOfimages = myTexture.getWidth() / playerWidth;
     playerImages.resize(4 * numberOfimages);
     this->numOfAnimationImages = numberOfimages;
@@ -68,7 +68,6 @@ Player ::Player(LTexture &myTexture, LGame &game, int playerHeight, int playerWi
             playerHeight};
     }
 }
-
 
 void Player::handleEvent(SDL_Event &e)
 {
@@ -134,31 +133,33 @@ void Player::move()
 {
     // Move the dot left or right
     mBox.x += mVelX * moveFactor;
-    //std::cout << "After move: " << mBox.x << std::endl;
+    // std::cout << "After move: " << mBox.x << std::endl;
 
     // If the dot went too far to the left or right or touched a wall
     if ((mBox.x < 0) || (mBox.x + playerWidth > mGame.getLevelWidth()) /* || touchesWall(mBox, tiles) */)
     {
         // move back
-        mBox.x -= mVelX*moveFactor;
+        mBox.x -= mVelX * moveFactor;
         // wallCollisionMusic.play() ;
     }
 
     // Move the dot up or down
-    mBox.y += mVelY*moveFactor;
+    mBox.y += mVelY * moveFactor;
 
     // If the dot went too far up or down or touched a wall
     if ((mBox.y < 0) || (mBox.y + playerHeight > mGame.getLevelHeight()) /* || touchesWall(mBox, tiles) */)
     {
         // move back
-        mBox.y -= mVelY*moveFactor;
+        mBox.y -= mVelY * moveFactor;
         // wallCollisionMusic.play() ;
     }
 }
 
-void Player::moveBy(int offsetX, int offsetY){
+void Player::moveBy(int offsetX, int offsetY)
+{
     mBox.x += offsetX;
     mBox.y += offsetY;
+    // std::cout << "New Player Y: " << mBox.y << std::endl;
 }
 
 void Player::setCamera(SDL_Rect &camera)
@@ -187,7 +188,6 @@ void Player::setCamera(SDL_Rect &camera)
         camera.y = mGame.getLevelHeight() - camera.h;
     }
 }
-
 
 int Player::render(SDL_Renderer *renderer, SDL_Rect &camera)
 {
@@ -234,21 +234,23 @@ void Player::setVelocity(int vel)
     mVelY *= velocity;
 }
 
-void Player::setHealth( int h ) 
+void Player::setHealth(int h)
 {
-    health = h ; 
+    health = h;
 }
 
-void Player :: setMoney( int m )
+void Player ::setMoney(int m)
 {
-    money = m ; 
+    money = m;
 }
 
-void Player :: setPoints( int p )
+void Player ::setPoints(int p)
 {
-    points = p ; 
+    points = p;
 }
-void Player::setMoveFactor(int factor){
+
+void Player::setMoveFactor(int factor)
+{
     moveFactor = factor;
 }
 
@@ -257,22 +259,70 @@ SDL_Rect Player::getBox()
     return mBox;
 }
 
-int Player::getXVel(){
+int Player::getXVel()
+{
     return mVelX * moveFactor;
 }
 
-int Player::getYVel(){
+int Player::getYVel()
+{
     return mVelY * moveFactor;
 }
 
-int Player :: getHealth() {
-    return health ; 
+int Player ::getHealth()
+{
+    return health;
 }
 
-int Player :: getMoney(){
-    return money ; 
+int Player ::getMoney()
+{
+    return money;
 }
 
-int Player :: getPoints(){
-    return points ; 
+int Player ::getPoints()
+{
+    return points;
+}
+
+void Player::update()
+{
+    // std::cout << yuluTimer.isStarted() << std::endl;
+    if (yuluTimer.isStarted())
+    {
+        moveFactor = 2;
+        if (yuluTimer.getTicks() / 1000 >= 2)
+        {
+            // std::cout << ((yuluTimer.getTicks() / 1000) - 50) << std::endl;
+            money -= 2;
+            yuluTimer.stop();
+            yuluTimer.start();
+            std::cout << money << std::endl;
+        }
+    }
+    else
+    {
+        moveFactor = 1;
+    }
+}
+
+void Player::toggleYulu()
+{
+    if (yuluTimer.isStarted())
+    {
+        yuluTimer.stop();
+    }
+    else
+    {
+        yuluTimer.start();
+    }
+}
+
+void Player::setLastTileType(int tileType)
+{
+    lastTileType = tileType;
+}
+
+int Player::getLastTileType()
+{
+    return lastTileType;
 }

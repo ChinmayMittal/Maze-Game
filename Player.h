@@ -8,6 +8,7 @@
 #include "Renderable.h"
 #include "MyWindow.h"
 #include "SoundEffect.h"
+#include "Timer.h"
 #include <string>
 
 class LGame;
@@ -48,6 +49,10 @@ public:
     void setPoints( int p ) ; 
     void setMoney( int m ) ; 
     void setMoveFactor(int factor);
+    void update();
+    void toggleYulu();
+    void setLastTileType(int tileType);
+    int getLastTileType();
 
 private:
     // Collision box of the dot
@@ -70,6 +75,8 @@ private:
     int moveFactor;
     // The velocity of the dot
     int mVelX, mVelY;
+    int lastTileType = -1;
+    LTimer yuluTimer;
 };
 
 #endif
