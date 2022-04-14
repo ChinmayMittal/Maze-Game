@@ -17,6 +17,7 @@ LGame::LGame(LWindow &window) : LScreen(window)
 void LGame::handleEvent(SDL_Event &e)
 {
     players[0].handleEvent(e);
+    entities[players[0].getLastTileType()].handleEvent(e, players[0]);
 }
 
 void LGame::update()
@@ -31,9 +32,9 @@ void LGame::update()
     int tileY = (playerBox.y + playerBox.h / 2) / mTileHeight;
     int tileType = tiles[tileY * mTilesX + tileX].getType();
     // std::cout << "Tiletype " << tileType << std::endl;
-    // stores the prompt text to be displayed 
+    // stores the prompt text to be displayed
 
-    entities[tileType].collided(players[0] , displayText );
+    entities[tileType].collided(players[0], displayText);
 
     // std::cout << "After collide " << playerBox.y << std::endl;
     players[0].setCamera(camera);
@@ -47,16 +48,19 @@ void LGame::update()
     players[0].setLastTileType(newTileType);
 
     int secs = globalTime.getTicks() / 1000;
-    std::string mins = std::to_string ( 3 * (secs % 20) ) ;
-    std::string hours = std::to_string ( (secs / 20) ) ;
-    if( mins.size() <=1  ) mins = "0" + mins ; 
-    if( hours.size() <=1 ) hours = "0" + hours ; 
+    std::string mins = std::to_string(3 * (secs % 20));
+    std::string hours = std::to_string((secs / 20));
+    if (mins.size() <= 1)
+        mins = "0" + mins;
+    if (hours.size() <= 1)
+        hours = "0" + hours;
     timeText->setText("TIME: " + hours + ":" + mins);
     pointsText->setText("POINTS: " + std::to_string(players[0].getPoints()));
     moneyText->setText("MONEY: " + std::to_string(players[0].getMoney()));
     healthText->setText("HEALTH:");
-    if(displayText == "") displayText = "INSTRUCTIONS WILL APPEAR HERE " ; 
-    prompText -> setText(displayText) ; 
+    if (displayText == "")
+        displayText = "INSTRUCTIONS WILL APPEAR HERE ";
+    prompText->setText(displayText);
 }
 
 void LGame::render(SDL_Renderer *renderer)
@@ -65,13 +69,13 @@ void LGame::render(SDL_Renderer *renderer)
     viewport.x = 0;
     viewport.y = gyRenderOffset;
     viewport.w = window.getWidth();
-    viewport.h = window.getHeight() -  gyRenderOffset - gyRenderOffset;
-    SDL_RenderSetViewport( renderer, &viewport );
+    viewport.h = window.getHeight() - gyRenderOffset - gyRenderOffset;
+    SDL_RenderSetViewport(renderer, &viewport);
 
     for (size_t i = 0; i < renderables.size(); i++)
     {
 
-        int res = renderables[i]->render(renderer,camera);
+        int res = renderables[i]->render(renderer, camera);
 
         if (res != 0)
         {
@@ -83,12 +87,12 @@ void LGame::render(SDL_Renderer *renderer)
     viewport.y = 0;
     viewport.w = window.getWidth();
     viewport.h = gyRenderOffset;
-    SDL_RenderSetViewport( renderer, &viewport );
+    SDL_RenderSetViewport(renderer, &viewport);
     SDL_SetRenderDrawColor(renderer, 0xFF, 0x00, 0x00, 0xFF);
 
     int offset = timeText->getWidth() + 32;
     timeText->render(renderer, window.getWidth() - offset, gyTextOffset);
-    offset += gMaxPlayerHealth + gxTextSpacing ;
+    offset += gMaxPlayerHealth + gxTextSpacing;
     SDL_Rect fillRect = {window.getWidth() - offset, gyTextOffset, (players[0].getHealth() * (gMaxPlayerHealth) / mMaxPlayerHealth), 32};
     SDL_RenderFillRect(renderer, &fillRect);
     SDL_Rect outlineRect = {window.getWidth() - offset, gyTextOffset, gMaxPlayerHealth, 32};
@@ -98,7 +102,7 @@ void LGame::render(SDL_Renderer *renderer)
     offset += healthText->getWidth() + 10;
     healthText->render(renderer, window.getWidth() - offset, gyTextOffset);
 
-    offset += moneyText->getWidth() + gxTextSpacing ;
+    offset += moneyText->getWidth() + gxTextSpacing;
     moneyText->render(renderer, window.getWidth() - offset, gyTextOffset);
 
     offset += pointsText->getWidth() + gxTextSpacing;
@@ -106,13 +110,11 @@ void LGame::render(SDL_Renderer *renderer)
     players[0].setHealth((players[0].getHealth() + 10) % 100);
 
     viewport.x = 0;
-    viewport.y = window.getHeight() -  gyRenderOffset ;
+    viewport.y = window.getHeight() - gyRenderOffset;
     viewport.w = window.getWidth();
     viewport.h = gyRenderOffset;
-    SDL_RenderSetViewport( renderer, &viewport );
-    prompText -> render( renderer , 0 , 0 ) ; 
-
-
+    SDL_RenderSetViewport(renderer, &viewport);
+    prompText->render(renderer, 0, 0);
 }
 
 void LGame::cleanUp()
@@ -162,8 +164,8 @@ bool LGame::initObjs()
     healthText = new Text(window, "HEALTH :: ", font, txtColor);
     moneyText = new Text(window, "MONEY:: ", font, txtColor);
     pointsText = new Text(window, "POINTS:: ", font, txtColor);
-    displayText = "INSTRUCTIONS WILL APPEAR HERE" ; 
-    prompText =  new Text( window , displayText , font , txtColor ) ; 
+    displayText = "INSTRUCTIONS WILL APPEAR HERE";
+    prompText = new Text(window, displayText, font, txtColor);
 
     for (int i = 0; i < tiles.size(); i++)
     {
@@ -252,34 +254,30 @@ bool LGame::setTiles()
     mTilesY = numTilesY;
     mTileWidth = tileWidth;
     mTileHeight = tileHeight;
-    mMaxPlayerHealth = gMaxPlayerHealth ;
+    mMaxPlayerHealth = gMaxPlayerHealth;
 
     return true;
 }
 
 void LGame::initEntities()
 {
-    Entity road("Road", [&](Player &player , std::string &displayText)
-                { 
-                    player.setVelocity(2); 
-                    displayText = "" ; 
-                
+    Entity road("Road", [&](Player &player, std::string &displayText)
+                {
+                    player.setVelocity(2);
+                    displayText = "";
                 });
-    Entity grass("Grass", [&](Player &player , std::string &displayText)
+    Entity grass("Grass", [&](Player &player, std::string &displayText)
                  { 
                      player.setVelocity(1); 
-                     displayText = "" ; 
-                });
-    Entity pavement("Pavement", [&](Player &player , std::string &displayText)
-                { 
+                     displayText = "" ; });
+    Entity pavement("Pavement", [&](Player &player, std::string &displayText)
+                    { 
                     player.setVelocity(2); 
-                    displayText = "" ; 
-                });
-    Entity no_movement("no_movement", [&](Player &player , std::string &displayText)
+                    displayText = "" ; });
+    Entity no_movement("no_movement", [&](Player &player, std::string &displayText)
                        { 
                            player.moveBy(-player.getXVel(), -player.getYVel());
-                           displayText = "" ; 
-                        });
+                           displayText = "" ; });
 
     Entity yulu("yulu", [&](Player &player, std::string &displayText)
                 { 
@@ -289,87 +287,86 @@ void LGame::initEntities()
                         //std::cout << "Toggled" << std::endl;
                         
                     }
-                    displayText = "yulu" ; 
-                 });
+                    displayText = "yulu" ; });
 
     Entity nilgiri("nilgiri", [&](Player &player, std::string &displayText)
-                   { displayText =  "nilgiri"; });
+                   { displayText = "nilgiri"; });
     Entity kara("kara", [&](Player &player, std::string &displayText)
-                { displayText =  "kara" ; });
+                { displayText = "kara"; });
     Entity aravali("aravali", [&](Player &player, std::string &displayText)
-                   { displayText =  "aravali"  ; });
+                   { displayText = "aravali"; });
     Entity jwala("jwala", [&](Player &player, std::string &displayText)
-                 { displayText =  "jwala" ; });
+                 { displayText = "jwala"; });
     Entity kumaon("kumaon", [&](Player &player, std::string &displayText)
-                  { displayText =  "kumaon"   ; });
+                  { displayText = "kumaon"; });
     Entity vindy("vindy", [&](Player &player, std::string &displayText)
-                 { displayText =  "vindy" ; });
+                 { displayText = "vindy"; });
     Entity satpura("satpura", [&](Player &player, std::string &displayText)
-                   { displayText =  "satpura"; });
+                   { displayText = "satpura"; });
     Entity udai_girnar("udai_girnar", [&](Player &player, std::string &displayText)
-                       { displayText =  "udai_girnar" ; });
+                       { displayText = "udai_girnar"; });
     Entity volleyball("volleyball", [&](Player &player, std::string &displayText)
-                      { displayText =  "volleyball" ; });
+                      { displayText = "volleyball"; });
     Entity tennis("tennis", [&](Player &player, std::string &displayText)
-                  { displayText =  "tennis"  ; });
+                  { displayText = "tennis"; });
     Entity swimming_pool("swimming_pool", [&](Player &player, std::string &displayText)
-                         { displayText =  "swimming_pool"; });
+                         { displayText = "swimming_pool"; });
     Entity oat("oat", [&](Player &player, std::string &displayText)
-               { displayText =  "oat"; });
+               { displayText = "oat"; });
     Entity hot_dog("hot_dog", [&](Player &player, std::string &displayText)
-                   { displayText =  "hot_dog"; });
+                   { displayText = "hot_dog"; });
     Entity himadri("himadri", [&](Player &player, std::string &displayText)
-                   { displayText =  "himadri"; });
+                   { displayText = "himadri"; });
     Entity kailash("kailash", [&](Player &player, std::string &displayText)
-                   { displayText =  "kailash"; });
+                   { displayText = "kailash"; });
     Entity gas("gas", [&](Player &player, std::string &displayText)
-               { displayText =  "gas" ; });
+               { displayText = "gas"; });
     Entity icecream("icecream", [&](Player &player, std::string &displayText)
-                    { displayText =  "icecream" ; });
+                    { displayText = "icecream"; });
     Entity shop("shop", [&](Player &player, std::string &displayText)
-                { displayText =  "shop"; });
+                { displayText = "shop"; });
     Entity shivalik("shivalik", [&](Player &player, std::string &displayText)
-                    { displayText =  "shivalik"; });
+                    { displayText = "shivalik"; });
     Entity zanskar("zanskar", [&](Player &player, std::string &displayText)
-                   { displayText =  "zanskar"; });
+                   { displayText = "zanskar"; });
     Entity sac("sac", [&](Player &player, std::string &displayText)
-               { displayText =  "sac"; });
+               { displayText = "sac"; });
     Entity foot("foot", [&](Player &player, std::string &displayText)
-                { displayText =  "foot"; });
+                { displayText = "foot"; });
     Entity basketball("basketball", [&](Player &player, std::string &displayText)
-                      { displayText =  "basketball"  ; });
+                      { displayText = "basketball"; });
     Entity athletic("athletic", [&](Player &player, std::string &displayText)
-                    { displayText =  "athletic" ; });
+                    { displayText = "athletic"; });
     Entity cricket("cricket", [&](Player &player, std::string &displayText)
-                   { displayText =  "cricket"  ; });
+                   { displayText = "cricket"; });
     Entity lhc("lhc", [&](Player &player, std::string &displayText)
-               { displayText =  "lhc"; });
+               { displayText = "lhc"; });
     Entity police("police", [&](Player &player, std::string &displayText)
-                  { displayText =  "police" ; });
+                  { displayText = "police"; });
     Entity main_building("main_building", [&](Player &player, std::string &displayText)
-                         { displayText =  "main_building" ; });
+                         { displayText = "main_building"; });
     Entity biotech_dept("biotech_dept", [&](Player &player, std::string &displayText)
-                        { displayText =  "biotech_dept"   ; });
+                        { displayText = "biotech_dept"; });
     Entity library("library", [&](Player &player, std::string &displayText)
-                   { displayText =  "library" ; });
+                   { displayText = "library"; });
     Entity coffee("coffee", [&](Player &player, std::string &displayText)
-                  { displayText =  "coffee"; });
+                  { displayText = "coffee"; });
     Entity hospital("hospital", [&](Player &player, std::string &displayText)
-                    { displayText =  "hospital" ; });
+                    { displayText = "hospital"; });
     Entity burger("burger", [&](Player &player, std::string &displayText)
-                  { displayText =  "burger"; });
+                  { displayText = "burger"; });
     Entity vegetable_shop("vegetable_shop", [&](Player &player, std::string &displayText)
-                          { displayText =  "vegetable_shop"   ; });
+                          { displayText = "vegetable_shop"; });
     Entity bread_shop("bread_shop", [&](Player &player, std::string &displayText)
-                      { displayText =  "bread_shop"  ; });
+                      { displayText = "bread_shop"; });
     Entity hardware_shop("hardware_shop", [&](Player &player, std::string &displayText)
-                         { displayText =  "hardware_shop" ; });
+                         { displayText = "hardware_shop"; });
     Entity barber("barber", [&](Player &player, std::string &displayText)
-                  { displayText =  "barber" ; });
+                  { displayText = "barber"; });
     Entity pharmacy("pharmacy", [&](Player &player, std::string &displayText)
-                    { displayText =  "pharmacy" ; });
+                    { displayText = "pharmacy"; });
     Entity beverage_shop("beverage_shop", [&](Player &player, std::string &displayText)
-                         { displayText =  "beverage_shop"  ; });
+                         { displayText = "beverage_shop"; });
 
     entities.push_back(road);
     entities.push_back(grass);
