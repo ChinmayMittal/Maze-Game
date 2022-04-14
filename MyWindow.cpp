@@ -64,10 +64,10 @@ void LWindow::begin()
     // While application is running
     while (!quit)
     {
+        updateTimer.start();
         // Handle events on queue
         while (SDL_PollEvent(&e) != 0)
         {
-            updateTimer.start();
 
             // User requests quit
             if (e.type == SDL_QUIT)
@@ -99,11 +99,13 @@ void LWindow::begin()
             SDL_RenderPresent(mRenderer);
         }
         int frameTicks = updateTimer.getTicks();
+        // std::cout << "Time taken: " << frameTicks << std::endl;
         if (frameTicks < MILLIS_PER_FRAME)
         {
             // Wait remaining time
             SDL_Delay(MILLIS_PER_FRAME - frameTicks);
         }
+        std::cout << "FPS: " << 1000 / updateTimer.getTicks() << std::endl;
     }
 
     mCurrScreen->cleanUp();
@@ -205,7 +207,7 @@ bool LWindow::initLibs()
     // Initialization flag
 
     // Initialize SDL
-    if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_AUDIO ) < 0)
+    if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_AUDIO) < 0)
     {
         printf("SDL could not initialize! SDL Error: %s\n", SDL_GetError());
         return false;
@@ -231,11 +233,11 @@ bool LWindow::initLibs()
         return false;
     }
 
-    //Initialize SDL_mixer
-    if( Mix_OpenAudio( 44100, MIX_DEFAULT_FORMAT, 2, 1024 ) < 0 )
+    // Initialize SDL_mixer
+    if (Mix_OpenAudio(44100, MIX_DEFAULT_FORMAT, 2, 1024) < 0)
     {
-        printf( "SDL_mixer could not initialize! SDL_mixer Error: %s\n", Mix_GetError() );
-        return false ; 
+        printf("SDL_mixer could not initialize! SDL_mixer Error: %s\n", Mix_GetError());
+        return false;
     }
     Mix_AllocateChannels(32);
 
