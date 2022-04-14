@@ -326,3 +326,8 @@ int Player::getLastTileType()
 {
     return lastTileType;
 }
+
+bool Player::hasYulu()
+{
+    return yuluTimer.isStarted();
+}

@@ -17,7 +17,11 @@ LGame::LGame(LWindow &window) : LScreen(window)
 void LGame::handleEvent(SDL_Event &e)
 {
     players[0].handleEvent(e);
-    entities[players[0].getLastTileType()].handleEvent(e, players[0]);
+    int lastTileType = players[0].getLastTileType();
+    if (lastTileType != -1)
+    {
+        entities[lastTileType].handleEvent(e, players[0]);
+    }
 }
 
 void LGame::update()
@@ -264,8 +268,7 @@ void LGame::initEntities()
     Entity road("Road", [&](Player &player, std::string &displayText)
                 {
                     player.setVelocity(2);
-                    displayText = "";
-                });
+                    displayText = ""; });
     Entity grass("Grass", [&](Player &player, std::string &displayText)
                  { 
                      player.setVelocity(1); 
@@ -279,15 +282,32 @@ void LGame::initEntities()
                            player.moveBy(-player.getXVel(), -player.getYVel());
                            displayText = "" ; });
 
-    Entity yulu("yulu", [&](Player &player, std::string &displayText)
-                { 
-                    if (player.getLastTileType() != 4)
-                    {
-                        player.toggleYulu();
-                        //std::cout << "Toggled" << std::endl;
-                        
-                    }
-                    displayText = "yulu" ; });
+    Entity yulu(
+        "yulu", [&](Player &player, std::string &displayText)
+        {
+        // if (player.getLastTileType() != 4)
+        // {
+        //     //player.toggleYulu();
+        //     // std::cout << "Toggled" << std::endl;
+        // }
+        if(player.hasYulu()){
+            displayText = "Press y to release yulu";
+        }else
+        {
+            displayText = "Press y to take yulu";
+        } },
+        [&](SDL_Event &e, Player &player)
+        {
+            if (e.type == SDL_KEYDOWN && e.key.repeat == 0)
+            {
+                switch (e.key.keysym.sym)
+                {
+                case SDLK_y:
+                    player.toggleYulu();
+                    break;
+                }
+            }
+        });
 
     Entity nilgiri("nilgiri", [&](Player &player, std::string &displayText)
                    { displayText = "nilgiri"; });
