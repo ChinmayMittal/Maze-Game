@@ -2,6 +2,7 @@
 #include <SDL2/SDL_image.h>
 #include <SDL2/SDL_ttf.h>
 #include <SDL2/SDL_mixer.h>
+#include <SDL2/SDL_net.h>
 #include <vector>
 #include <sstream>
 #include <string>
@@ -14,7 +15,6 @@
 #include "constants.h"
 
 #include "Timer.h"
-
 
 LWindow::LWindow(int width, int height)
 {
@@ -51,7 +51,7 @@ void LWindow::begin()
 
     LTimer updateTimer;
     int MILLIS_PER_FRAME = 1000 / 60;
-    int loopTimes = 0 ; 
+    int loopTimes = 0;
 
     // While application is running
     while (!quit)
@@ -97,10 +97,11 @@ void LWindow::begin()
             // Wait remaining time
             SDL_Delay(MILLIS_PER_FRAME - frameTicks);
         }
-        FPS =  1000 / updateTimer.getTicks(); 
+        FPS = 1000 / updateTimer.getTicks();
         std::stringstream caption;
-        loopTimes = (loopTimes + 1 )%FPSupdatespeed ;  
-        if(loopTimes == 0 ){
+        loopTimes = (loopTimes + 1) % FPSupdatespeed;
+        if (loopTimes == 0)
+        {
             caption << "MAZEGAME FPS:" << std::to_string(FPS);
             SDL_SetWindowTitle(mWindow, caption.str().c_str());
         }
@@ -174,8 +175,6 @@ void LWindow::handleEvent(SDL_Event &e)
             mMinimized = false;
             break;
         }
-
-    
     }
     // Enter exit full screen on return key
     else if (e.type == SDL_KEYDOWN && e.key.keysym.sym == SDLK_RETURN)
@@ -232,6 +231,12 @@ bool LWindow::initLibs()
         return false;
     }
     Mix_AllocateChannels(32);
+
+    if (SDLNet_Init() < 0)
+    {
+        fprintf(stderr, "SDLNet_Init: %s\n", SDLNet_GetError());
+        return false;
+    }
 
     return true;
 }
@@ -295,4 +300,9 @@ void LWindow::cleanUp()
     mKeyboardFocus = false;
     mWidth = 0;
     mHeight = 0;
+}
+
+LScreen *LWindow::getCurrScreen()
+{
+    return mCurrScreen;
 }

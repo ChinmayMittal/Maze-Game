@@ -24,6 +24,10 @@ public:
     void render(SDL_Renderer *renderer, int x, int y);
     void cleanUp();
     void setText(std::string txt);
+    int length();
+    std::string getText();
+    void pop_back();
+    SDL_Color getColor();
 };
 
 #endif

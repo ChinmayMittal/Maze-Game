@@ -2,14 +2,14 @@
 CXX = g++
 
 #OBJS specifies which files to compile as part of the project
-OBJS = Button.cpp collision.cpp Game.cpp main.cpp MainMenu.cpp MyTexture.cpp MyWindow.cpp Player.cpp Screen.cpp Text.cpp Tile.cpp TileAtlas.cpp Timer.cpp SoundEffect.cpp Entity.cpp
+OBJS = Button.cpp collision.cpp Game.cpp main.cpp MainMenu.cpp MyTexture.cpp MyWindow.cpp Player.cpp Screen.cpp SearchOpponent.cpp Text.cpp TextInput.cpp Tile.cpp TileAtlas.cpp Timer.cpp SoundEffect.cpp Entity.cpp
 
 #COMPILER_FLAGS specifies the additional compilation options we're using
 # -w suppresses all warnings
 COMPILER_FLAGS = -g
 
 #LINKER_FLAGS specifies the libraries we're linking against
-LINKER_FLAGS = -lSDL2 -lSDL2_image -lSDL2_ttf -lSDL2_mixer
+LINKER_FLAGS = -lSDL2 -lSDL2_image -lSDL2_ttf -lSDL2_mixer -lSDL2_net
 
 #OBJ_NAME specifies the name of our exectuable
 OBJ_NAME = experiment.out

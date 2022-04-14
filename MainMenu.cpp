@@ -1,6 +1,8 @@
 #include "Screen.h"
 #include "MainMenu.h"
 #include "Game.h"
+#include "TextInput.h"
+#include "SearchOpponent.h"
 #include <functional>
 #include <iostream>
 
@@ -21,9 +23,17 @@ MainMenu::MainMenu(LWindow &window) : LScreen(window)
     playButton->setHighlightTexture(buttonBgHighlighted);
     playButton->setClickTexture(buttonBgClicked);
     playButton->setOnClickListener([&](LWindow &window)
-                                   {LGame* myGame = new LGame(window);
-                                   window.setCurrScreen(myGame); });
+                                   { 
+                                    LScreen* currScreen = window.getCurrScreen();
+                                    MainMenu* menuScreen = dynamic_cast<MainMenu*>(currScreen);
+                                    SearchOpponent *searchOpponent = new SearchOpponent(window, menuScreen->getName());
+                                    window.setCurrScreen(searchOpponent); });
     buttons.push_back(playButton);
+
+    txtColor = {0, 0, 0, 255};
+    TextInput *nameInput = new TextInput(x, y - 40 - 20, 240, 40, {255, 255, 255, 255}, window, "", font, txtColor);
+    nameInput->setCenterX(true);
+    textInputs.push_back(nameInput);
 }
 
 void MainMenu::handleEvent(SDL_Event &e)
@@ -31,6 +41,10 @@ void MainMenu::handleEvent(SDL_Event &e)
     for (int i = 0; i < buttons.size(); i++)
     {
         buttons[i]->handle(e);
+    }
+    for (int i = 0; i < textInputs.size(); i++)
+    {
+        textInputs[i]->handleEvent(e);
     }
 }
 
@@ -46,6 +60,10 @@ void MainMenu::render(SDL_Renderer *renderer)
     {
         buttons[i]->render(renderer);
     }
+    for (int i = 0; i < textInputs.size(); i++)
+    {
+        textInputs[i]->render(renderer);
+    }
 }
 
 void MainMenu::cleanUp()
@@ -55,4 +73,14 @@ void MainMenu::cleanUp()
         buttons[i]->cleanUp();
         delete buttons[i];
     }
+    for (int i = 0; i < textInputs.size(); i++)
+    {
+        textInputs[i]->cleanUp();
+        delete textInputs[i];
+    }
+}
+
+std::string MainMenu::getName()
+{
+    return textInputs[0]->getText();
 }

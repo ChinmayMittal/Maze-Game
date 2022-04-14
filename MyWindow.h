@@ -36,6 +36,7 @@ public:
     bool loadText(LTexture &texture, std::string txt, TTF_Font *font, SDL_Color textColor);
 
     void setCurrScreen(LScreen *screen);
+    LScreen *getCurrScreen();
 
 private:
     bool initLibs();
@@ -50,7 +51,7 @@ private:
     // Window dimensions
     int mWidth;
     int mHeight;
-    int FPS ; 
+    int FPS;
 
     // Window focus
     bool mMouseFocus;
