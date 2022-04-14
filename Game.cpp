@@ -111,7 +111,6 @@ void LGame::render(SDL_Renderer *renderer)
 
     offset += pointsText->getWidth() + gxTextSpacing;
     pointsText->render(renderer, window.getWidth() - offset, gyTextOffset);
-    players[0].setHealth((players[0].getHealth() + 10) % 100);
 
     viewport.x = 0;
     viewport.y = window.getHeight() - gyRenderOffset;

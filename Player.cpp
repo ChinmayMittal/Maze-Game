@@ -6,6 +6,7 @@
 #include "Game.h"
 #include <iostream>
 #include <string>
+#include"constants.h"
 
 Player ::Player(LTexture &myTexture, LGame &game, int playerHeight, int playerWidth, int right, int left, int top, int bottom) : mTexture(myTexture), mGame(game), wallCollisionMusic(std::string("collision.wav"))
 {
@@ -40,6 +41,7 @@ Player ::Player(LTexture &myTexture, LGame &game, int playerHeight, int playerWi
     int numberOfimages = myTexture.getWidth() / playerWidth;
     playerImages.resize(4 * numberOfimages);
     this->numOfAnimationImages = numberOfimages;
+    healthTimer.start() ; 
     for (int col = 0; col < numberOfimages; col++)
     {
         // right image in column col
@@ -234,7 +236,7 @@ void Player::setVelocity(int vel)
     mVelY *= velocity;
 }
 
-void Player::setHealth(int h)
+void Player::setHealth(float h)
 {
     health = h;
 }
@@ -271,7 +273,7 @@ int Player::getYVel()
 
 int Player ::getHealth()
 {
-    return health;
+    return (int)health;
 }
 
 int Player ::getMoney()
@@ -287,6 +289,7 @@ int Player ::getPoints()
 void Player::update()
 {
     // std::cout << yuluTimer.isStarted() << std::endl;
+    std :: cout << health << "\n" ; 
     if (yuluTimer.isStarted())
     {
         moveFactor = 2;
@@ -303,6 +306,20 @@ void Player::update()
     {
         moveFactor = 1;
     }
+
+    if( healthTimer.isStarted() and hasYulu()){
+        if (healthTimer.getTicks() / 1000 >= secondPerHealthDecreasewithYulu ){
+            health -= 1 ; 
+            healthTimer.stop() ; 
+            healthTimer.start() ; 
+        }
+    }else if( healthTimer.isStarted() ) {
+        if (healthTimer.getTicks() / 1000 >= secondPerHealthDecrease ){
+            health -= 1 ; 
+            healthTimer.stop() ; 
+            healthTimer.start() ; 
+        }
+    }
 }
 
 void Player::toggleYulu()
@@ -310,11 +327,15 @@ void Player::toggleYulu()
     if (yuluTimer.isStarted())
     {
         yuluTimer.stop();
+        health -= ( ( healthTimer.getTicks()/1000.0)/secondPerHealthDecreasewithYulu) ; 
     }
     else
     {
         yuluTimer.start();
+        health -= ( ( healthTimer.getTicks()/1000.0)/secondPerHealthDecrease) ; 
     }
+    healthTimer.stop() ; 
+    healthTimer.start() ; 
 }
 
 void Player::setLastTileType(int tileType)

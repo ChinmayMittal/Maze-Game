@@ -45,7 +45,7 @@ public:
     int getHealth();
     int getMoney();
     int getPoints();
-    void setHealth(int h);
+    void setHealth( float h);
     void setPoints(int p);
     void setMoney(int m);
     void setMoveFactor(int factor);
@@ -69,7 +69,8 @@ private:
     char direction;
     int numOfAnimationImages;
     int animationSpeed = 12;
-    int health, money, points;
+    int  money, points;
+    float health ; 
     std::vector<SDL_Rect> playerImages;
     // Maximum axis velocity of the dot
     int velocity;
@@ -78,6 +79,7 @@ private:
     int mVelX, mVelY;
     int lastTileType = -1;
     LTimer yuluTimer;
+    LTimer healthTimer ; 
 };
 
 #endif
