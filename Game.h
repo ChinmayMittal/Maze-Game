@@ -34,13 +34,16 @@ private:
     int mTilesY;
     int mTileWidth;
     int mTileHeight;
-
+    int mMaxPlayerHealth ; 
     bool initObjs();
     bool setTiles();
     void initEntities();
 
     LTimer globalTime;
     Text* timeText;
+    Text* healthText ; 
+    Text* moneyText ; 
+    Text* pointsText ; 
 
 public:
     LGame(LWindow &window);

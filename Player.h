@@ -41,6 +41,12 @@ public:
     SDL_Rect getBox();
     int getXVel();
     int getYVel();
+    int getHealth()  ; 
+    int getMoney() ; 
+    int getPoints() ; 
+    void setHealth( int h ) ; 
+    void setPoints( int p ) ; 
+    void setMoney( int m ) ; 
     void setMoveFactor(int factor);
 
 private:
@@ -57,6 +63,7 @@ private:
     char direction;
     int numOfAnimationImages;
     int animationSpeed = 12;
+    int health , money , points ; 
     std::vector<SDL_Rect> playerImages;
     // Maximum axis velocity of the dot
     int velocity;

@@ -34,6 +34,9 @@ Player ::Player(LTexture &myTexture, LGame &game, int playerHeight, int playerWi
     this->top = top;
     this->bottom = bottom;
     this->mframes = 0;
+    this -> health = 80 ; 
+    this -> money = 100 ; 
+    this -> points = 0 ; 
     int numberOfimages = myTexture.getWidth() / playerWidth;
     playerImages.resize(4 * numberOfimages);
     this->numOfAnimationImages = numberOfimages;
@@ -66,25 +69,7 @@ Player ::Player(LTexture &myTexture, LGame &game, int playerHeight, int playerWi
     }
 }
 
-// bool Dot::touchesWall(std::vector<Tile> tiles)
-// {
-//     // Go through the tiles
-//     for (int i = 0; i < tiles.size(); ++i)
-//     {
-//         // If the tile is a wall type tile
-//         if ((tiles[i].getType() >= TILE_CENTER) && (tiles[i]->getType() <= TILE_TOPLEFT))
-//         {
-//             // If the collision box touches the wall tile
-//             if (checkCollision(box, tiles[i]->getBox()))
-//             {
-//                 return true;
-//             }
-//         }
-//     }
 
-//     // If no wall tiles were touched
-//     return false;
-// }
 void Player::handleEvent(SDL_Event &e)
 {
     // If a key was pressed
@@ -203,13 +188,6 @@ void Player::setCamera(SDL_Rect &camera)
     }
 }
 
-// int Dot::render(SDL_Renderer *renderer, SDL_Rect &camera)
-// {
-//     // Show the dot
-//     // std::cout << camera.x << std::endl;
-//     mTexture.render(renderer, mBox.x - camera.x, mBox.y - camera.y);
-//     return 0;
-// }
 
 int Player::render(SDL_Renderer *renderer, SDL_Rect &camera)
 {
@@ -256,6 +234,20 @@ void Player::setVelocity(int vel)
     mVelY *= velocity;
 }
 
+void Player::setHealth( int h ) 
+{
+    health = h ; 
+}
+
+void Player :: setMoney( int m )
+{
+    money = m ; 
+}
+
+void Player :: setPoints( int p )
+{
+    points = p ; 
+}
 void Player::setMoveFactor(int factor){
     moveFactor = factor;
 }
@@ -271,4 +263,16 @@ int Player::getXVel(){
 
 int Player::getYVel(){
     return mVelY * moveFactor;
+}
+
+int Player :: getHealth() {
+    return health ; 
+}
+
+int Player :: getMoney(){
+    return money ; 
+}
+
+int Player :: getPoints(){
+    return points ; 
 }
