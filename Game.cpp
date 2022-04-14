@@ -65,7 +65,12 @@ void LGame::update()
     healthText->setText("HEALTH:");
     if (displayText == "")
         displayText  = std::string("INSTRUCTIONS WILL APPEAR HERE, YOUR HOSTEL IS " )  + players[0].getHostelName() ;
-    prompText->setText(displayText);
+    if(players[0].isBusy()){
+        prompText -> setText( players[0].getTaskText()) ; 
+    }else{
+        prompText->setText(displayText);
+    }
+
 }
 
 void LGame::render(SDL_Renderer *renderer)
@@ -119,6 +124,14 @@ void LGame::render(SDL_Renderer *renderer)
     viewport.h = gyRenderOffset;
     SDL_RenderSetViewport(renderer, &viewport);
     prompText->render(renderer, 0, 0);
+    if(players[0].isBusy()){
+        SDL_SetRenderDrawColor(renderer, 0xFd, 0xb3, 0x36, 0xFF);
+        offset = taskStatusBarWidth + 10 ; 
+        SDL_Rect fillRect = {window.getWidth() - offset, gyTextOffset, (float)(players[0].getCurrentTaskTimer().getTicks() * (taskStatusBarWidth) )/ (players[0].getCurrentTaskTime()), gyRenderOffset};
+        SDL_RenderFillRect(renderer, &fillRect);
+        SDL_Rect outlineRect = {window.getWidth() - offset, gyTextOffset, taskStatusBarWidth, gyRenderOffset};
+        SDL_RenderDrawRect(renderer, &outlineRect);  
+    }
 }
 
 void LGame::cleanUp()
@@ -266,15 +279,81 @@ std::function< void(Player &player, std::string &displayText)> getHostelCollideF
 {
     return [=](Player &player, std::string &displayText)
                { 
-                   std :: cout << player.getHostelName() <<  " "  << hostelName << "\n" ; 
+                   
                    if( player.getHostelName() == hostelName )
                    {
-                     displayText = "YOUR HOSTEL, " ; 
-                     displayText += "PRESS  B for BreakFast, L for Lunch, D for Dinner, R for REST" ; 
+                     displayText = "YOUR HOSTEL,  " ; 
+                     displayText += " B-BreakFast  L-Lunch  D-Dinner  R-REST" ; 
                    }else{
                        displayText = "NEIGHBOURING HOSTEL" ; 
                    }
                } ; 
+}
+
+std :: function< void (SDL_Event &e, Player &player)> getHostelEventListener( std :: string HostelName)
+{
+
+            return   [=](SDL_Event &e, Player &player)
+                {
+                    if (e.type == SDL_KEYDOWN && e.key.repeat == 0 && player.getHostelName() == HostelName)
+                    {
+                        switch (e.key.keysym.sym)
+                        {
+                        case SDLK_r:
+                            // create rest task if player is not busy 
+                            if(!player.isBusy()){
+                                player.setCurrentTaskTime(10000) ; 
+                                player.getCurrentTaskTimer().start() ;
+                                player.setTaskText("resting ... ") ; 
+                                player.setUpdateStateParameters({
+                                    gMaxPlayerHealth , 
+                                    0 , 
+                                    0 
+                                }) ; 
+                            }
+                            break;
+                        case SDLK_b: 
+                            if( !player.isBusy() and !player.hadBreakFast() and (  player.getGame().getTimer().getTicks() < 100*1000 ) ){
+                                player.setBreakfast(true) ; 
+                                player.setTaskText("having breakfast... ") ; 
+                                player.setCurrentTaskTime(3000) ; 
+                                player.getCurrentTaskTimer().start() ;
+                                player.setUpdateStateParameters({
+                                    30 , 
+                                    0 , 
+                                    0 
+                                }) ;                                
+                            }
+                            break ; 
+                        case SDLK_l: 
+                            if( !player.isBusy() and !player.hadLunch() and (  player.getGame().getTimer().getTicks() < 100*1000 ) ){
+                                player.setLunch(true) ; 
+                                player.setTaskText("having lunch ... ") ; 
+                                player.setCurrentTaskTime(3000) ; 
+                                player.getCurrentTaskTimer().start() ;
+                                player.setUpdateStateParameters({
+                                    30 , 
+                                    0 , 
+                                    0 
+                                }) ;                                
+                            }
+                            break ; 
+                        case SDLK_d: 
+                            if( !player.isBusy() and !player.hadDinner() and (  player.getGame().getTimer().getTicks() < 100*1000 ) ){
+                                player.setDinner(true) ; 
+                                player.setTaskText("having dinner... ") ; 
+                                player.setCurrentTaskTime(3000) ; 
+                                player.getCurrentTaskTimer().start() ;
+                                player.setUpdateStateParameters({
+                                    30 , 
+                                    0 , 
+                                    0 
+                                }) ;                                
+                            }
+                            break ; 
+                        }
+                    }
+                } ; 
 }
 void LGame::initEntities()
 {
@@ -322,115 +401,18 @@ void LGame::initEntities()
             }
         });
 
-    Entity nilgiri("nilgiri", getHostelCollideFunc("nilgiri") ,
-                    [&](SDL_Event &e, Player &player)
-                {
-                    if (e.type == SDL_KEYDOWN && e.key.repeat == 0)
-                    {
-                        switch (e.key.keysym.sym)
-                        {
-                        case SDLK_r:
-                            if(!player.isBusy()){
-                                player.setCurrentTaskTime(10000) ; 
-                                player.getCurrentTaskTimer().start() ;
-                                player.setUpdateStateParameters({
-                                    gMaxPlayerHealth , 
-                                    0 , 
-                                    0 
-                                }) ; 
-                            }
-                            break;
-                        }
-                    }
-                });
-    Entity kara("kara", [&](Player &player, std::string &displayText)
-                { 
-                       if( player.getHostelName() == "kara")
-                       {
-                         displayText = "YOUR HOSTEL" ;
-                         displayText += "PRESS  B for BreakFast, L for Lunch, D for Dinner, R for REST" ;  
-                       }
-                });
-    Entity aravali("aravali", [&](Player &player, std::string &displayText)
-                { 
-                    if( player.getHostelName() == "aravali")
-                       {
-                         displayText = "YOUR HOSTEL" ;
-                         displayText += "PRESS  B for BreakFast, L for Lunch, D for Dinner, R for REST" ;  
-                       }
-                });
-    Entity jwala("jwala", [&](Player &player, std::string &displayText)
-                 { 
-                       if( player.getHostelName() == "jwala")
-                       {
-                         displayText = "YOUR HOSTEL" ; 
-                         displayText += "PRESS  B for BreakFast, L for Lunch, D for Dinner, R for REST" ; 
-                       }
-                 });
-    Entity kumaon("kumaon", [&](Player &player, std::string &displayText)
-                  { 
-                        if( player.getHostelName() == "kumaon")
-                       {
-                         displayText = "YOUR HOSTEL" ; 
-                         displayText += "PRESS  B for BreakFast, L for Lunch, D for Dinner, R for REST" ; 
-                       }
-                  });
-    Entity vindy("vindy", [&](Player &player, std::string &displayText)
-                 { 
-                       if( player.getHostelName() == "vindy")
-                       {
-                         displayText = "YOUR HOSTEL" ; 
-                         displayText += "PRESS  B for BreakFast, L for Lunch, D for Dinner, R for REST" ; 
-                       }
-                 });
-    Entity satpura("satpura", [&](Player &player, std::string &displayText)
-                   { 
-                       if( player.getHostelName() == "satpura")
-                       {
-                         displayText = "YOUR HOSTEL" ; 
-                         displayText += "PRESS  B for BreakFast, L for Lunch, D for Dinner, R for REST" ; 
-                       }
-                   });
-    Entity udai_girnar("udai_girnar", [&](Player &player, std::string &displayText)
-                    { 
-                       if( player.getHostelName() == "udai_girnar")
-                       {
-                         displayText = "YOUR HOSTEL" ; 
-                         displayText += "PRESS  B for BreakFast, L for Lunch, D for Dinner, R for REST" ; 
-                       }
-                    });
-    Entity himadri("himadri", [&](Player &player, std::string &displayText)
-                   {
-                       if( player.getHostelName() == "himadri")
-                       {
-                         displayText = "YOUR HOSTEL" ; 
-                         displayText += "PRESS  B for BreakFast, L for Lunch, D for Dinner, R for REST" ; 
-                       }
-                    });
-    Entity kailash("kailash", [&](Player &player, std::string &displayText)
-                   { 
-                       if( player.getHostelName() == "kailash")
-                       {
-                         displayText = "YOUR HOSTEL" ; 
-                         displayText += "PRESS  B for BreakFast, L for Lunch, D for Dinner, R for REST" ; 
-                       }
-                    });
-    Entity shivalik("shivalik", [&](Player &player, std::string &displayText)
-                    { 
-                        if( player.getHostelName() == "shivalik")
-                       {
-                         displayText = "YOUR HOSTEL" ; 
-                         displayText += "PRESS  B for BreakFast, L for Lunch, D for Dinner, R for REST" ; 
-                       }
-                    });
-    Entity zanskar("zanskar", [&](Player &player, std::string &displayText)
-                   { 
-                       if( player.getHostelName() == "zanskar")
-                       {
-                         displayText = "YOUR HOSTEL" ; 
-                         displayText += "PRESS  B for BreakFast, L for Lunch, D for Dinner, R for REST" ; 
-                       } 
-                   });
+    Entity nilgiri("nilgiri", getHostelCollideFunc("nilgiri") , getHostelEventListener("nilgiri"));
+    Entity kara("kara", getHostelCollideFunc("kara") , getHostelEventListener("kara"));
+    Entity aravali("aravali", getHostelCollideFunc("aravali"), getHostelEventListener("aravali"));
+    Entity jwala("jwala", getHostelCollideFunc("jwala"), getHostelEventListener("jwala"));
+    Entity kumaon("kumaon" , getHostelCollideFunc("kumaon"), getHostelEventListener("kumaon"));
+    Entity vindy("vindy", getHostelCollideFunc("vindy"), getHostelEventListener("vindy"));
+    Entity satpura("satpura", getHostelCollideFunc("satpura"), getHostelEventListener("satpura"));
+    Entity udai_girnar("udai_girnar", getHostelCollideFunc("udai_girnar"), getHostelEventListener("udai_girnar"));
+    Entity himadri("himadri",getHostelCollideFunc("himadri"), getHostelEventListener("himadri") );
+    Entity kailash("kailash", getHostelCollideFunc("kailash"), getHostelEventListener("kailash"));
+    Entity shivalik("shivalik", getHostelCollideFunc("shivalik"), getHostelEventListener("shivalik"));
+    Entity zanskar("zanskar" , getHostelCollideFunc("zanskar"), getHostelEventListener("zanskar"));
     Entity volleyball("volleyball", [&](Player &player, std::string &displayText)
                       { displayText = "volleyball"; });
     Entity tennis("tennis", [&](Player &player, std::string &displayText)

@@ -63,7 +63,15 @@ public:
     void setCurrentTaskTime( int t ) ; 
     bool isBusy() ; 
     void updateStateParameters( playerStateUpdate s ) ; 
-    void setUpdateStateParameters( playerStateUpdate s ) ; 
+    void setUpdateStateParameters( playerStateUpdate s ) ;
+    bool hadLunch() ; 
+    bool hadBreakFast() ; 
+    bool hadDinner() ;  
+    void setBreakfast( bool b) ; 
+    void setLunch( bool l ) ; 
+    void setDinner( bool d) ; 
+    std :: string getTaskText() ; 
+    void  setTaskText( std::string s ) ; 
 private:
     // Collision box of the dot
 
@@ -93,6 +101,8 @@ private:
     LTimer currentTaskTimer ; 
     int currentTaskTime ; 
     playerStateUpdate updateState ; 
+    bool breakfast , lunch, dinner ; 
+    std::string taskText ; 
 };
 
 #endif

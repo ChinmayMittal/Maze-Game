@@ -24,7 +24,8 @@ Player ::Player(LTexture &myTexture, LGame &game, int playerHeight, int playerWi
     mBox.h = playerHeight;
 
     srand(time(0));
-    hostelName = hostelNames[rand()%hostelNames.size()]; 
+    hostelName = hostelNames[rand()%hostelNames.size()];
+    hostelName = "nilgiri" ; // for testing  
     currentTaskTime = 0 ; 
     currentTaskTimer = LTimer() ; 
     updateState = { 0.0 , 0 , 0 } ; 
@@ -48,6 +49,8 @@ Player ::Player(LTexture &myTexture, LGame &game, int playerHeight, int playerWi
     this->health = 80;
     this->money = 100;
     this->points = 0;
+    breakfast = lunch = dinner = false ; 
+    taskText = "" ; 
     int numberOfimages = myTexture.getWidth() / playerWidth;
     playerImages.resize(4 * numberOfimages);
     this->numOfAnimationImages = numberOfimages;
@@ -83,7 +86,12 @@ Player ::Player(LTexture &myTexture, LGame &game, int playerHeight, int playerWi
 
 void Player::handleEvent(SDL_Event &e)
 {
-
+    if(isBusy() ) {
+        return ; 
+        mVelX = mVelY = 0 ; 
+        mframes = 0 ; 
+        direction = 'D' ; 
+    }  
     // If a key was pressed
     if (e.type == SDL_KEYDOWN && e.key.repeat == 0)
     {
@@ -232,7 +240,7 @@ int Player::render(SDL_Renderer *renderer, SDL_Rect &camera)
     }
     mTexture.render(renderer, mBox.x - camera.x, mBox.y - camera.y, &playerImages[dimension + offset]);
     mframes = (mframes + 1) % (numOfAnimationImages * animationSpeed);
-
+    if( isBusy()) mframes = 0 ; 
     return 0;
 }
 
@@ -310,6 +318,7 @@ void Player::update()
 {
     // std::cout << yuluTimer.isStarted() << std::endl;
     // std :: cout << health << "\n" ; 
+    // std :: cout << taskText << "\n" ; 
     if (yuluTimer.isStarted())
     {
         moveFactor = 2;
@@ -346,6 +355,7 @@ void Player::update()
         currentTaskTimer.stop() ; 
         updateStateParameters( updateState) ; 
         updateState = { 0.0 , 0 , 0 } ; 
+        taskText = "" ; 
         // update player stats 
     }
 }
@@ -426,4 +436,38 @@ void Player::updateStateParameters( playerStateUpdate s)
 void Player::setUpdateStateParameters( playerStateUpdate s ) 
 {
     updateState = s ; 
+}
+
+bool Player :: hadBreakFast(){
+    return breakfast ; 
+}
+
+void Player :: setBreakfast( bool b ){
+    breakfast = b ; 
+}
+
+bool Player :: hadLunch(){
+    return lunch ; 
+}
+
+void Player :: setLunch ( bool l ){
+    lunch = l ; 
+}
+
+bool Player :: hadDinner(){
+    return dinner ; 
+}
+
+void Player :: setDinner( bool d ){
+    dinner = d ; 
+}
+
+std:: string Player :: getTaskText()
+{
+    return taskText; 
+}
+
+void Player :: setTaskText( std :: string s)
+{
+    taskText = s ; 
 }
