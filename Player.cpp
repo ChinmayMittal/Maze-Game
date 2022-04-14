@@ -4,9 +4,16 @@
 #include "Tile.h"
 #include "MyTexture.h"
 #include "Game.h"
+#include "Timer.h"
 #include <iostream>
 #include <string>
+#include <vector>
+#include<time.h>
+#include<stdlib.h>
 #include"constants.h"
+
+
+std :: vector < std :: string >  hostelNames{ "nilgiri" , "kara" , "aravali" , "jwala" , "kumaon" , "vindy" , "satpura" , "udai_girnar" , "himadri" , "kailash" } ;
 
 Player ::Player(LTexture &myTexture, LGame &game, int playerHeight, int playerWidth, int right, int left, int top, int bottom) : mTexture(myTexture), mGame(game), wallCollisionMusic(std::string("collision.wav"))
 {
@@ -16,11 +23,14 @@ Player ::Player(LTexture &myTexture, LGame &game, int playerHeight, int playerWi
     mBox.w = playerWidth;
     mBox.h = playerHeight;
 
+    srand(time(0));
+    hostelName = hostelNames[rand()%hostelNames.size()]; 
+    currentTaskTime = 0 ; 
+    currentTaskTimer = LTimer() ; 
+    updateState = { 0.0 , 0 , 0 } ; 
     // Initialize the velocity
     mVelX = 0;
     mVelY = 0;
-    // std::cout << "here1\n" ;
-    // std::cout << "here2\n" ;
     // wallCollisionMusic.play() ;
     // SDL_Delay(1000) ;
     // wallCollisionMusic.play() ;
@@ -73,6 +83,7 @@ Player ::Player(LTexture &myTexture, LGame &game, int playerHeight, int playerWi
 
 void Player::handleEvent(SDL_Event &e)
 {
+
     // If a key was pressed
     if (e.type == SDL_KEYDOWN && e.key.repeat == 0)
     {
@@ -133,27 +144,30 @@ void Player::handleEvent(SDL_Event &e)
 
 void Player::move()
 {
-    // Move the dot left or right
-    mBox.x += mVelX * moveFactor;
-    // std::cout << "After move: " << mBox.x << std::endl;
-
-    // If the dot went too far to the left or right or touched a wall
-    if ((mBox.x < 0) || (mBox.x + playerWidth > mGame.getLevelWidth()) /* || touchesWall(mBox, tiles) */)
+    if( !isBusy())
     {
-        // move back
-        mBox.x -= mVelX * moveFactor;
-        // wallCollisionMusic.play() ;
-    }
+        // Move the dot left or right
+        mBox.x += mVelX * moveFactor;
+        // std::cout << "After move: " << mBox.x << std::endl;
 
-    // Move the dot up or down
-    mBox.y += mVelY * moveFactor;
+        // If the dot went too far to the left or right or touched a wall
+        if ((mBox.x < 0) || (mBox.x + playerWidth > mGame.getLevelWidth()) /* || touchesWall(mBox, tiles) */)
+        {
+            // move back
+            mBox.x -= mVelX * moveFactor;
+            // wallCollisionMusic.play() ;
+        }
 
-    // If the dot went too far up or down or touched a wall
-    if ((mBox.y < 0) || (mBox.y + playerHeight > mGame.getLevelHeight()) /* || touchesWall(mBox, tiles) */)
-    {
-        // move back
-        mBox.y -= mVelY * moveFactor;
-        // wallCollisionMusic.play() ;
+        // Move the dot up or down
+        mBox.y += mVelY * moveFactor;
+
+        // If the dot went too far up or down or touched a wall
+        if ((mBox.y < 0) || (mBox.y + playerHeight > mGame.getLevelHeight()) /* || touchesWall(mBox, tiles) */)
+        {
+            // move back
+            mBox.y -= mVelY * moveFactor;
+            // wallCollisionMusic.play() ;
+        }
     }
 }
 
@@ -239,6 +253,7 @@ void Player::setVelocity(int vel)
 void Player::setHealth(float h)
 {
     health = h;
+    if( health > gMaxPlayerHealth ) health = gMaxPlayerHealth ; 
 }
 
 void Player ::setMoney(int m)
@@ -286,10 +301,15 @@ int Player ::getPoints()
     return points;
 }
 
+std::string Player :: getHostelName(){
+
+    return hostelName ; 
+}
+
 void Player::update()
 {
     // std::cout << yuluTimer.isStarted() << std::endl;
-    std :: cout << health << "\n" ; 
+    // std :: cout << health << "\n" ; 
     if (yuluTimer.isStarted())
     {
         moveFactor = 2;
@@ -319,6 +339,14 @@ void Player::update()
             healthTimer.stop() ; 
             healthTimer.start() ; 
         }
+    }
+
+    if( currentTaskTimer.getTicks() > currentTaskTime){
+        currentTaskTime = 0  ; 
+        currentTaskTimer.stop() ; 
+        updateStateParameters( updateState) ; 
+        updateState = { 0.0 , 0 , 0 } ; 
+        // update player stats 
     }
 }
 
@@ -351,4 +379,51 @@ int Player::getLastTileType()
 bool Player::hasYulu()
 {
     return yuluTimer.isStarted();
+}
+
+LGame& Player :: getGame( )
+{
+    return mGame ; 
+}
+
+void Player::resetHealth()
+{
+    health = gMaxPlayerHealth ; 
+}
+
+
+LTimer& Player :: getCurrentTaskTimer()
+{
+    return currentTaskTimer ; 
+}
+
+int Player :: getCurrentTaskTime()
+{
+    return currentTaskTime ; 
+}
+
+void  Player::setCurrentTaskTime( int t )
+{
+    currentTaskTime = t ; 
+}
+
+bool Player::isBusy()
+{
+    if(  currentTaskTimer.isStarted() and (currentTaskTimer.getTicks() < currentTaskTime)){
+        return true ; 
+    }else{
+        return false ; 
+    }
+}
+
+void Player::updateStateParameters( playerStateUpdate s)
+{
+    setHealth( getHealth() + s.health ) ; 
+    setPoints( getPoints() + s.points) ; 
+    setMoney( getMoney() + s.money ) ; 
+}
+
+void Player::setUpdateStateParameters( playerStateUpdate s ) 
+{
+    updateState = s ; 
 }

@@ -8,6 +8,7 @@
 #include "MyWindow.h"
 #include "Screen.h"
 #include "Entity.h"
+#include<functional>
 
 LGame::LGame(LWindow &window) : LScreen(window)
 {
@@ -63,7 +64,7 @@ void LGame::update()
     moneyText->setText("MONEY: " + std::to_string(players[0].getMoney()));
     healthText->setText("HEALTH:");
     if (displayText == "")
-        displayText = "INSTRUCTIONS WILL APPEAR HERE ";
+        displayText  = std::string("INSTRUCTIONS WILL APPEAR HERE, YOUR HOSTEL IS " )  + players[0].getHostelName() ;
     prompText->setText(displayText);
 }
 
@@ -167,7 +168,7 @@ bool LGame::initObjs()
     healthText = new Text(window, "HEALTH :: ", font, txtColor);
     moneyText = new Text(window, "MONEY:: ", font, txtColor);
     pointsText = new Text(window, "POINTS:: ", font, txtColor);
-    displayText = "INSTRUCTIONS WILL APPEAR HERE";
+    displayText = "YOU HAVE BEEN ASSIGNED HOSTEL " + players[0].getHostelName() ;
     prompText = new Text(window, displayText, font, txtColor);
 
     for (int i = 0; i < tiles.size(); i++)
@@ -261,7 +262,20 @@ bool LGame::setTiles()
 
     return true;
 }
-
+std::function< void(Player &player, std::string &displayText)> getHostelCollideFunc( std :: string hostelName)
+{
+    return [=](Player &player, std::string &displayText)
+               { 
+                   std :: cout << player.getHostelName() <<  " "  << hostelName << "\n" ; 
+                   if( player.getHostelName() == hostelName )
+                   {
+                     displayText = "YOUR HOSTEL, " ; 
+                     displayText += "PRESS  B for BreakFast, L for Lunch, D for Dinner, R for REST" ; 
+                   }else{
+                       displayText = "NEIGHBOURING HOSTEL" ; 
+                   }
+               } ; 
+}
 void LGame::initEntities()
 {
     Entity road("Road", [&](Player &player, std::string &displayText)
@@ -308,22 +322,115 @@ void LGame::initEntities()
             }
         });
 
-    Entity nilgiri("nilgiri", [&](Player &player, std::string &displayText)
-                   { displayText = "nilgiri"; });
+    Entity nilgiri("nilgiri", getHostelCollideFunc("nilgiri") ,
+                    [&](SDL_Event &e, Player &player)
+                {
+                    if (e.type == SDL_KEYDOWN && e.key.repeat == 0)
+                    {
+                        switch (e.key.keysym.sym)
+                        {
+                        case SDLK_r:
+                            if(!player.isBusy()){
+                                player.setCurrentTaskTime(10000) ; 
+                                player.getCurrentTaskTimer().start() ;
+                                player.setUpdateStateParameters({
+                                    gMaxPlayerHealth , 
+                                    0 , 
+                                    0 
+                                }) ; 
+                            }
+                            break;
+                        }
+                    }
+                });
     Entity kara("kara", [&](Player &player, std::string &displayText)
-                { displayText = "kara"; });
+                { 
+                       if( player.getHostelName() == "kara")
+                       {
+                         displayText = "YOUR HOSTEL" ;
+                         displayText += "PRESS  B for BreakFast, L for Lunch, D for Dinner, R for REST" ;  
+                       }
+                });
     Entity aravali("aravali", [&](Player &player, std::string &displayText)
-                   { displayText = "aravali"; });
+                { 
+                    if( player.getHostelName() == "aravali")
+                       {
+                         displayText = "YOUR HOSTEL" ;
+                         displayText += "PRESS  B for BreakFast, L for Lunch, D for Dinner, R for REST" ;  
+                       }
+                });
     Entity jwala("jwala", [&](Player &player, std::string &displayText)
-                 { displayText = "jwala"; });
+                 { 
+                       if( player.getHostelName() == "jwala")
+                       {
+                         displayText = "YOUR HOSTEL" ; 
+                         displayText += "PRESS  B for BreakFast, L for Lunch, D for Dinner, R for REST" ; 
+                       }
+                 });
     Entity kumaon("kumaon", [&](Player &player, std::string &displayText)
-                  { displayText = "kumaon"; });
+                  { 
+                        if( player.getHostelName() == "kumaon")
+                       {
+                         displayText = "YOUR HOSTEL" ; 
+                         displayText += "PRESS  B for BreakFast, L for Lunch, D for Dinner, R for REST" ; 
+                       }
+                  });
     Entity vindy("vindy", [&](Player &player, std::string &displayText)
-                 { displayText = "vindy"; });
+                 { 
+                       if( player.getHostelName() == "vindy")
+                       {
+                         displayText = "YOUR HOSTEL" ; 
+                         displayText += "PRESS  B for BreakFast, L for Lunch, D for Dinner, R for REST" ; 
+                       }
+                 });
     Entity satpura("satpura", [&](Player &player, std::string &displayText)
-                   { displayText = "satpura"; });
+                   { 
+                       if( player.getHostelName() == "satpura")
+                       {
+                         displayText = "YOUR HOSTEL" ; 
+                         displayText += "PRESS  B for BreakFast, L for Lunch, D for Dinner, R for REST" ; 
+                       }
+                   });
     Entity udai_girnar("udai_girnar", [&](Player &player, std::string &displayText)
-                       { displayText = "udai_girnar"; });
+                    { 
+                       if( player.getHostelName() == "udai_girnar")
+                       {
+                         displayText = "YOUR HOSTEL" ; 
+                         displayText += "PRESS  B for BreakFast, L for Lunch, D for Dinner, R for REST" ; 
+                       }
+                    });
+    Entity himadri("himadri", [&](Player &player, std::string &displayText)
+                   {
+                       if( player.getHostelName() == "himadri")
+                       {
+                         displayText = "YOUR HOSTEL" ; 
+                         displayText += "PRESS  B for BreakFast, L for Lunch, D for Dinner, R for REST" ; 
+                       }
+                    });
+    Entity kailash("kailash", [&](Player &player, std::string &displayText)
+                   { 
+                       if( player.getHostelName() == "kailash")
+                       {
+                         displayText = "YOUR HOSTEL" ; 
+                         displayText += "PRESS  B for BreakFast, L for Lunch, D for Dinner, R for REST" ; 
+                       }
+                    });
+    Entity shivalik("shivalik", [&](Player &player, std::string &displayText)
+                    { 
+                        if( player.getHostelName() == "shivalik")
+                       {
+                         displayText = "YOUR HOSTEL" ; 
+                         displayText += "PRESS  B for BreakFast, L for Lunch, D for Dinner, R for REST" ; 
+                       }
+                    });
+    Entity zanskar("zanskar", [&](Player &player, std::string &displayText)
+                   { 
+                       if( player.getHostelName() == "zanskar")
+                       {
+                         displayText = "YOUR HOSTEL" ; 
+                         displayText += "PRESS  B for BreakFast, L for Lunch, D for Dinner, R for REST" ; 
+                       } 
+                   });
     Entity volleyball("volleyball", [&](Player &player, std::string &displayText)
                       { displayText = "volleyball"; });
     Entity tennis("tennis", [&](Player &player, std::string &displayText)
@@ -334,20 +441,12 @@ void LGame::initEntities()
                { displayText = "oat"; });
     Entity hot_dog("hot_dog", [&](Player &player, std::string &displayText)
                    { displayText = "hot_dog"; });
-    Entity himadri("himadri", [&](Player &player, std::string &displayText)
-                   { displayText = "himadri"; });
-    Entity kailash("kailash", [&](Player &player, std::string &displayText)
-                   { displayText = "kailash"; });
     Entity gas("gas", [&](Player &player, std::string &displayText)
                { displayText = "gas"; });
     Entity icecream("icecream", [&](Player &player, std::string &displayText)
                     { displayText = "icecream"; });
     Entity shop("shop", [&](Player &player, std::string &displayText)
                 { displayText = "shop"; });
-    Entity shivalik("shivalik", [&](Player &player, std::string &displayText)
-                    { displayText = "shivalik"; });
-    Entity zanskar("zanskar", [&](Player &player, std::string &displayText)
-                   { displayText = "zanskar"; });
     Entity sac("sac", [&](Player &player, std::string &displayText)
                { displayText = "sac"; });
     Entity foot("foot", [&](Player &player, std::string &displayText)
@@ -456,4 +555,9 @@ int LGame::getWindowWidth()
 int LGame::getWindowHeight()
 {
     return window.getHeight();
+}
+
+LTimer LGame :: getTimer()
+{
+    return globalTime ; 
 }

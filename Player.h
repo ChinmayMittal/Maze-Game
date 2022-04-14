@@ -9,6 +9,7 @@
 #include "MyWindow.h"
 #include "SoundEffect.h"
 #include "Timer.h"
+#include "utilities.h"
 #include <string>
 
 class LGame;
@@ -51,10 +52,18 @@ public:
     void setMoveFactor(int factor);
     void update();
     void toggleYulu();
+    LGame& getGame() ; 
     void setLastTileType(int tileType);
     int getLastTileType();
+    std :: string  getHostelName() ; 
+    void resetHealth() ; 
     bool hasYulu();
-
+    LTimer& getCurrentTaskTimer() ; 
+    int getCurrentTaskTime() ; 
+    void setCurrentTaskTime( int t ) ; 
+    bool isBusy() ; 
+    void updateStateParameters( playerStateUpdate s ) ; 
+    void setUpdateStateParameters( playerStateUpdate s ) ; 
 private:
     // Collision box of the dot
 
@@ -71,6 +80,7 @@ private:
     int animationSpeed = 12;
     int  money, points;
     float health ; 
+    std :: string hostelName ; 
     std::vector<SDL_Rect> playerImages;
     // Maximum axis velocity of the dot
     int velocity;
@@ -80,6 +90,9 @@ private:
     int lastTileType = -1;
     LTimer yuluTimer;
     LTimer healthTimer ; 
+    LTimer currentTaskTimer ; 
+    int currentTaskTime ; 
+    playerStateUpdate updateState ; 
 };
 
 #endif

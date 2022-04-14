@@ -59,6 +59,7 @@ public:
     int getLevelHeight();
     int getWindowWidth();
     int getWindowHeight();
+    LTimer getTimer() ; 
 };
 
 #endif
