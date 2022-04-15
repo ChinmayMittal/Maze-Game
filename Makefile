@@ -15,5 +15,10 @@ LINKER_FLAGS = -lSDL2 -lSDL2_image -lSDL2_ttf -lSDL2_mixer -lSDL2_net
 OBJ_NAME = experiment.out
 
 #This is the target that compiles our executable
-all : $(OBJS)
+all : Client Server
+
+Client: $(OBJS)
 	$(CXX) -I/usr/include/SDL2 $(OBJS) $(COMPILER_FLAGS) $(LINKER_FLAGS) -o $(OBJ_NAME)
+
+Server: server/server.cpp
+	$(CXX) server/server.cpp $(COMPILER_FLAGS) -o server/server.out
