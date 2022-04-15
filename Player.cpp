@@ -20,6 +20,7 @@ Player ::Player(LTexture &myTexture, LGame &game, int playerHeight, int playerWi
 {
     // Initialize the collision box
     mCollisionMusic = Mix_LoadWAV("resources/collision.wav") ; 
+    mMovementMusic  = Mix_LoadWAV("resources/collision.wav") ; 
     mBox.x = 32 * 7;
     mBox.y = 0;
     mBox.w = playerWidth;
@@ -154,15 +155,20 @@ void Player::move()
     if( !isBusy())
     {
         // Move the dot left or right
-        mBox.x += mVelX * moveFactor;
+        mBox.x += mVelX * moveFactor; 
         // std::cout << "After move: " << mBox.x << std::endl;
-
+        bool movement = true ; 
+        if( mVelX == 0 and mVelY == 0 )
+        {
+            movement = false ; 
+        }
         // If the dot went too far to the left or right or touched a wall
         if ((mBox.x < 0) || (mBox.x + playerWidth > mGame.getLevelWidth()) /* || touchesWall(mBox, tiles) */)
         {
             // move back
             mBox.x -= mVelX * moveFactor;
             Mix_PlayChannel( -1, mCollisionMusic, 0 );
+            movement = false ; 
         }
 
         // Move the dot up or down
@@ -174,7 +180,13 @@ void Player::move()
             // move back
             mBox.y -= mVelY * moveFactor;
             Mix_PlayChannel( -1, mCollisionMusic, 0 );
+            movement = false ;
         }
+        Mix_Volume( -1, 5 );
+        if( movement ) {
+            Mix_PlayChannel( -1 , mMovementMusic , 0 ) ; 
+        }
+        Mix_Volume( -1, MIX_MAX_VOLUME );
     }
 }
 
@@ -252,6 +264,7 @@ void Player::cleanUp()
 {
     mTexture.free();
     Mix_FreeChunk( mCollisionMusic ) ; 
+    Mix_FreeChunk( mMovementMusic ) ; 
 }
 
 void Player::setVelocity(int vel)

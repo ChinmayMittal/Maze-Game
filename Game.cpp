@@ -152,6 +152,8 @@ bool LGame::initObjs()
     }
     LTexture* sleepingAnimationTexture = new LTexture()  ; 
     LTexture* burgerAnimationTexture = new LTexture() ; 
+    LTexture* hotdogAnimationTexture = new LTexture() ; 
+    LTexture* icecreamAnimationTexture  = new LTexture( ) ; 
     if (!window.loadTexture(*sleepingAnimationTexture, "resources/sleeping.png"))
     {
         printf("Failed to load sleeping texture!\n");
@@ -162,8 +164,20 @@ bool LGame::initObjs()
         printf("Failed to load burger texture!\n");
         return false;
     }
+    if (!window.loadTexture(*hotdogAnimationTexture, "resources/hotdog.png"))
+    {
+        printf("Failed to load hotdog texture!\n");
+        return false;
+    }
+    if (!window.loadTexture(*icecreamAnimationTexture, "resources/icecream.png"))
+    {
+        printf("Failed to load icecream texture!\n");
+        return false;
+    }
     sleepingAnimation = new Animation( *sleepingAnimationTexture , 32, 32) ; 
-    burgerAnimation = new Animation( *burgerAnimationTexture , 32 , 32) ;  
+    burgerAnimation = new Animation( *burgerAnimationTexture , 32 , 32) ; 
+    hotDogAnimation = new Animation(*hotdogAnimationTexture , 32 , 32) ; 
+    icecreamAnimation = new Animation(*icecreamAnimationTexture , 32 , 32 ) ;  
 
     Player ash(ashTexture, *this, 32, 32, 3, 1, 2, 0);
     players.push_back(ash);
@@ -454,6 +468,7 @@ void LGame::initEntities()
                             case SDLK_h:
                                 if(player.getMoney() > 20 ) {
                                     player.setTaskText("having hotdog... ") ; 
+                                    player.setTaskAnimation(player.getGame().hotDogAnimation) ; 
                                     player.setCurrentTaskTime(3000) ; 
                                     player.getCurrentTaskTimer().start() ;
                                     player.setUpdateStateParameters({
@@ -469,8 +484,30 @@ void LGame::initEntities()
                    );
     Entity gas("gas", [&](Player &player, std::string &displayText)
                { displayText = "gas"; });
-    Entity icecream("icecream", [&](Player &player, std::string &displayText)
-                    { displayText = "icecream"; });
+    Entity icecream("icecream", getFoodCollideFunc("PRESS I for ICECREAM") , 
+                        [&](SDL_Event &e, Player &player)
+                    {
+                        if (e.type == SDL_KEYDOWN && e.key.repeat == 0)
+                        {
+                            switch (e.key.keysym.sym)
+                            {
+                            case SDLK_i:
+                                if(player.getMoney() > 10 ) {
+                                    player.setTaskText("having icecream... ") ; 
+                                    player.setCurrentTaskTime(5000) ; 
+                                    player.getCurrentTaskTimer().start() ;
+                                    player.setTaskAnimation( player.getGame().icecreamAnimation ) ;
+                                    player.setUpdateStateParameters({
+                                        10 , 
+                                        -10 , 
+                                        0 
+                                    }) ;  
+                                }
+                                break;
+                            }
+                        }
+                    }
+    );
     Entity shop("shop", [&](Player &player, std::string &displayText)
                 { displayText = "shop"; });
     Entity sac("sac", [&](Player &player, std::string &displayText)

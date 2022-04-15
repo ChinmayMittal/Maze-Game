@@ -109,6 +109,7 @@ private:
     bool breakfast , lunch, dinner ; 
     std::string taskText ; 
     Mix_Chunk* mCollisionMusic ; 
+    Mix_Chunk* mMovementMusic ; 
 };
 
 #endif

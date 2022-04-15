@@ -61,7 +61,9 @@ public:
     int getWindowWidth();
     int getWindowHeight();
     Animation* sleepingAnimation ; 
-    Animation* burgerAnimation ;     
+    Animation* burgerAnimation ; 
+    Animation* icecreamAnimation ; 
+    Animation* hotDogAnimation ;     
     LTimer getTimer() ; 
 };
 
