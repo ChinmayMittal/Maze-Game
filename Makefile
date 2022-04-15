@@ -2,7 +2,7 @@
 CXX = g++
 
 #OBJS specifies which files to compile as part of the project
-OBJS = Button.cpp collision.cpp Game.cpp main.cpp MainMenu.cpp MyTexture.cpp MyWindow.cpp Player.cpp Screen.cpp SearchOpponent.cpp Text.cpp TextInput.cpp Tile.cpp TileAtlas.cpp Timer.cpp SoundEffect.cpp Entity.cpp Animation.cpp
+OBJS = Button.o collision.o Game.o main.o MainMenu.o MyTexture.o MyWindow.o Player.o Screen.o SearchOpponent.o Text.o TextInput.o Tile.o TileAtlas.o Timer.o SoundEffect.o Entity.o Animation.o
 
 #COMPILER_FLAGS specifies the additional compilation options we're using
 # -w suppresses all warnings
@@ -19,6 +19,44 @@ all : Client Server
 
 Client: $(OBJS)
 	$(CXX) -I/usr/include/SDL2 $(OBJS) $(COMPILER_FLAGS) $(LINKER_FLAGS) -o $(OBJ_NAME)
+
+Button.o: MyWindow.h
+
+collision.o: 
+
+Game.o: Tile.h Player.h MyTexture.h TileAtlas.h TileAtlas.h Renderable.h Entity.h Text.h Timer.h Screen.h constants.h MyWindow.h
+
+main.o: MyWindow.h Game.h MainMenu.h
+
+MainMenu.o: Screen.h Game.h TextInput.h SearchOpponent.h MyWindow.h Button.h
+
+MyTexture.o: 
+
+MyWindow.o: MyTexture.h Text.h Renderable.h constants.h Screen.h
+
+Player.o:	Tile.h MyTexture.h Renderable.h MyWindow.h SoundEffect.h Timer.h utilities.h Animation.h constants.h Game.h
+
+Screen.o: MyWindow.h 
+
+SearchOpponent.o: MyWindow.h MessageStructs.h Game.h Screen.h
+
+Text.o: MyTexture.h MyWindow.h
+
+TextInput.o: MyWindow.h 
+
+Tile.o: MyTexture.h Renderable.h collision.h TileAtlas.h Game.h
+
+TileAtlas.o: 
+
+Timer.o: 
+
+SoundEffect.o: 
+
+Entity.o: Player.h 
+
+Animation.o: Renderable.h MyTexture.h
+
+
 
 Server: server/server.cpp
 	$(CXX) server/server.cpp $(COMPILER_FLAGS) -o server/server.out
