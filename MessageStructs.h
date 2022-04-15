@@ -20,6 +20,15 @@ struct NewClientMessage : Message
     std::string name;
 };
 
+struct GameBeginMessage : Message
+{
+    GameBeginMessage()
+    {
+        type = 1;
+    }
+    std::string opponentName;
+};
+
 int serialize(Message *msg, char *data)
 {
     int bytesUsed = 0;
@@ -30,6 +39,7 @@ int serialize(Message *msg, char *data)
     switch (msg->type)
     {
     case 0:
+    {
         NewClientMessage *msgNewClient = dynamic_cast<NewClientMessage *>(msg);
         char *p = (char *)q;
         for (int i = 0; i < msgNewClient->name.length(); i++)
@@ -43,18 +53,35 @@ int serialize(Message *msg, char *data)
         bytesUsed++;
         break;
     }
+    case 1:
+    {
+        GameBeginMessage *msgGameBegin = dynamic_cast<GameBeginMessage *>(msg);
+        char *p = (char *)q;
+        for (int i = 0; i < msgGameBegin->opponentName.length(); i++)
+        {
+            *p = msgGameBegin->opponentName[i];
+            p++;
+            bytesUsed++;
+        }
+        *p = '\0';
+        p++;
+        bytesUsed++;
+        break;
+    }
+    }
     return bytesUsed;
 }
 
-void deserialize(char *data, Message *msg)
+Message *deserialize(char *data)
 {
     int *q = (int *)data;
-    msg->type = *q;
+    int type = *q;
     q++;
-    switch (msg->type)
+    switch (type)
     {
     case 0:
-        NewClientMessage *msgNewClient = dynamic_cast<NewClientMessage *>(msg);
+    {
+        NewClientMessage *msgNewClient = new NewClientMessage();
         char *p = (char *)q;
         // int j = 0;
         // while (p[j] != 0)
@@ -68,7 +95,24 @@ void deserialize(char *data, Message *msg)
             msgNewClient->name += *p;
             p++;
         }
-        break;
+        return msgNewClient;
+    }
+    case 1:
+    {
+        GameBeginMessage *msgGameBegin = new GameBeginMessage();
+        char *p = (char *)q;
+        int nameLen = strlen(p);
+        for (int i = 0; i < nameLen; i++)
+        {
+            msgGameBegin->opponentName += *p;
+            p++;
+        }
+        return msgGameBegin;
+    }
+    default:
+    {
+        return NULL;
+    }
     }
 }
 

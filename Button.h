@@ -35,6 +35,10 @@ public:
     void render(SDL_Renderer *renderer);
     void cleanUp();
     void setOnClickListener(std::function<void(LWindow &window)> f);
+    int getX();
+    int getY();
+    int getWidth();
+    int getHeight();
 };
 
 #endif

@@ -18,17 +18,17 @@
 class LGame : public LScreen
 {
 private:
+    std::string playerName, opponentName;
     std::vector<Tile> tiles;
     std::vector<Player> players;
     std::vector<Entity> entities;
     SDL_Rect camera;
-    // for instructions on object collision 
-    std:: string displayText ; 
+    // for instructions on object collision
+    std::string displayText;
     std::vector<Renderable *> renderables;
 
     LTexture tilesTexture;
     LTexture ashTexture;
-
 
     TileAtlas tileAtlas;
 
@@ -36,21 +36,21 @@ private:
     int mTilesY;
     int mTileWidth;
     int mTileHeight;
-    int mMaxPlayerHealth ;
+    int mMaxPlayerHealth;
     bool initObjs();
     bool setTiles();
     void initEntities();
 
     LTimer globalTime;
-    Text* timeText;
-    Text* healthText ; 
-    Text* moneyText ; 
-    Text* pointsText ;
-    // for instructions on object collision 
-    Text* prompText ;  
+    Text *timeText;
+    Text *healthText;
+    Text *moneyText;
+    Text *pointsText;
+    // for instructions on object collision
+    Text *prompText;
 
 public:
-    LGame(LWindow &window);
+    LGame(LWindow &window, std::string playerName, std::string opponentName);
     void handleEvent(SDL_Event &e);
     void update();
     void render(SDL_Renderer *renderer);
@@ -60,11 +60,11 @@ public:
     int getLevelHeight();
     int getWindowWidth();
     int getWindowHeight();
-    Animation* sleepingAnimation ; 
-    Animation* burgerAnimation ; 
-    Animation* icecreamAnimation ; 
-    Animation* hotDogAnimation ;     
-    LTimer getTimer() ; 
+    Animation *sleepingAnimation;
+    Animation *burgerAnimation;
+    Animation *icecreamAnimation;
+    Animation *hotDogAnimation;
+    LTimer getTimer();
 };
 
 #endif

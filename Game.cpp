@@ -8,10 +8,11 @@
 #include "MyWindow.h"
 #include "Screen.h"
 #include "Entity.h"
-#include<functional>
+#include <functional>
 
-LGame::LGame(LWindow &window) : LScreen(window)
+LGame::LGame(LWindow &window, std::string playerName, std::string opponentName) : LScreen(window), playerName(playerName), opponentName(opponentName)
 {
+    std::cout << "Name: " << playerName << " Opponent: " << opponentName << std::endl;
     initObjs();
 }
 
@@ -64,13 +65,15 @@ void LGame::update()
     moneyText->setText("MONEY: " + std::to_string(players[0].getMoney()));
     healthText->setText("HEALTH:");
     if (displayText == "")
-        displayText  = std::string("INSTRUCTIONS WILL APPEAR HERE, YOUR HOSTEL IS " )  + players[0].getHostelName() ;
-    if(players[0].isBusy()){
-        prompText -> setText( players[0].getTaskText()) ; 
-    }else{
+        displayText = std::string("INSTRUCTIONS WILL APPEAR HERE, YOUR HOSTEL IS ") + players[0].getHostelName();
+    if (players[0].isBusy())
+    {
+        prompText->setText(players[0].getTaskText());
+    }
+    else
+    {
         prompText->setText(displayText);
     }
-
 }
 
 void LGame::render(SDL_Renderer *renderer)
@@ -124,13 +127,14 @@ void LGame::render(SDL_Renderer *renderer)
     viewport.h = gyRenderOffset;
     SDL_RenderSetViewport(renderer, &viewport);
     prompText->render(renderer, 0, 0);
-    if(players[0].isBusy()){
+    if (players[0].isBusy())
+    {
         SDL_SetRenderDrawColor(renderer, 0xFd, 0xb3, 0x36, 0xFF);
-        offset = taskStatusBarWidth + 10 ; 
-        SDL_Rect fillRect = {window.getWidth() - offset, gyTextOffset, ((int)players[0].getCurrentTaskTimer().getTicks() * (taskStatusBarWidth) )/ (players[0].getCurrentTaskTime()), gyRenderOffset};
+        offset = taskStatusBarWidth + 10;
+        SDL_Rect fillRect = {window.getWidth() - offset, gyTextOffset, ((int)players[0].getCurrentTaskTimer().getTicks() * (taskStatusBarWidth)) / (players[0].getCurrentTaskTime()), gyRenderOffset};
         SDL_RenderFillRect(renderer, &fillRect);
         SDL_Rect outlineRect = {window.getWidth() - offset, gyTextOffset, taskStatusBarWidth, gyRenderOffset};
-        SDL_RenderDrawRect(renderer, &outlineRect);  
+        SDL_RenderDrawRect(renderer, &outlineRect);
     }
 }
 
@@ -139,7 +143,7 @@ void LGame::cleanUp()
     players[0].cleanUp();
     tiles[0].cleanUp();
     delete timeText;
-    delete sleepingAnimation ; 
+    delete sleepingAnimation;
 }
 
 bool LGame::initObjs()
@@ -150,10 +154,10 @@ bool LGame::initObjs()
         printf("Failed to load ash texture!\n");
         return false;
     }
-    LTexture* sleepingAnimationTexture = new LTexture()  ; 
-    LTexture* burgerAnimationTexture = new LTexture() ; 
-    LTexture* hotdogAnimationTexture = new LTexture() ; 
-    LTexture* icecreamAnimationTexture  = new LTexture( ) ; 
+    LTexture *sleepingAnimationTexture = new LTexture();
+    LTexture *burgerAnimationTexture = new LTexture();
+    LTexture *hotdogAnimationTexture = new LTexture();
+    LTexture *icecreamAnimationTexture = new LTexture();
     if (!window.loadTexture(*sleepingAnimationTexture, "resources/sleeping.png"))
     {
         printf("Failed to load sleeping texture!\n");
@@ -174,10 +178,10 @@ bool LGame::initObjs()
         printf("Failed to load icecream texture!\n");
         return false;
     }
-    sleepingAnimation = new Animation( *sleepingAnimationTexture , 32, 32) ; 
-    burgerAnimation = new Animation( *burgerAnimationTexture , 32 , 32) ; 
-    hotDogAnimation = new Animation(*hotdogAnimationTexture , 32 , 32) ; 
-    icecreamAnimation = new Animation(*icecreamAnimationTexture , 32 , 32 ) ;  
+    sleepingAnimation = new Animation(*sleepingAnimationTexture, 32, 32);
+    burgerAnimation = new Animation(*burgerAnimationTexture, 32, 32);
+    hotDogAnimation = new Animation(*hotdogAnimationTexture, 32, 32);
+    icecreamAnimation = new Animation(*icecreamAnimationTexture, 32, 32);
 
     Player ash(ashTexture, *this, 32, 32, 3, 1, 2, 0);
     players.push_back(ash);
@@ -210,7 +214,7 @@ bool LGame::initObjs()
     healthText = new Text(window, "HEALTH :: ", font, txtColor);
     moneyText = new Text(window, "MONEY:: ", font, txtColor);
     pointsText = new Text(window, "POINTS:: ", font, txtColor);
-    displayText = "YOU HAVE BEEN ASSIGNED HOSTEL " + players[0].getHostelName() ;
+    displayText = "YOU HAVE BEEN ASSIGNED HOSTEL " + players[0].getHostelName();
     prompText = new Text(window, displayText, font, txtColor);
 
     for (int i = 0; i < tiles.size(); i++)
@@ -304,93 +308,90 @@ bool LGame::setTiles()
 
     return true;
 }
-std::function< void(Player &player , std::string &displayText )> getFoodCollideFunc( std :: string a )
+std::function<void(Player &player, std::string &displayText)> getFoodCollideFunc(std ::string a)
 {
     return [=](Player &player, std::string &displayText)
-                   { 
-                       displayText = a ; 
-                   } ; 
+    {
+        displayText = a;
+    };
 }
-std::function< void(Player &player, std::string &displayText)> getHostelCollideFunc( std :: string hostelName)
+std::function<void(Player &player, std::string &displayText)> getHostelCollideFunc(std ::string hostelName)
 {
     return [=](Player &player, std::string &displayText)
-               { 
-                   
-                   if( player.getHostelName() == hostelName )
-                   {
-                     displayText = "YOUR HOSTEL,  " ; 
-                     displayText += " B-BreakFast  L-Lunch  D-Dinner  R-REST" ; 
-                   }else{
-                       displayText = "NEIGHBOURING HOSTEL" ; 
-                   }
-               } ; 
+    {
+        if (player.getHostelName() == hostelName)
+        {
+            displayText = "YOUR HOSTEL,  ";
+            displayText += " B-BreakFast  L-Lunch  D-Dinner  R-REST";
+        }
+        else
+        {
+            displayText = "NEIGHBOURING HOSTEL";
+        }
+    };
 }
 
-std :: function< void (SDL_Event &e, Player &player)> getHostelEventListener( std :: string HostelName)
+std ::function<void(SDL_Event &e, Player &player)> getHostelEventListener(std ::string HostelName)
 {
 
-            return   [=](SDL_Event &e, Player &player)
+    return [=](SDL_Event &e, Player &player)
+    {
+        if (e.type == SDL_KEYDOWN && e.key.repeat == 0 && player.getHostelName() == HostelName)
+        {
+            switch (e.key.keysym.sym)
+            {
+            case SDLK_r:
+                // create rest task if player is not busy
+                if (!player.isBusy())
                 {
-                    if (e.type == SDL_KEYDOWN && e.key.repeat == 0 && player.getHostelName() == HostelName)
-                    {
-                        switch (e.key.keysym.sym)
-                        {
-                        case SDLK_r:
-                            // create rest task if player is not busy 
-                            if(!player.isBusy()){
-                                player.setCurrentTaskTime(10000) ; 
-                                player.getCurrentTaskTimer().start() ;
-                                player.setTaskText("resting ... ") ;
-                                player.setTaskAnimation( player.getGame().sleepingAnimation ) ;  
-                                player.setUpdateStateParameters({
-                                    gMaxPlayerHealth , 
-                                    0 , 
-                                    0 
-                                }) ; 
-                            }
-                            break;
-                        case SDLK_b: 
-                            if( !player.isBusy() and !player.hadBreakFast() and (  player.getGame().getTimer().getTicks() < 100*1000 ) ){
-                                player.setBreakfast(true) ; 
-                                player.setTaskText("having breakfast... ") ; 
-                                player.setCurrentTaskTime(3000) ; 
-                                player.getCurrentTaskTimer().start() ;
-                                player.setUpdateStateParameters({
-                                    30 , 
-                                    0 , 
-                                    0 
-                                }) ;                                
-                            }
-                            break ; 
-                        case SDLK_l: 
-                            if( !player.isBusy() and !player.hadLunch() and (  player.getGame().getTimer().getTicks() < 100*1000 ) ){
-                                player.setLunch(true) ; 
-                                player.setTaskText("having lunch ... ") ; 
-                                player.setCurrentTaskTime(3000) ; 
-                                player.getCurrentTaskTimer().start() ;
-                                player.setUpdateStateParameters({
-                                    30 , 
-                                    0 , 
-                                    0 
-                                }) ;                                
-                            }
-                            break ; 
-                        case SDLK_d: 
-                            if( !player.isBusy() and !player.hadDinner() and (  player.getGame().getTimer().getTicks() < 100*1000 ) ){
-                                player.setDinner(true) ; 
-                                player.setTaskText("having dinner... ") ; 
-                                player.setCurrentTaskTime(3000) ; 
-                                player.getCurrentTaskTimer().start() ;
-                                player.setUpdateStateParameters({
-                                    30 , 
-                                    0 , 
-                                    0 
-                                }) ;                                
-                            }
-                            break ; 
-                        }
-                    }
-                } ; 
+                    player.setCurrentTaskTime(10000);
+                    player.getCurrentTaskTimer().start();
+                    player.setTaskText("resting ... ");
+                    player.setTaskAnimation(player.getGame().sleepingAnimation);
+                    player.setUpdateStateParameters({gMaxPlayerHealth,
+                                                     0,
+                                                     0});
+                }
+                break;
+            case SDLK_b:
+                if (!player.isBusy() and !player.hadBreakFast() and (player.getGame().getTimer().getTicks() < 100 * 1000))
+                {
+                    player.setBreakfast(true);
+                    player.setTaskText("having breakfast... ");
+                    player.setCurrentTaskTime(3000);
+                    player.getCurrentTaskTimer().start();
+                    player.setUpdateStateParameters({30,
+                                                     0,
+                                                     0});
+                }
+                break;
+            case SDLK_l:
+                if (!player.isBusy() and !player.hadLunch() and (player.getGame().getTimer().getTicks() < 100 * 1000))
+                {
+                    player.setLunch(true);
+                    player.setTaskText("having lunch ... ");
+                    player.setCurrentTaskTime(3000);
+                    player.getCurrentTaskTimer().start();
+                    player.setUpdateStateParameters({30,
+                                                     0,
+                                                     0});
+                }
+                break;
+            case SDLK_d:
+                if (!player.isBusy() and !player.hadDinner() and (player.getGame().getTimer().getTicks() < 100 * 1000))
+                {
+                    player.setDinner(true);
+                    player.setTaskText("having dinner... ");
+                    player.setCurrentTaskTime(3000);
+                    player.getCurrentTaskTimer().start();
+                    player.setUpdateStateParameters({30,
+                                                     0,
+                                                     0});
+                }
+                break;
+            }
+        }
+    };
 }
 void LGame::initEntities()
 {
@@ -438,18 +439,18 @@ void LGame::initEntities()
             }
         });
 
-    Entity nilgiri("nilgiri", getHostelCollideFunc("nilgiri") , getHostelEventListener("nilgiri"));
-    Entity kara("kara", getHostelCollideFunc("kara") , getHostelEventListener("kara"));
+    Entity nilgiri("nilgiri", getHostelCollideFunc("nilgiri"), getHostelEventListener("nilgiri"));
+    Entity kara("kara", getHostelCollideFunc("kara"), getHostelEventListener("kara"));
     Entity aravali("aravali", getHostelCollideFunc("aravali"), getHostelEventListener("aravali"));
     Entity jwala("jwala", getHostelCollideFunc("jwala"), getHostelEventListener("jwala"));
-    Entity kumaon("kumaon" , getHostelCollideFunc("kumaon"), getHostelEventListener("kumaon"));
+    Entity kumaon("kumaon", getHostelCollideFunc("kumaon"), getHostelEventListener("kumaon"));
     Entity vindy("vindy", getHostelCollideFunc("vindy"), getHostelEventListener("vindy"));
     Entity satpura("satpura", getHostelCollideFunc("satpura"), getHostelEventListener("satpura"));
     Entity udai_girnar("udai_girnar", getHostelCollideFunc("udai_girnar"), getHostelEventListener("udai_girnar"));
-    Entity himadri("himadri",getHostelCollideFunc("himadri"), getHostelEventListener("himadri") );
+    Entity himadri("himadri", getHostelCollideFunc("himadri"), getHostelEventListener("himadri"));
     Entity kailash("kailash", getHostelCollideFunc("kailash"), getHostelEventListener("kailash"));
     Entity shivalik("shivalik", getHostelCollideFunc("shivalik"), getHostelEventListener("shivalik"));
-    Entity zanskar("zanskar" , getHostelCollideFunc("zanskar"), getHostelEventListener("zanskar"));
+    Entity zanskar("zanskar", getHostelCollideFunc("zanskar"), getHostelEventListener("zanskar"));
     Entity volleyball("volleyball", [&](Player &player, std::string &displayText)
                       { displayText = "volleyball"; });
     Entity tennis("tennis", [&](Player &player, std::string &displayText)
@@ -458,56 +459,52 @@ void LGame::initEntities()
                          { displayText = "swimming_pool"; });
     Entity oat("oat", [&](Player &player, std::string &displayText)
                { displayText = "oat"; });
-    Entity hot_dog("hot_dog", getFoodCollideFunc("PRESS H for HOTDOG") , 
+    Entity hot_dog("hot_dog", getFoodCollideFunc("PRESS H for HOTDOG"),
+                   [&](SDL_Event &e, Player &player)
+                   {
+                       if (e.type == SDL_KEYDOWN && e.key.repeat == 0)
+                       {
+                           switch (e.key.keysym.sym)
+                           {
+                           case SDLK_h:
+                               if (player.getMoney() > 20)
+                               {
+                                   player.setTaskText("having hotdog... ");
+                                   player.setTaskAnimation(player.getGame().hotDogAnimation);
+                                   player.setCurrentTaskTime(3000);
+                                   player.getCurrentTaskTimer().start();
+                                   player.setUpdateStateParameters({20,
+                                                                    -20,
+                                                                    0});
+                               }
+                               break;
+                           }
+                       }
+                   });
+    Entity gas("gas", [&](Player &player, std::string &displayText)
+               { displayText = "gas"; });
+    Entity icecream("icecream", getFoodCollideFunc("PRESS I for ICECREAM"),
                     [&](SDL_Event &e, Player &player)
                     {
                         if (e.type == SDL_KEYDOWN && e.key.repeat == 0)
                         {
                             switch (e.key.keysym.sym)
                             {
-                            case SDLK_h:
-                                if(player.getMoney() > 20 ) {
-                                    player.setTaskText("having hotdog... ") ; 
-                                    player.setTaskAnimation(player.getGame().hotDogAnimation) ; 
-                                    player.setCurrentTaskTime(3000) ; 
-                                    player.getCurrentTaskTimer().start() ;
-                                    player.setUpdateStateParameters({
-                                        20 , 
-                                        -20 , 
-                                        0 
-                                    }) ;  
-                                }
-                                break;
-                            }
-                        }
-                    }
-                   );
-    Entity gas("gas", [&](Player &player, std::string &displayText)
-               { displayText = "gas"; });
-    Entity icecream("icecream", getFoodCollideFunc("PRESS I for ICECREAM") , 
-                        [&](SDL_Event &e, Player &player)
-                    {
-                        if (e.type == SDL_KEYDOWN && e.key.repeat == 0)
-                        {
-                            switch (e.key.keysym.sym)
-                            {
                             case SDLK_i:
-                                if(player.getMoney() > 10 ) {
-                                    player.setTaskText("having icecream... ") ; 
-                                    player.setCurrentTaskTime(5000) ; 
-                                    player.getCurrentTaskTimer().start() ;
-                                    player.setTaskAnimation( player.getGame().icecreamAnimation ) ;
-                                    player.setUpdateStateParameters({
-                                        10 , 
-                                        -10 , 
-                                        0 
-                                    }) ;  
+                                if (player.getMoney() > 10)
+                                {
+                                    player.setTaskText("having icecream... ");
+                                    player.setCurrentTaskTime(5000);
+                                    player.getCurrentTaskTimer().start();
+                                    player.setTaskAnimation(player.getGame().icecreamAnimation);
+                                    player.setUpdateStateParameters({10,
+                                                                     -10,
+                                                                     0});
                                 }
                                 break;
                             }
                         }
-                    }
-    );
+                    });
     Entity shop("shop", [&](Player &player, std::string &displayText)
                 { displayText = "shop"; });
     Entity sac("sac", [&](Player &player, std::string &displayText)
@@ -534,8 +531,8 @@ void LGame::initEntities()
                   { displayText = "coffee"; });
     Entity hospital("hospital", [&](Player &player, std::string &displayText)
                     { displayText = "hospital"; });
-    Entity burger("burger"  , getFoodCollideFunc("PRESS B for BURGER") ,[&](SDL_Event &e, Player &player)
-                    {
+    Entity burger("burger", getFoodCollideFunc("PRESS B for BURGER"), [&](SDL_Event &e, Player &player)
+                  {
                         if (e.type == SDL_KEYDOWN && e.key.repeat == 0)
                         {
                             switch (e.key.keysym.sym)
@@ -554,9 +551,7 @@ void LGame::initEntities()
                                 }
                                 break;
                             }
-                        }
-                    }
-    );
+                        } });
     Entity vegetable_shop("vegetable_shop", [&](Player &player, std::string &displayText)
                           { displayText = "vegetable_shop"; });
     Entity bread_shop("bread_shop", [&](Player &player, std::string &displayText)
@@ -641,7 +636,7 @@ int LGame::getWindowHeight()
     return window.getHeight();
 }
 
-LTimer LGame :: getTimer()
+LTimer LGame ::getTimer()
 {
-    return globalTime ; 
+    return globalTime;
 }

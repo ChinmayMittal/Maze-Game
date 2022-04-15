@@ -130,3 +130,23 @@ void Button::setClickTexture(LTexture &texture)
 {
     clickTexture = &texture;
 }
+
+int Button::getX()
+{
+    return x;
+}
+
+int Button::getY()
+{
+    return y;
+}
+
+int Button::getWidth()
+{
+    return w;
+}
+
+int Button::getHeight()
+{
+    return h;
+}
