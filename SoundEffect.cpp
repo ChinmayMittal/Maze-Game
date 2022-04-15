@@ -65,11 +65,12 @@ void SoundEffect::free()
 void SoundEffect::play()
 {
     int channel = Mix_PlayChannel( -1, mMusic , 0  ) ; 
+    std::cout << ( mMusic == NULL ) << "\n" ; 
     if( channel == -1 ){
         printf("Mix_PlayChannel: %s\n",Mix_GetError());
     }else{
         std::cout << "playing on channel " << channel << "\n" ; 
     }
-    SDL_Delay(1000) ; 
+    // SDL_Delay(1000) ; 
     // Mix_PlayChannel(-1, chunk.get(), 0);
 }

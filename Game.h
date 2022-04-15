@@ -29,6 +29,7 @@ private:
     LTexture tilesTexture;
     LTexture ashTexture;
 
+
     TileAtlas tileAtlas;
 
     int mTilesX;
@@ -59,6 +60,8 @@ public:
     int getLevelHeight();
     int getWindowWidth();
     int getWindowHeight();
+    Animation* sleepingAnimation ; 
+    Animation* burgerAnimation ;     
     LTimer getTimer() ; 
 };
 

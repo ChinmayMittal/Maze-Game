@@ -3,6 +3,7 @@
 
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_image.h>
+#include<SDL2/SDL_mixer.h>
 #include "Tile.h"
 #include "MyTexture.h"
 #include "Renderable.h"
@@ -11,6 +12,8 @@
 #include "Timer.h"
 #include "utilities.h"
 #include <string>
+#include"Animation.h"
+
 
 class LGame;
 
@@ -72,13 +75,15 @@ public:
     void setDinner( bool d) ; 
     std :: string getTaskText() ; 
     void  setTaskText( std::string s ) ; 
+    void setTaskAnimation( Animation *a) ; 
 private:
     // Collision box of the dot
 
     LGame &mGame;
     SDL_Rect mBox;
     LTexture &mTexture;
-    SoundEffect wallCollisionMusic;
+    Animation* taskAnimation ; 
+    bool hasTaskAnimation ; 
     // bool touchesWall(std::vector<Tile> tiles);
     int playerHeight, playerWidth;
     int right, top, left, bottom;
@@ -103,6 +108,7 @@ private:
     playerStateUpdate updateState ; 
     bool breakfast , lunch, dinner ; 
     std::string taskText ; 
+    Mix_Chunk* mCollisionMusic ; 
 };
 
 #endif

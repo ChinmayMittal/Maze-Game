@@ -1,5 +1,6 @@
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_image.h>
+#include<SDL2/SDL_mixer.h>
 #include "Player.h"
 #include "Tile.h"
 #include "MyTexture.h"
@@ -15,14 +16,15 @@
 
 std :: vector < std :: string >  hostelNames{ "nilgiri" , "kara" , "aravali" , "jwala" , "kumaon" , "vindy" , "satpura" , "udai_girnar" , "himadri" , "kailash" } ;
 
-Player ::Player(LTexture &myTexture, LGame &game, int playerHeight, int playerWidth, int right, int left, int top, int bottom) : mTexture(myTexture), mGame(game), wallCollisionMusic(std::string("collision.wav"))
+Player ::Player(LTexture &myTexture, LGame &game, int playerHeight, int playerWidth, int right, int left, int top, int bottom) : mTexture(myTexture), mGame(game)
 {
     // Initialize the collision box
+    mCollisionMusic = Mix_LoadWAV("resources/collision.wav") ; 
     mBox.x = 32 * 7;
     mBox.y = 0;
     mBox.w = playerWidth;
     mBox.h = playerHeight;
-
+    taskAnimation = NULL  ; 
     srand(time(0));
     hostelName = hostelNames[rand()%hostelNames.size()];
     hostelName = "nilgiri" ; // for testing  
@@ -32,10 +34,6 @@ Player ::Player(LTexture &myTexture, LGame &game, int playerHeight, int playerWi
     // Initialize the velocity
     mVelX = 0;
     mVelY = 0;
-    // wallCollisionMusic.play() ;
-    // SDL_Delay(1000) ;
-    // wallCollisionMusic.play() ;
-    // SDL_Delay(2000) ;
     this->velocity = 10;
     this->moveFactor = 1;
     this->direction = 'D';
@@ -51,6 +49,7 @@ Player ::Player(LTexture &myTexture, LGame &game, int playerHeight, int playerWi
     this->points = 0;
     breakfast = lunch = dinner = false ; 
     taskText = "" ; 
+    hasTaskAnimation = false ; 
     int numberOfimages = myTexture.getWidth() / playerWidth;
     playerImages.resize(4 * numberOfimages);
     this->numOfAnimationImages = numberOfimages;
@@ -163,7 +162,7 @@ void Player::move()
         {
             // move back
             mBox.x -= mVelX * moveFactor;
-            // wallCollisionMusic.play() ;
+            Mix_PlayChannel( -1, mCollisionMusic, 0 );
         }
 
         // Move the dot up or down
@@ -174,7 +173,7 @@ void Player::move()
         {
             // move back
             mBox.y -= mVelY * moveFactor;
-            // wallCollisionMusic.play() ;
+            Mix_PlayChannel( -1, mCollisionMusic, 0 );
         }
     }
 }
@@ -238,7 +237,12 @@ int Player::render(SDL_Renderer *renderer, SDL_Rect &camera)
     {
         offset = mframes / animationSpeed;
     }
-    mTexture.render(renderer, mBox.x - camera.x, mBox.y - camera.y, &playerImages[dimension + offset]);
+    if( isBusy() and hasTaskAnimation){
+        taskAnimation->setBox( mBox.x , mBox.y ) ; 
+        taskAnimation->render( renderer , camera ) ; 
+    }else{
+        mTexture.render(renderer, mBox.x - camera.x, mBox.y - camera.y, &playerImages[dimension + offset]);
+    }
     mframes = (mframes + 1) % (numOfAnimationImages * animationSpeed);
     if( isBusy()) mframes = 0 ; 
     return 0;
@@ -247,6 +251,7 @@ int Player::render(SDL_Renderer *renderer, SDL_Rect &camera)
 void Player::cleanUp()
 {
     mTexture.free();
+    Mix_FreeChunk( mCollisionMusic ) ; 
 }
 
 void Player::setVelocity(int vel)
@@ -316,9 +321,7 @@ std::string Player :: getHostelName(){
 
 void Player::update()
 {
-    // std::cout << yuluTimer.isStarted() << std::endl;
-    // std :: cout << health << "\n" ; 
-    // std :: cout << taskText << "\n" ; 
+
     if (yuluTimer.isStarted())
     {
         moveFactor = 2;
@@ -356,6 +359,7 @@ void Player::update()
         updateStateParameters( updateState) ; 
         updateState = { 0.0 , 0 , 0 } ; 
         taskText = "" ; 
+        hasTaskAnimation = false ; 
         // update player stats 
     }
 }
@@ -471,3 +475,8 @@ void Player :: setTaskText( std :: string s)
 {
     taskText = s ; 
 }
+
+void Player::setTaskAnimation( Animation *a) {
+    taskAnimation = a ; 
+    hasTaskAnimation = true ; 
+} 

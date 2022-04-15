@@ -127,7 +127,7 @@ void LGame::render(SDL_Renderer *renderer)
     if(players[0].isBusy()){
         SDL_SetRenderDrawColor(renderer, 0xFd, 0xb3, 0x36, 0xFF);
         offset = taskStatusBarWidth + 10 ; 
-        SDL_Rect fillRect = {window.getWidth() - offset, gyTextOffset, (float)(players[0].getCurrentTaskTimer().getTicks() * (taskStatusBarWidth) )/ (players[0].getCurrentTaskTime()), gyRenderOffset};
+        SDL_Rect fillRect = {window.getWidth() - offset, gyTextOffset, ((int)players[0].getCurrentTaskTimer().getTicks() * (taskStatusBarWidth) )/ (players[0].getCurrentTaskTime()), gyRenderOffset};
         SDL_RenderFillRect(renderer, &fillRect);
         SDL_Rect outlineRect = {window.getWidth() - offset, gyTextOffset, taskStatusBarWidth, gyRenderOffset};
         SDL_RenderDrawRect(renderer, &outlineRect);  
@@ -139,6 +139,7 @@ void LGame::cleanUp()
     players[0].cleanUp();
     tiles[0].cleanUp();
     delete timeText;
+    delete sleepingAnimation ; 
 }
 
 bool LGame::initObjs()
@@ -149,6 +150,20 @@ bool LGame::initObjs()
         printf("Failed to load ash texture!\n");
         return false;
     }
+    LTexture* sleepingAnimationTexture = new LTexture()  ; 
+    LTexture* burgerAnimationTexture = new LTexture() ; 
+    if (!window.loadTexture(*sleepingAnimationTexture, "resources/sleeping.png"))
+    {
+        printf("Failed to load sleeping texture!\n");
+        return false;
+    }
+    if (!window.loadTexture(*burgerAnimationTexture, "resources/burger.png"))
+    {
+        printf("Failed to load burger texture!\n");
+        return false;
+    }
+    sleepingAnimation = new Animation( *sleepingAnimationTexture , 32, 32) ; 
+    burgerAnimation = new Animation( *burgerAnimationTexture , 32 , 32) ;  
 
     Player ash(ashTexture, *this, 32, 32, 3, 1, 2, 0);
     players.push_back(ash);
@@ -275,6 +290,13 @@ bool LGame::setTiles()
 
     return true;
 }
+std::function< void(Player &player , std::string &displayText )> getFoodCollideFunc( std :: string a )
+{
+    return [=](Player &player, std::string &displayText)
+                   { 
+                       displayText = a ; 
+                   } ; 
+}
 std::function< void(Player &player, std::string &displayText)> getHostelCollideFunc( std :: string hostelName)
 {
     return [=](Player &player, std::string &displayText)
@@ -304,7 +326,8 @@ std :: function< void (SDL_Event &e, Player &player)> getHostelEventListener( st
                             if(!player.isBusy()){
                                 player.setCurrentTaskTime(10000) ; 
                                 player.getCurrentTaskTimer().start() ;
-                                player.setTaskText("resting ... ") ; 
+                                player.setTaskText("resting ... ") ;
+                                player.setTaskAnimation( player.getGame().sleepingAnimation ) ;  
                                 player.setUpdateStateParameters({
                                     gMaxPlayerHealth , 
                                     0 , 
@@ -421,8 +444,29 @@ void LGame::initEntities()
                          { displayText = "swimming_pool"; });
     Entity oat("oat", [&](Player &player, std::string &displayText)
                { displayText = "oat"; });
-    Entity hot_dog("hot_dog", [&](Player &player, std::string &displayText)
-                   { displayText = "hot_dog"; });
+    Entity hot_dog("hot_dog", getFoodCollideFunc("PRESS H for HOTDOG") , 
+                    [&](SDL_Event &e, Player &player)
+                    {
+                        if (e.type == SDL_KEYDOWN && e.key.repeat == 0)
+                        {
+                            switch (e.key.keysym.sym)
+                            {
+                            case SDLK_h:
+                                if(player.getMoney() > 20 ) {
+                                    player.setTaskText("having hotdog... ") ; 
+                                    player.setCurrentTaskTime(3000) ; 
+                                    player.getCurrentTaskTimer().start() ;
+                                    player.setUpdateStateParameters({
+                                        20 , 
+                                        -20 , 
+                                        0 
+                                    }) ;  
+                                }
+                                break;
+                            }
+                        }
+                    }
+                   );
     Entity gas("gas", [&](Player &player, std::string &displayText)
                { displayText = "gas"; });
     Entity icecream("icecream", [&](Player &player, std::string &displayText)
@@ -453,8 +497,29 @@ void LGame::initEntities()
                   { displayText = "coffee"; });
     Entity hospital("hospital", [&](Player &player, std::string &displayText)
                     { displayText = "hospital"; });
-    Entity burger("burger", [&](Player &player, std::string &displayText)
-                  { displayText = "burger"; });
+    Entity burger("burger"  , getFoodCollideFunc("PRESS B for BURGER") ,[&](SDL_Event &e, Player &player)
+                    {
+                        if (e.type == SDL_KEYDOWN && e.key.repeat == 0)
+                        {
+                            switch (e.key.keysym.sym)
+                            {
+                            case SDLK_b:
+                                if(player.getMoney() > 20 ) {
+                                    player.setTaskText("having burger... ") ; 
+                                    player.setCurrentTaskTime(6000) ; 
+                                    player.getCurrentTaskTimer().start() ;
+                                    player.setTaskAnimation( player.getGame().burgerAnimation ) ; 
+                                    player.setUpdateStateParameters({
+                                        20 , 
+                                        -20 , 
+                                        0 
+                                    }) ;  
+                                }
+                                break;
+                            }
+                        }
+                    }
+    );
     Entity vegetable_shop("vegetable_shop", [&](Player &player, std::string &displayText)
                           { displayText = "vegetable_shop"; });
     Entity bread_shop("bread_shop", [&](Player &player, std::string &displayText)
