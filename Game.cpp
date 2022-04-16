@@ -68,7 +68,7 @@ void LGame::update()
     players[0].move();
     players[1].move();
     NPCs[0].move();
-
+    NPCs[1].move();
     SDL_Rect playerBox = players[0].getBox();
     // std::cout << "After move " << playerBox.y << std::endl;
     int tileX = (playerBox.x + playerBox.w / 2) / mTileWidth;
@@ -306,6 +306,11 @@ bool LGame::initObjs()
         printf("Failed to load dog texture!\n");
         return false;
     }
+    if (!window.loadTexture(profTexture, "resources/oak.png"))
+    {
+        printf("Failed to load prof texture!\n");
+        return false;
+    }
     LTexture *sleepingAnimationTexture = new LTexture();
     LTexture *burgerAnimationTexture = new LTexture();
     LTexture *hotdogAnimationTexture = new LTexture();
@@ -352,7 +357,9 @@ bool LGame::initObjs()
     Player ash(ashTexture, *this, 32, 32, 3, 1, 2, 0);
     players.push_back(ash);
     NPC dog(dogTexture, *this, 32, 32, 1, 3, 2, 0);
+    NPC prof(profTexture, *this, 42, 32, 3, 2, 0, 1);
     NPCs.push_back(dog);
+    NPCs.push_back(prof);
     Player opponent(ashTexture, *this, 32, 32, 3, 1, 2, 0);
     players.push_back(opponent);
 
