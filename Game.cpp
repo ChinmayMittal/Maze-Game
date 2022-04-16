@@ -22,9 +22,9 @@
 #include <algorithm>
 #include "MessageStructs.h"
 
-
 LGame::LGame(LWindow &window, std::string playerName, std::string opponentName, int &sockfd, sockaddr_in &theiraddr) : LScreen(window), playerName(playerName), opponentName(opponentName), sockfd(sockfd), theirAddr(theiraddr)
 {
+    window.maximize();
     std::cout << "Name: " << playerName << " Opponent: " << opponentName << std::endl;
     backGroundMusic = Mix_LoadMUS("resources/music.mpeg");
     introMusic = Mix_LoadWAV("resources/intro.wav");
@@ -47,6 +47,7 @@ void LGame::initTasks()
             it = std::find(currTasks.begin(), currTasks.end(), t);
         } while (it != currTasks.end());
         currTasks.push_back(t);
+        taskTexts[i]->setText(t.second);
     }
 }
 
@@ -66,8 +67,8 @@ void LGame::update()
     // Move the dot
     players[0].move();
     players[1].move();
-    NPCs[0].move() ; 
-    NPCs[1].move() ; 
+    NPCs[0].move();
+    NPCs[1].move();
     SDL_Rect playerBox = players[0].getBox();
     // std::cout << "After move " << playerBox.y << std::endl;
     int tileX = (playerBox.x + playerBox.w / 2) / mTileWidth;
@@ -99,7 +100,7 @@ void LGame::update()
     timeText->setText("TIME: " + hours + ":" + mins);
     pointsText->setText("POINTS: " + std::to_string(players[0].getPoints()));
     moneyText->setText("MONEY: " + std::to_string(players[0].getMoney()));
-    healthText->setText("HEALTH:");
+    // healthText->setText("HEALTH: ");
     if (displayText == "")
         displayText = std::string("INSTRUCTIONS WILL APPEAR HERE, YOUR HOSTEL IS ") + players[0].getHostelName();
     if (players[0].isBusy())
@@ -119,7 +120,7 @@ void LGame::update()
     gameUpdateMsg.moveFactor = players[0].getMoveFactor();
     gameUpdateMsg.money = players[0].getMoney();
     gameUpdateMsg.points = players[0].getPoints();
-    // gameUpdateMsg.health = players[0].getHealth();
+    gameUpdateMsg.health = players[0].getHealth();
     int bytesUsed = serialize(&gameUpdateMsg, buf);
 
     sendto(sockfd, buf, bytesUsed, 0, (const struct sockaddr *)&theirAddr,
@@ -132,7 +133,7 @@ void LGame::update()
     // std::cout << n << std::endl;
     if (n != -1)
     {
-        std::cout << "Received!" << std::endl;
+        // std::cout << "Received!" << std::endl;
         Message *msg = deserialize(recBuf);
         if (msg->type == 2)
         {
@@ -142,23 +143,25 @@ void LGame::update()
             players[1].setMoveFactor(updateMsg->moveFactor);
             players[1].setPoints(updateMsg->points);
             players[1].setMoney(updateMsg->money);
-            // players[1].setHealth(updateMsg->health);
+            players[1].setHealth(updateMsg->health);
         }
         delete msg;
     }
     else
     {
-        fprintf(stderr, "socket() failed: %s\n", strerror(errno));
+        // fprintf(stderr, "socket() failed: %s\n", strerror(errno));
     }
+    pointsTextOpp->setText("POINTS: " + std::to_string(players[1].getPoints()));
+    moneyTextOpp->setText("MONEY: " + std::to_string(players[1].getMoney()));
 }
 
 void LGame::render(SDL_Renderer *renderer)
 {
     SDL_Rect viewport;
     viewport.x = 0;
-    viewport.y = gyRenderOffset;
-    viewport.w = window.getWidth();
-    viewport.h = window.getHeight() - gyRenderOffset - gyRenderOffset;
+    viewport.y = 2 * gyRenderOffset + 3 * gyPadding;
+    viewport.w = window.getWidth() - tasksVPWidth;
+    viewport.h = window.getHeight() - 3 * gyRenderOffset - 5 * gyPadding;
     SDL_RenderSetViewport(renderer, &viewport);
 
     for (size_t i = 0; i < renderables.size(); i++)
@@ -175,52 +178,114 @@ void LGame::render(SDL_Renderer *renderer)
     viewport.x = 0;
     viewport.y = 0;
     viewport.w = window.getWidth();
-    viewport.h = gyRenderOffset;
+    viewport.h = 2 * gyRenderOffset + 3 * gyPadding;
     SDL_RenderSetViewport(renderer, &viewport);
+
+    // int offset = timeText->getWidth() + 32;
+    // timeText->render(renderer, window.getWidth() - offset, gyPadding);
+
+    int offset = gMaxPlayerHealth + gxTextSpacing;
+
     SDL_SetRenderDrawColor(renderer, 0xFF, 0x00, 0x00, 0xFF);
-
-    int offset = timeText->getWidth() + 32;
-    timeText->render(renderer, window.getWidth() - offset, gyTextOffset);
-    offset += gMaxPlayerHealth + gxTextSpacing;
-    SDL_Rect fillRect = {window.getWidth() - offset, gyTextOffset, (players[0].getHealth() * (gMaxPlayerHealth) / mMaxPlayerHealth), 32};
+    SDL_Rect fillRect = {window.getWidth() - offset, 2 * gyPadding + gyRenderOffset, (players[0].getHealth() * (gMaxPlayerHealth) / mMaxPlayerHealth), gyRenderOffset};
     SDL_RenderFillRect(renderer, &fillRect);
-    SDL_Rect outlineRect = {window.getWidth() - offset, gyTextOffset, gMaxPlayerHealth, 32};
-
+    SDL_Rect outlineRect = {window.getWidth() - offset, 2 * gyPadding + gyRenderOffset, gMaxPlayerHealth, gyRenderOffset};
     SDL_RenderDrawRect(renderer, &outlineRect);
 
-    offset += healthText->getWidth() + 10;
-    healthText->render(renderer, window.getWidth() - offset, gyTextOffset);
+    offset += healthText->getWidth() + gxTextSpacing;
+    healthText->render(renderer, window.getWidth() - offset, 2 * gyPadding + gyRenderOffset);
 
     offset += moneyText->getWidth() + gxTextSpacing;
-    moneyText->render(renderer, window.getWidth() - offset, gyTextOffset);
+    moneyText->render(renderer, window.getWidth() - offset, 2 * gyPadding + gyRenderOffset);
 
     offset += pointsText->getWidth() + gxTextSpacing;
-    pointsText->render(renderer, window.getWidth() - offset, gyTextOffset);
+    pointsText->render(renderer, window.getWidth() - offset, 2 * gyPadding + gyRenderOffset);
+    offset += pointsText->getWidth();
+
+    nameText->render(renderer, window.getWidth() - offset / 2, gyPadding);
+
+    timeText->render(renderer, (window.getWidth() - timeText->getWidth()) / 2, (3 * gyPadding) / 2 + gyRenderOffset - timeText->getHeight() / 2);
+
+    offset = gxTextSpacing;
+    healthText->render(renderer, offset, 2 * gyPadding + gyRenderOffset);
+
+    offset += healthText->getWidth();
+    SDL_SetRenderDrawColor(renderer, 0xFF, 0x00, 0x00, 0xFF);
+    fillRect = {offset, 2 * gyPadding + gyRenderOffset, (players[1].getHealth() * (gMaxPlayerHealth) / mMaxPlayerHealth), gyRenderOffset};
+    SDL_RenderFillRect(renderer, &fillRect);
+    outlineRect = {offset, 2 * gyPadding + gyRenderOffset, gMaxPlayerHealth, gyRenderOffset};
+    SDL_RenderDrawRect(renderer, &outlineRect);
+
+    offset += gMaxPlayerHealth + gxTextSpacing;
+    moneyTextOpp->render(renderer, offset, 2 * gyPadding + gyRenderOffset);
+
+    offset += moneyText->getWidth() + gxTextSpacing;
+    pointsTextOpp->render(renderer, offset, 2 * gyPadding + gyRenderOffset);
+
+    offset += pointsTextOpp->getWidth();
+    oppText->render(renderer, offset / 2, gyPadding);
 
     viewport.x = 0;
-    viewport.y = window.getHeight() - gyRenderOffset;
+    viewport.y = window.getHeight() - gyRenderOffset - 2 * gyPadding;
     viewport.w = window.getWidth();
-    viewport.h = gyRenderOffset;
+    viewport.h = gyRenderOffset + 2 * gyPadding;
     SDL_RenderSetViewport(renderer, &viewport);
-    prompText->render(renderer, 0, 0);
+    prompText->render(renderer, 0, gyPadding);
+
     if (players[0].isBusy())
     {
         SDL_SetRenderDrawColor(renderer, 0xFd, 0xb3, 0x36, 0xFF);
         offset = taskStatusBarWidth + 10;
-        SDL_Rect fillRect = {window.getWidth() - offset, gyTextOffset, ((int)players[0].getCurrentTaskTimer().getTicks() * (taskStatusBarWidth)) / (players[0].getCurrentTaskTime()), gyRenderOffset};
+        SDL_Rect fillRect = {window.getWidth() - offset, gyPadding, ((int)players[0].getCurrentTaskTimer().getTicks() * (taskStatusBarWidth)) / (players[0].getCurrentTaskTime()), gyRenderOffset};
         SDL_RenderFillRect(renderer, &fillRect);
-        SDL_Rect outlineRect = {window.getWidth() - offset, gyTextOffset, taskStatusBarWidth, gyRenderOffset};
+        SDL_Rect outlineRect = {window.getWidth() - offset, gyPadding, taskStatusBarWidth, gyRenderOffset};
         SDL_RenderDrawRect(renderer, &outlineRect);
+    }
+
+    viewport.x = window.getWidth() - tasksVPWidth;
+    viewport.y = 3 * gyPadding + 2 * gyRenderOffset;
+    viewport.w = tasksVPWidth;
+    viewport.h = window.getHeight() - (5 * gyPadding + 3 * gyRenderOffset);
+    SDL_RenderSetViewport(renderer, &viewport);
+
+    SDL_SetRenderDrawColor(renderer, 0x00, 0x00, 0x00, 0xFF);
+    outlineRect = {0, 0, tasksVPWidth, window.getHeight() - (5 * gyPadding + 3 * gyRenderOffset)};
+    SDL_RenderDrawRect(renderer, &outlineRect);
+
+    int maxHeight = taskTexts[0]->getHeight();
+    for (int i = 0; i < taskTexts.size(); i++)
+    {
+        maxHeight = maxHeight > taskTexts[i]->getHeight() ? maxHeight : taskTexts[i]->getHeight();
+    }
+
+    tasksText->render(renderer, (tasksVPWidth - tasksText->getWidth()) / 2, 16);
+    for (int i = 0; i < taskTexts.size(); i++)
+    {
+        taskTexts[i]->render(renderer, 8, (16 + maxHeight) * i + 20 + tasksText->getHeight() + 16);
     }
 }
 
 void LGame::cleanUp()
 {
+    window.restore();
     players[0].cleanUp();
     players[1].cleanUp();
     tiles[0].cleanUp();
-    NPCs[0].cleanUp() ; 
+    NPCs[0].cleanUp();
     delete timeText;
+    delete healthText;
+    delete pointsText;
+    delete moneyText;
+    delete oppText;
+    delete nameText;
+    delete moneyTextOpp;
+    delete pointsTextOpp;
+
+    for (int i = 0; i < currTasks.size(); i++)
+    {
+        delete taskTexts[i];
+    }
+
     delete sleepingAnimation;
     Mix_FreeMusic(backGroundMusic);
     Mix_FreeChunk(introMusic);
@@ -236,12 +301,12 @@ bool LGame::initObjs()
         printf("Failed to load ash texture!\n");
         return false;
     }
-    if (!window.loadTexture( dogTexture, "resources/dog.png"))
+    if (!window.loadTexture(dogTexture, "resources/dog.png"))
     {
         printf("Failed to load dog texture!\n");
         return false;
     }
-    if (!window.loadTexture( profTexture, "resources/oak.png"))
+    if (!window.loadTexture(profTexture, "resources/oak.png"))
     {
         printf("Failed to load prof texture!\n");
         return false;
@@ -291,10 +356,10 @@ bool LGame::initObjs()
 
     Player ash(ashTexture, *this, 32, 32, 3, 1, 2, 0);
     players.push_back(ash);
-    NPC dog( dogTexture , *this , 32 , 32 , 1 , 3 , 2 , 0) ;
-    NPC prof( profTexture , *this , 42 , 32 , 3 , 2 , 0 , 1) ;  
-    NPCs.push_back( dog ) ; 
-    NPCs.push_back( prof ) ; 
+    NPC dog(dogTexture, *this, 32, 32, 1, 3, 2, 0);
+    NPC prof(profTexture, *this, 42, 32, 3, 2, 0, 1);
+    NPCs.push_back(dog);
+    NPCs.push_back(prof);
     Player opponent(ashTexture, *this, 32, 32, 3, 1, 2, 0);
     players.push_back(opponent);
 
@@ -322,10 +387,23 @@ bool LGame::initObjs()
 
     SDL_Color txtColor = {0, 0, 0, 255};
     TTF_Font *font = TTF_OpenFont("resources/FrostbiteBossFight-dL0Z.ttf", 28);
+    TTF_Font *fontSmall = TTF_OpenFont("resources/FrostbiteBossFight-dL0Z.ttf", 26);
+
     timeText = new Text(window, "00:00", font, txtColor);
-    healthText = new Text(window, "HEALTH :: ", font, txtColor);
-    moneyText = new Text(window, "MONEY:: ", font, txtColor);
-    pointsText = new Text(window, "POINTS:: ", font, txtColor);
+    healthText = new Text(window, "HEALTH: ", font, txtColor);
+    moneyText = new Text(window, "MONEY: ", font, txtColor);
+    pointsText = new Text(window, "POINTS: ", font, txtColor);
+    moneyTextOpp = new Text(window, "MONEY: ", font, txtColor);
+    pointsTextOpp = new Text(window, "POINTS: ", font, txtColor);
+    nameText = new Text(window, playerName, font, txtColor);
+    oppText = new Text(window, opponentName, font, txtColor);
+    tasksText = new Text(window, "TASKS", font, txtColor);
+
+    for (int i = 0; i < tasksNum; i++)
+    {
+        taskTexts.push_back(new Text(window, "DUMMY", fontSmall, txtColor));
+    }
+
     displayText = "YOU HAVE BEEN ASSIGNED HOSTEL " + players[0].getHostelName();
     prompText = new Text(window, displayText, font, txtColor);
 
@@ -341,7 +419,8 @@ bool LGame::initObjs()
     {
         renderables.push_back(&NPCs[i]);
     }
-    std::cout << "OBJECTS INITIALIZED" << "\n" ;
+    std::cout << "OBJECTS INITIALIZED"
+              << "\n";
     globalTime.start();
     return true;
 }
@@ -869,6 +948,7 @@ void LGame::replaceTask(std::pair<int, std::string> task)
         it2 = std::find(currTasks.begin(), currTasks.end(), t);
     } while (it2 != currTasks.end());
     currTasks[index] = t;
+    taskTexts[index]->setText(t.second);
 }
 
 void LGame::replaceTask(int task)
@@ -895,6 +975,7 @@ void LGame::replaceTask(int task)
         it2 = std::find(currTasks.begin(), currTasks.end(), t);
     } while (it2 != currTasks.end());
     currTasks[index] = t;
+    taskTexts[index]->setText(t.second);
 }
 
 int LGame :: getTileType( int x , int y ) 
@@ -904,4 +985,5 @@ int LGame :: getTileType( int x , int y )
     // std :: cout << x << " " << tileX << "\n" ; 
     // std :: cout << y << " " << tileY << "\n" ;     
     return tiles[tileY * mTilesX + tileX].getType();
+
 }
