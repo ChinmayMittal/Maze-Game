@@ -83,27 +83,28 @@ Player ::Player(LTexture &myTexture, LGame &game, int playerHeight, int playerWi
     }
 }
 
-void Player :: resetPlayer()
+void Player ::resetPlayer()
 {
     mVelX = 0;
     mVelY = 0;
-    moveFactor = 1 ; 
-    mframes = 0 ; 
-    mBox = { 0 , 0 } ; 
-    currentTaskTime = 0; 
-    currentTaskTimer.stop() ; 
-    direction = 'D' ; 
-    updateState = { 0, 0, 0} ; 
+    moveFactor = 1;
+    mframes = 0;
+    mBox = {0, 0};
+    currentTaskTime = 0;
+    currentTaskTimer.stop();
+    direction = 'D';
+    updateState = {0, 0, 0};
 }
 
 void Player::handleEvent(SDL_Event &e)
 {
     if (isBusy())
     {
-        return;
+
         mVelX = mVelY = 0;
         mframes = 0;
         direction = 'D';
+        return;
     }
     // If a key was pressed
     if (e.type == SDL_KEYDOWN && e.key.repeat == 0)
@@ -127,22 +128,6 @@ void Player::handleEvent(SDL_Event &e)
             mVelX = velocity;
             mVelY = 0;
             break;
-        }
-        if (mVelX < 0)
-        {
-            direction = 'L';
-        }
-        else if (mVelX > 0)
-        {
-            direction = 'R';
-        }
-        else if (mVelY > 0)
-        {
-            direction = 'D';
-        }
-        else if (mVelY < 0)
-        {
-            direction = 'U';
         }
     }
     // If a key was released
@@ -244,6 +229,23 @@ void Player::setCamera(SDL_Rect &camera)
 
 int Player::render(SDL_Renderer *renderer, SDL_Rect &camera)
 {
+    if (mVelX < 0)
+    {
+        direction = 'L';
+    }
+    else if (mVelX > 0)
+    {
+        direction = 'R';
+    }
+    else if (mVelY > 0)
+    {
+        direction = 'D';
+    }
+    else if (mVelY < 0)
+    {
+        direction = 'U';
+    }
+
     int dimension = 0;
     switch (direction)
     {
@@ -410,12 +412,13 @@ void Player::update()
         hasTaskAnimation = false;
         // update player stats
     }
-    if( health < 0 ) {
-        resetPlayer() ; 
-        // send to hospital 
-        mBox.x = 26*32 ; 
-        mBox.y = 64*32 ; 
-        health = gMaxPlayerHealth ; 
+    if (health < 0)
+    {
+        resetPlayer();
+        // send to hospital
+        mBox.x = 26 * 32;
+        mBox.y = 64 * 32;
+        health = gMaxPlayerHealth;
     }
 }
 
