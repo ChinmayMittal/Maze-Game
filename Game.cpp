@@ -133,7 +133,7 @@ void LGame::update()
     // std::cout << n << std::endl;
     if (n != -1)
     {
-        std::cout << "Received!" << std::endl;
+        // std::cout << "Received!" << std::endl;
         Message *msg = deserialize(recBuf);
         if (msg->type == 2)
         {
@@ -149,7 +149,7 @@ void LGame::update()
     }
     else
     {
-        fprintf(stderr, "socket() failed: %s\n", strerror(errno));
+        // fprintf(stderr, "socket() failed: %s\n", strerror(errno));
     }
     pointsTextOpp->setText("POINTS: " + std::to_string(players[1].getPoints()));
     moneyTextOpp->setText("MONEY: " + std::to_string(players[1].getMoney()));
@@ -975,4 +975,5 @@ void LGame::replaceTask(int task)
         it2 = std::find(currTasks.begin(), currTasks.end(), t);
     } while (it2 != currTasks.end());
     currTasks[index] = t;
+    taskTexts[index]->setText(t.second);
 }
