@@ -22,8 +22,8 @@ NPC :: NPC(LTexture &myTexture, std::string nameOfNPC , LGame &game, int NPCHeig
     mBox.y = Exits[exit].second ; 
     changeSpeed = 500 ; 
     current = 0 ; 
-    mBox.w = NPCHeight ; 
-    mBox.h = NPCWidth ; 
+    mBox.w = NPCWidth ; 
+    mBox.h = NPCHeight ; 
     this -> NPCHeight = NPCHeight ; 
     this -> NPCWidth = NPCWidth ; 
     velocity = 1 ; 
