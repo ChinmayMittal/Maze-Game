@@ -65,10 +65,12 @@ void LGame::update()
 {
     camera = {camera.x, camera.y, window.getWidth(), window.getHeight()};
     // Move the dot
-    players[0].move();
-    players[1].move();
-    NPCs[0].move();
-    NPCs[1].move();
+    for( int i = 0 ; i < players.size() ; i ++ ){
+        players[i].move() ; 
+    }
+    for( int i = 0 ; i < NPCs.size() ; i ++ ){
+        NPCs[i].move() ; 
+    }
     SDL_Rect playerBox = players[0].getBox();
     // std::cout << "After move " << playerBox.y << std::endl;
     int tileX = (playerBox.x + playerBox.w / 2) / mTileWidth;
@@ -76,7 +78,14 @@ void LGame::update()
     int tileType = tiles[tileY * mTilesX + tileX].getType();
     // std::cout << "Tiletype " << tileType << std::endl;
     // stores the prompt text to be displayed
-
+    for( int i = 0 ; i < NPCs.size() ; i ++ ) {
+        SDL_Rect NPCbox = NPCs[i].getBox() ; 
+        int NPCtileX = (NPCbox.x + NPCbox.w / 2) / mTileWidth;
+        int NPCtileY = (NPCbox.y + NPCbox.h / 2) / mTileHeight ; 
+        if( (( tileX >= NPCtileX -1) && (tileX <=  NPCtileX + 1 )) ||  (( tileY >= NPCtileY -1) && (tileY <=  NPCtileY + 1 ))){
+            std :: cout << "collision with " << NPCs[i].getName() << "\n"  ; 
+        }
+    }
     entities[tileType].collided(players[0], displayText);
 
     // std::cout << "After collide " << playerBox.y << std::endl;
@@ -268,10 +277,14 @@ void LGame::render(SDL_Renderer *renderer)
 void LGame::cleanUp()
 {
     window.restore();
-    players[0].cleanUp();
-    players[1].cleanUp();
+    for( int i = 0 ; i < players.size() ; i ++ )
+    {
+        players[i].cleanUp() ; 
+    }
     tiles[0].cleanUp();
-    NPCs[0].cleanUp();
+    for( int i = 0 ; i < NPCs.size() ; i ++ ){
+        NPCs[i].cleanUp() ; 
+    }
     delete timeText;
     delete healthText;
     delete pointsText;
@@ -356,10 +369,14 @@ bool LGame::initObjs()
 
     Player ash(ashTexture, *this, 32, 32, 3, 1, 2, 0);
     players.push_back(ash);
-    NPC dog(dogTexture, *this, 32, 32, 1, 3, 2, 0);
-    NPC prof(profTexture, *this, 42, 32, 3, 2, 0, 1);
-    NPCs.push_back(dog);
-    NPCs.push_back(prof);
+    int numberOfNPCs = 5 ; 
+    for( int i = 0 ; i < numberOfNPCs ; i ++ ){
+        NPC dog(dogTexture, "dog" + std::to_string(i+1), *this, 32, 32, 1, 3, 2, 0);
+        NPC prof(profTexture, "prof" + std::to_string(i+1), *this, 42, 32, 3, 2, 0, 1);
+        NPCs.push_back(dog);
+        NPCs.push_back(prof);
+    }
+
     Player opponent(ashTexture, *this, 32, 32, 3, 1, 2, 0);
     players.push_back(opponent);
 

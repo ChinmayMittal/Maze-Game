@@ -3,14 +3,25 @@
 #include <stdlib.h>
 #include<time.h>
 #include<iostream>
+#include<utility>
+#include<vector>
 
-NPC :: NPC(LTexture &myTexture, LGame &game, int NPCHeight, int NPCWidth, int right, int left, int top, int bottom) : mTexture(myTexture) , mGame(game)
+
+
+NPC :: NPC(LTexture &myTexture, std::string nameOfNPC , LGame &game, int NPCHeight, int NPCWidth, int right, int left, int top, int bottom) : mTexture(myTexture) , mGame(game)
 {
+    std::vector<std::pair<int,int>> Exits{ {7,0} , { 0 , 53} , {0,92} ,{0,115} , {18,127} , {55,126} , {68,8} , {67,53} } ;
+    for( auto &point : Exits)
+    {
+        point = { point.first*32 , point.second*32} ; 
+    }
     srand(time(0)) ; 
-    mBox.x = 32*7 ; 
+    name = nameOfNPC ; 
+    int exit = rand()%(Exits.size()) ; 
+    mBox.x = Exits[exit].first ; 
+    mBox.y = Exits[exit].second ; 
     changeSpeed = 500 ; 
     current = 0 ; 
-    mBox.y = 0 ; 
     mBox.w = NPCHeight ; 
     mBox.h = NPCWidth ; 
     this -> NPCHeight = NPCHeight ; 
@@ -198,4 +209,9 @@ void NPC::switchDirection()
         direction = 'R' ; 
         break ; 
     }
+}
+
+std::string NPC::getName()
+{
+    return name ; 
 }

@@ -3,6 +3,7 @@
 #include<SDL2/SDL.h>
 #include<SDL2/SDL_image.h>
 #include<vector>
+#include<string>
 #include"Renderable.h"
 #include"MyTexture.h"
 
@@ -12,14 +13,16 @@ class NPC : public Renderable
 
 {
     public:
-        NPC(LTexture &myTexture, LGame &game, int NPCHeight, int NPCWidth, int right, int left, int top, int bottom);        
+        NPC(LTexture &myTexture, std::string nameOfNPC , LGame &game, int NPCHeight, int NPCWidth, int right, int left, int top, int bottom);        
         void move() ; 
         int render(SDL_Renderer *renderer, SDL_Rect &camera);        
         void cleanUp();
         SDL_Rect getBox() ; 
-        void switchDirection() ; 
+        void switchDirection() ;
+        std::string getName() ;  
     private:
         LGame &mGame ; 
+        std::string name ; 
         SDL_Rect mBox ;
         LTexture &mTexture ; 
         int NPCHeight , NPCWidth ; 

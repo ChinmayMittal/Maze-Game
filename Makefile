@@ -60,7 +60,6 @@ Animation.o: Renderable.h MyTexture.h
 
 NPC.o: Renderable.h Game.h MyTexture.h
 
-
 Server: server/server.cpp MessageStructs.cpp
 	$(CXX) server/server.cpp MessageStructs.cpp $(COMPILER_FLAGS) -o server/server.out
 
