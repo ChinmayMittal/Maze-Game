@@ -122,7 +122,7 @@ void LGame::update()
     gameUpdateMsg.moveFactor = players[0].getMoveFactor();
     gameUpdateMsg.money = players[0].getMoney();
     gameUpdateMsg.points = players[0].getPoints();
-    gameUpdateMsg.health = players[0].getHealth();
+    // gameUpdateMsg.health = players[0].getHealth();
     int bytesUsed = serialize(&gameUpdateMsg, buf);
 
     if (firstTime)
@@ -149,7 +149,7 @@ void LGame::update()
             players[1].setMoveFactor(updateMsg->moveFactor);
             players[1].setPoints(updateMsg->points);
             players[1].setMoney(updateMsg->money);
-            players[1].setHealth(updateMsg->health);
+            // players[1].setHealth(updateMsg->health);
         }
         delete msg;
     }

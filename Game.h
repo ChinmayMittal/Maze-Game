@@ -33,8 +33,8 @@ private:
     std::string serverIp;
     std::string playerName, opponentName;
 
-    int sockfd;
-    struct sockaddr_in theirAddr;
+    int &sockfd;
+    struct sockaddr_in &theirAddr;
     char buf[512];
     char recBuf[512];
     void initSocket();

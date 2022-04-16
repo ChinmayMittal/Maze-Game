@@ -36,7 +36,7 @@ struct GameUpdateMessage : Message
         type = 2;
     }
     int x, y, velX, velY, moveFactor, money, points;
-    float health;
+    // float health;
 };
 
 int serialize(Message *msg, char *data);

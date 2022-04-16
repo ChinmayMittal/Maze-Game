@@ -107,8 +107,8 @@ int main()
                 // std::cout << "Iterator first: " << itr->first << " second: " << itr->second << std::endl;
                 cliaddr.sin_addr.s_addr = itr->second;
                 int e;
-                e = sendto(sockfd, buffer, n, 0, (const struct sockaddr *)&cliaddr,
-                           sizeof(cliaddr));
+                e = sendto(sockfd, buffer, n, 0, (const struct sockaddr *)&waitaddr,
+                           sizeof(waitaddr));
                 // std::cout << e << std::endl;
                 if (e == -1)
                 {
