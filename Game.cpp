@@ -125,13 +125,9 @@ void LGame::update()
     // gameUpdateMsg.health = players[0].getHealth();
     int bytesUsed = serialize(&gameUpdateMsg, buf);
 
-    if (firstTime)
-    {
-        sendto(sockfd, buf, bytesUsed, 0, (const struct sockaddr *)&theirAddr,
-               sizeof(theirAddr));
-        std::cout << "SENT" << std::endl;
-        firstTime = false;
-    }
+    sendto(sockfd, buf, bytesUsed, 0, (const struct sockaddr *)&theirAddr,
+           sizeof(theirAddr));
+    // std::cout << "SENT" << std::endl;
 
     unsigned int len = sizeof(theirAddr);
     int n = recvfrom(sockfd, (char *)recBuf, 512, MSG_WAITALL, (struct sockaddr *)&theirAddr, &len);

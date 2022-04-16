@@ -19,7 +19,7 @@ int main()
     char buffer[512];
     char msgBuffer[512];
     // char *hello = "Hello from server";
-    struct sockaddr_in servaddr, cliaddr, waitaddr;
+    struct sockaddr_in servaddr, cliaddr, waitaddr, otherAddr;
     bool waiting = false;
     std::string waitingName;
 
@@ -35,6 +35,7 @@ int main()
     memset(&servaddr, 0, sizeof(servaddr));
     memset(&cliaddr, 0, sizeof(cliaddr));
     memset(&waitaddr, 0, sizeof(waitaddr));
+    memset(&otherAddr, 0, sizeof(otherAddr));
 
     // Filling server information
     servaddr.sin_family = AF_INET; // IPv4
@@ -77,6 +78,8 @@ int main()
             }
             else
             {
+                otherAddr = cliaddr;
+
                 GameBeginMessage gameBeginMessage;
 
                 gameBeginMessage.opponentName = waitingName;
@@ -99,23 +102,37 @@ int main()
         }
         case 2:
         {
-            auto itr = opponents.find(cliaddr.sin_addr.s_addr);
-            // std::cout << "Received from " << inet_ntoa(cliaddr.sin_addr) << std::endl;
+            // auto itr = opponents.find(cliaddr.sin_addr.s_addr);
+            //  std::cout << "Received from " << inet_ntoa(cliaddr.sin_addr) << std::endl;
 
-            if (itr != opponents.end())
+            // if (itr != opponents.end())
+            // {
+            // struct sockaddr_in sendAddr;
+            // memset(&sendAddr, '\0', sizeof(sendAddr));
+            // // std::cout << "Iterator first: " << itr->first << " second: " << itr->second << std::endl;
+            // sendAddr.sin_addr.s_addr = itr->second;
+            // sendAddr.sin_family = servaddr.sin_family = AF_INET;
+            // sendAddr.sin_port = htons(8080);
+
+            int e;
+            if (cliaddr.sin_addr.s_addr == waitaddr.sin_addr.s_addr)
             {
-                // std::cout << "Iterator first: " << itr->first << " second: " << itr->second << std::endl;
-                cliaddr.sin_addr.s_addr = itr->second;
-                int e;
+                e = sendto(sockfd, buffer, n, 0, (const struct sockaddr *)&otherAddr,
+                           sizeof(otherAddr));
+            }
+            else
+            {
                 e = sendto(sockfd, buffer, n, 0, (const struct sockaddr *)&waitaddr,
                            sizeof(waitaddr));
-                // std::cout << e << std::endl;
-                if (e == -1)
-                {
-                    fprintf(stderr, "socket() failed: %s\n", strerror(errno));
-                }
-                // std::cout << "Sent to " << inet_ntoa(cliaddr.sin_addr) << std::endl;
             }
+
+            // std::cout << e << std::endl;
+            if (e == -1)
+            {
+                fprintf(stderr, "socket() failed: %s\n", strerror(errno));
+            }
+            // std::cout << "Sent to " << inet_ntoa(cliaddr.sin_addr) << std::endl;
+            //}
             break;
         }
         default:
