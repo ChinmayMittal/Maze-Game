@@ -21,6 +21,7 @@
 #include <netdb.h>
 #include "MessageStructs.h"
 
+
 LGame::LGame(LWindow &window, std::string playerName, std::string opponentName, int &sockfd, sockaddr_in &theiraddr) : LScreen(window), playerName(playerName), opponentName(opponentName), sockfd(sockfd), theirAddr(theiraddr)
 {
     std::cout << "Name: " << playerName << " Opponent: " << opponentName << std::endl;
@@ -70,6 +71,7 @@ void LGame::update()
     // Move the dot
     players[0].move();
     players[1].move();
+    NPCs[0].move() ; 
 
     SDL_Rect playerBox = players[0].getBox();
     // std::cout << "After move " << playerBox.y << std::endl;
@@ -222,6 +224,7 @@ void LGame::cleanUp()
     players[0].cleanUp();
     players[1].cleanUp();
     tiles[0].cleanUp();
+    NPCs[0].cleanUp() ; 
     delete timeText;
     delete sleepingAnimation;
     Mix_FreeMusic(backGroundMusic);
@@ -236,6 +239,11 @@ bool LGame::initObjs()
     if (!window.loadTexture(ashTexture, "resources/ash.bmp"))
     {
         printf("Failed to load ash texture!\n");
+        return false;
+    }
+    if (!window.loadTexture( profTexture, "resources/ash.bmp"))
+    {
+        printf("Failed to load prof texture!\n");
         return false;
     }
     LTexture *sleepingAnimationTexture = new LTexture();
@@ -283,7 +291,8 @@ bool LGame::initObjs()
 
     Player ash(ashTexture, *this, 32, 32, 3, 1, 2, 0);
     players.push_back(ash);
-
+    NPC prof( profTexture , *this , 32 , 32 , 3 , 1 , 2 , 0) ; 
+    NPCs.push_back( prof ) ; 
     Player opponent(ashTexture, *this, 32, 32, 3, 1, 2, 0);
     players.push_back(opponent);
 
@@ -326,7 +335,11 @@ bool LGame::initObjs()
     {
         renderables.push_back(&players[i]);
     }
-
+    for (int i = 0; i < NPCs.size(); i++)
+    {
+        renderables.push_back(&NPCs[i]);
+    }
+    std::cout << "OBJECTS INITIALIZED" << "\n" ;
     globalTime.start();
     return true;
 }

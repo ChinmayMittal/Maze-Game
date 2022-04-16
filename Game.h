@@ -26,6 +26,7 @@
 #include <arpa/inet.h>
 #include <fcntl.h>
 #include <netdb.h>
+#include "NPC.h"
 
 class LGame : public LScreen
 {
@@ -44,6 +45,7 @@ private:
     std::vector<Tile> tiles;
     std::vector<Player> players;
     std::vector<Entity> entities;
+    std::vector<NPC> NPCs ; 
     SDL_Rect camera;
     // for instructions on object collision
     std::string displayText;
@@ -51,6 +53,7 @@ private:
 
     LTexture tilesTexture;
     LTexture ashTexture;
+    LTexture profTexture ; 
 
     TileAtlas tileAtlas;
 
