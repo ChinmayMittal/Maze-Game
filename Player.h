@@ -76,9 +76,8 @@ public:
     std ::string getTaskText();
     void setTaskText(std::string s);
     void setTaskAnimation(Animation *a);
-    void setCoords(int x, int y);
-    void setVel(int velX, int velY);
     int music = 0;
+    void resetPlayer();
 
 private:
     // Collision box of the dot

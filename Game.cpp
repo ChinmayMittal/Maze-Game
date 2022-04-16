@@ -24,8 +24,15 @@
 LGame::LGame(LWindow &window, std::string playerName, std::string opponentName, std::string serverIp) : LScreen(window), playerName(playerName), opponentName(opponentName), serverIp(serverIp)
 {
     std::cout << "Name: " << playerName << " Opponent: " << opponentName << std::endl;
+<<<<<<< HEAD
     backGroundMusic = Mix_LoadMUS("resources/music.mpeg");
     Mix_PlayMusic(backGroundMusic, -1);
+=======
+    backGroundMusic = Mix_LoadMUS("resources/music.mpeg") ; 
+    introMusic = Mix_LoadWAV("resources/intro.wav") ; 
+    Mix_PlayChannel( -1 , introMusic , 0 ) ; 
+    Mix_PlayMusic( backGroundMusic, -1 );
+>>>>>>> b2940d105a2479557944c90f6937bf14a6be60df
     initObjs();
     initSocket();
 }
@@ -215,7 +222,12 @@ void LGame::cleanUp()
     tiles[0].cleanUp();
     delete timeText;
     delete sleepingAnimation;
+<<<<<<< HEAD
     Mix_FreeMusic(backGroundMusic);
+=======
+    Mix_FreeMusic(backGroundMusic );
+    Mix_FreeChunk( introMusic ) ; 
+>>>>>>> b2940d105a2479557944c90f6937bf14a6be60df
     backGroundMusic = NULL;
 }
 
