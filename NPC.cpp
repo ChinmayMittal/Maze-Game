@@ -15,7 +15,6 @@ NPC :: NPC(LTexture &myTexture, std::string nameOfNPC , LGame &game, int NPCHeig
     {
         point = { point.first*32 , point.second*32} ; 
     }
-    srand(time(0)) ; 
     name = nameOfNPC ; 
     int exit = rand()%(Exits.size()) ; 
     mBox.x = Exits[exit].first ; 

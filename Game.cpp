@@ -87,7 +87,7 @@ void LGame::update()
         int NPCtileX = (NPCbox.x + NPCbox.w / 2) / mTileWidth;
         int NPCtileY = (NPCbox.y + NPCbox.h / 2) / mTileHeight ; 
         std::cout << NPCtileX << " " << NPCtileY << "\n" ; 
-        if( (( tileX >= NPCtileX ) && (tileX <=  NPCtileX  )) ||  (( tileY >= NPCtileY ) && (tileY <=  NPCtileY  ))){
+        if( (( tileX >= NPCtileX-1 ) && (tileX <=  NPCtileX+1  )) && (( tileY >= NPCtileY-1 ) && (tileY <=  NPCtileY+1  ))){
             std :: cout << "collision with " << NPCs[i].getName() << "\n"  ; 
         }
     }
