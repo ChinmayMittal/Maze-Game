@@ -6,6 +6,7 @@
 #include <vector>
 
 #include <SDL2/SDL.h>
+#include <SDL2/SDL_mixer.h>
 #include "Tile.h"
 #include "Player.h"
 #include "MyTexture.h"
@@ -64,7 +65,10 @@ public:
     Animation *burgerAnimation;
     Animation *icecreamAnimation;
     Animation *hotDogAnimation;
+    Animation *tennisAnimation ; 
+    Animation *basketballAnimation ; 
     LTimer getTimer();
+    Mix_Music* backGroundMusic ; 
 };
 
 #endif

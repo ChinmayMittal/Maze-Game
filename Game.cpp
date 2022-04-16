@@ -13,6 +13,8 @@
 LGame::LGame(LWindow &window, std::string playerName, std::string opponentName) : LScreen(window), playerName(playerName), opponentName(opponentName)
 {
     std::cout << "Name: " << playerName << " Opponent: " << opponentName << std::endl;
+    backGroundMusic = Mix_LoadMUS("resources/music.mpeg") ; 
+    Mix_PlayMusic( backGroundMusic, -1 );
     initObjs();
 }
 
@@ -144,6 +146,8 @@ void LGame::cleanUp()
     tiles[0].cleanUp();
     delete timeText;
     delete sleepingAnimation;
+    Mix_FreeMusic(backGroundMusic );
+    backGroundMusic = NULL;
 }
 
 bool LGame::initObjs()
@@ -158,6 +162,8 @@ bool LGame::initObjs()
     LTexture *burgerAnimationTexture = new LTexture();
     LTexture *hotdogAnimationTexture = new LTexture();
     LTexture *icecreamAnimationTexture = new LTexture();
+    LTexture *tennisAnimationTexture = new LTexture() ; 
+    LTexture* basketBallAnimationTexture = new LTexture() ;
     if (!window.loadTexture(*sleepingAnimationTexture, "resources/sleeping.png"))
     {
         printf("Failed to load sleeping texture!\n");
@@ -178,10 +184,22 @@ bool LGame::initObjs()
         printf("Failed to load icecream texture!\n");
         return false;
     }
+    if (!window.loadTexture(*tennisAnimationTexture, "resources/tennis.png"))
+    {
+        printf("Failed to load tennis texture!\n");
+        return false;
+    }
+    if (!window.loadTexture(*basketBallAnimationTexture, "resources/basketball.png"))
+    {
+        printf("Failed to load basketball texture!\n");
+        return false;
+    }
     sleepingAnimation = new Animation(*sleepingAnimationTexture, 32, 32);
     burgerAnimation = new Animation(*burgerAnimationTexture, 32, 32);
     hotDogAnimation = new Animation(*hotdogAnimationTexture, 32, 32);
     icecreamAnimation = new Animation(*icecreamAnimationTexture, 32, 32);
+    basketballAnimation = new Animation(*basketBallAnimationTexture,32,32) ; 
+    tennisAnimation = new Animation(*tennisAnimationTexture,32,32) ; 
 
     Player ash(ashTexture, *this, 32, 32, 3, 1, 2, 0);
     players.push_back(ash);
@@ -308,7 +326,7 @@ bool LGame::setTiles()
 
     return true;
 }
-std::function<void(Player &player, std::string &displayText)> getFoodCollideFunc(std ::string a)
+std::function<void(Player &player, std::string &displayText)> getTextPromptFunc(std ::string a)
 {
     return [=](Player &player, std::string &displayText)
     {
@@ -453,13 +471,31 @@ void LGame::initEntities()
     Entity zanskar("zanskar", getHostelCollideFunc("zanskar"), getHostelEventListener("zanskar"));
     Entity volleyball("volleyball", [&](Player &player, std::string &displayText)
                       { displayText = "volleyball"; });
-    Entity tennis("tennis", [&](Player &player, std::string &displayText)
-                  { displayText = "tennis"; });
+    Entity tennis("tennis", getTextPromptFunc("PRESS T TO PLAY TENNIS") , 
+                                               [&](SDL_Event &e, Player &player)
+                   {
+                       if (e.type == SDL_KEYDOWN && e.key.repeat == 0)
+                       {
+                           switch (e.key.keysym.sym)
+                           {
+                           case SDLK_t:
+                                   player.setTaskText("playing tennis... ");
+                                   player.setTaskAnimation(player.getGame().tennisAnimation);
+                                   player.setCurrentTaskTime(5000);
+                                   player.getCurrentTaskTimer().start();
+                                   player.setUpdateStateParameters({0,
+                                                                    0,
+                                                                    0});
+                               break;
+                           }
+                       }
+                   }
+                        );
     Entity swimming_pool("swimming_pool", [&](Player &player, std::string &displayText)
                          { displayText = "swimming_pool"; });
     Entity oat("oat", [&](Player &player, std::string &displayText)
                { displayText = "oat"; });
-    Entity hot_dog("hot_dog", getFoodCollideFunc("PRESS H for HOTDOG"),
+    Entity hot_dog("hot_dog", getTextPromptFunc("PRESS H for HOTDOG"),
                    [&](SDL_Event &e, Player &player)
                    {
                        if (e.type == SDL_KEYDOWN && e.key.repeat == 0)
@@ -483,7 +519,7 @@ void LGame::initEntities()
                    });
     Entity gas("gas", [&](Player &player, std::string &displayText)
                { displayText = "gas"; });
-    Entity icecream("icecream", getFoodCollideFunc("PRESS I for ICECREAM"),
+    Entity icecream("icecream", getTextPromptFunc("PRESS I for ICECREAM"),
                     [&](SDL_Event &e, Player &player)
                     {
                         if (e.type == SDL_KEYDOWN && e.key.repeat == 0)
@@ -511,8 +547,26 @@ void LGame::initEntities()
                { displayText = "sac"; });
     Entity foot("foot", [&](Player &player, std::string &displayText)
                 { displayText = "foot"; });
-    Entity basketball("basketball", [&](Player &player, std::string &displayText)
-                      { displayText = "basketball"; });
+    Entity basketball("basketball" , getTextPromptFunc("PRESS B TO PLAY BASKTEBALL") , 
+                           [&](SDL_Event &e, Player &player)
+                   {
+                       if (e.type == SDL_KEYDOWN && e.key.repeat == 0)
+                       {
+                           switch (e.key.keysym.sym)
+                           {
+                           case SDLK_b:
+                                   player.setTaskText("having hotdog... ");
+                                   player.setTaskAnimation(player.getGame().basketballAnimation);
+                                   player.setCurrentTaskTime(3000);
+                                   player.getCurrentTaskTimer().start();
+                                   player.setUpdateStateParameters({0,
+                                                                    0,
+                                                                    0});
+                               break;
+                           }
+                       }
+                   }
+    );
     Entity athletic("athletic", [&](Player &player, std::string &displayText)
                     { displayText = "athletic"; });
     Entity cricket("cricket", [&](Player &player, std::string &displayText)
@@ -531,7 +585,7 @@ void LGame::initEntities()
                   { displayText = "coffee"; });
     Entity hospital("hospital", [&](Player &player, std::string &displayText)
                     { displayText = "hospital"; });
-    Entity burger("burger", getFoodCollideFunc("PRESS B for BURGER"), [&](SDL_Event &e, Player &player)
+    Entity burger("burger", getTextPromptFunc("PRESS B for BURGER"), [&](SDL_Event &e, Player &player)
                   {
                         if (e.type == SDL_KEYDOWN && e.key.repeat == 0)
                         {

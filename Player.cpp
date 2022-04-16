@@ -183,8 +183,11 @@ void Player::move()
             movement = false ;
         }
         Mix_Volume( -1, 5 );
+
         if( movement ) {
-            Mix_PlayChannel( -1 , mMovementMusic , 0 ) ; 
+            music += 1 ; 
+            music = music % 5 ; 
+            if(music == 0 )Mix_PlayChannel( -1 , mMovementMusic , 0 ) ; 
         }
         Mix_Volume( -1, MIX_MAX_VOLUME );
     }
