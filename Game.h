@@ -69,6 +69,7 @@ public:
     Animation *basketballAnimation ; 
     LTimer getTimer();
     Mix_Music* backGroundMusic ; 
+    Mix_Chunk* introMusic ; 
 };
 
 #endif

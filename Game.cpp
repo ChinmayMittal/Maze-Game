@@ -14,6 +14,8 @@ LGame::LGame(LWindow &window, std::string playerName, std::string opponentName) 
 {
     std::cout << "Name: " << playerName << " Opponent: " << opponentName << std::endl;
     backGroundMusic = Mix_LoadMUS("resources/music.mpeg") ; 
+    introMusic = Mix_LoadWAV("resources/intro.wav") ; 
+    Mix_PlayChannel( -1 , introMusic , 0 ) ; 
     Mix_PlayMusic( backGroundMusic, -1 );
     initObjs();
 }
@@ -147,6 +149,7 @@ void LGame::cleanUp()
     delete timeText;
     delete sleepingAnimation;
     Mix_FreeMusic(backGroundMusic );
+    Mix_FreeChunk( introMusic ) ; 
     backGroundMusic = NULL;
 }
 
