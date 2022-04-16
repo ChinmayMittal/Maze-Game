@@ -17,7 +17,7 @@ class NPC : public Renderable
         int render(SDL_Renderer *renderer, SDL_Rect &camera);        
         void cleanUp();
         SDL_Rect getBox() ; 
-
+        void switchDirection() ; 
     private:
         LGame &mGame ; 
         SDL_Rect mBox ;

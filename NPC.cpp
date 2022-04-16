@@ -2,6 +2,7 @@
 #include "Game.h"
 #include <stdlib.h>
 #include<time.h>
+#include<iostream>
 
 NPC :: NPC(LTexture &myTexture, LGame &game, int NPCHeight, int NPCWidth, int right, int left, int top, int bottom) : mTexture(myTexture) , mGame(game)
 {
@@ -12,10 +13,12 @@ NPC :: NPC(LTexture &myTexture, LGame &game, int NPCHeight, int NPCWidth, int ri
     mBox.y = 0 ; 
     mBox.w = NPCHeight ; 
     mBox.h = NPCWidth ; 
+    this -> NPCHeight = NPCHeight ; 
+    this -> NPCWidth = NPCWidth ; 
     velocity = 1 ; 
-    direction = 'U' ; 
+    direction = 'D' ; 
     mVelX = 0 ; 
-    mVelY = -velocity ; 
+    mVelY = +velocity ; 
     this -> right = right ; 
     this -> left = left ; 
     this -> top = top ; 
@@ -109,14 +112,21 @@ int NPC::render(SDL_Renderer *renderer, SDL_Rect &camera)
 
 void NPC::move()
 {
-        
+    // std :: cout << mBox.x << " " << mBox.y << " "<< mVelX << " " << mVelY << "\n"  ; 
     mBox.x += mVelX ;
-
+    bool boxFlipped = false ; 
     if ((mBox.x < 0) || (mBox.x + NPCWidth > mGame.getLevelWidth()) )
     {
         // move back
+        boxFlipped = true ; 
+        bool positive ; 
+        if( mBox.x < 0 ){
+            positive = true ; 
+        }else{
+            positive = false ;  
+        }
         mBox.x -= mVelX ; 
-        mVelX *= -1 ; 
+        mVelX = (positive) ? ( abs(mVelX)) : -(abs(mVelX)) ; 
     }
 
 
@@ -126,14 +136,24 @@ void NPC::move()
     if ((mBox.y < 0) || (mBox.y + NPCHeight > mGame.getLevelHeight()) )
     {
         // move back
-        mBox.y -= mVelY  ; 
-        mVelY *= -1 ;         
+        boxFlipped = true ; 
+        bool positive ; 
+        if( mBox.y < 0 ){
+            positive = true ; 
+        }else{
+            positive = false ;  
+        }
+        mBox.y -= mVelY ; 
+        mVelY = (positive) ? ( abs(mVelY)) : -(abs(mVelY)) ;     
     }
-
+    if( mGame.getTileType( (mBox.x) + mBox.w/2 ,  mBox.y + ( mBox.h)/2 ) == 3 and not boxFlipped ){
+        switchDirection() ; 
+    }
     current ++ ; 
     if( current == changeSpeed ) {
         current = 0 ; 
-        int rem = rand()%4 ; 
+        int rem = rand()%4 ;
+        mframes = 0 ;  
         switch (rem)
         {
         case 0:
@@ -155,4 +175,27 @@ void NPC::move()
 void NPC::cleanUp()
 {
     mTexture.free(); 
+}
+
+void NPC::switchDirection()
+{
+    switch ( direction )
+    {
+    case 'D':
+        direction = 'U' ;
+        mVelY *= -1 ; 
+        break;
+    case 'U':
+        direction = 'D' ; 
+        mVelY *= -1 ; 
+        break ; 
+    case 'R':
+        mVelX *=-1 ; 
+        direction = 'L' ; 
+        break ; 
+    case 'L' : 
+        mVelX *= -1 ; 
+        direction = 'R' ; 
+        break ; 
+    }
 }
