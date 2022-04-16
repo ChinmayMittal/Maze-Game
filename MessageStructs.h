@@ -39,6 +39,26 @@ struct GameUpdateMessage : Message
     float health;
 };
 
+struct GameEndMessage : Message
+{
+    GameEndMessage()
+    {
+        type = 3;
+    }
+    int points;
+    int money;
+    float health;
+};
+
+struct GameResultMessage : Message
+{
+    GameResultMessage()
+    {
+        type = 4;
+    }
+    bool won;
+};
+
 int serialize(Message *msg, char *data);
 
 Message *deserialize(char *data);

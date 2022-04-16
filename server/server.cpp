@@ -23,6 +23,11 @@ int main()
     bool waiting = false;
     std::string waitingName;
 
+    bool p1Ended = false;
+    bool p2Ended = false;
+    int p1Points = 0;
+    int p2Points = 0;
+
     std::map<in_addr_t, in_addr_t> opponents;
 
     // Creating socket file descriptor
@@ -135,11 +140,39 @@ int main()
             //}
             break;
         }
+        case 3:
+        {
+            GameEndMessage *gameEndMsg = dynamic_cast<GameEndMessage *>(msg);
+            if (cliaddr.sin_addr.s_addr == waitaddr.sin_addr.s_addr)
+            {
+                p1Ended = true;
+                p1Points = gameEndMsg->points;
+                std::cout << "P1 Points " << p1Points << std::endl;
+            }
+            else
+            {
+                p2Ended = true;
+                p2Points = gameEndMsg->points;
+                std::cout << "P2 Points " << p2Points << std::endl;
+            }
+        }
         default:
         {
             break;
         }
         }
         delete msg;
+        if (p1Ended && p2Ended)
+        {
+            GameResultMessage gameResP1, gameResP2;
+            gameResP1.won = p1Points >= p2Points;
+            int numBytes = serialize(&gameResP1, msgBuffer);
+            sendto(sockfd, msgBuffer, numBytes, 0, (const struct sockaddr *)&waitaddr,
+                   sizeof(waitaddr));
+            gameResP2.won = p2Points >= p1Points;
+            numBytes = serialize(&gameResP2, msgBuffer);
+            sendto(sockfd, msgBuffer, numBytes, 0, (const struct sockaddr *)&otherAddr,
+                   sizeof(otherAddr));
+        }
     }
 }

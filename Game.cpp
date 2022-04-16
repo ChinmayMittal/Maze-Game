@@ -21,6 +21,7 @@
 #include <netdb.h>
 #include <algorithm>
 #include "MessageStructs.h"
+#include "MainMenu.h"
 
 LGame::LGame(LWindow &window, std::string playerName, std::string opponentName, int &sockfd, sockaddr_in &theiraddr) : LScreen(window), playerName(playerName), opponentName(opponentName), sockfd(sockfd), theirAddr(theiraddr)
 {
@@ -100,8 +101,13 @@ void LGame::update()
     players[0].setLastTileType(newTileType);
 
     int secs = globalTime.getTicks() / 1000;
-    std::string mins = std::to_string(3 * (secs % 20));
-    std::string hours = std::to_string((secs / 20));
+    int secsPerHour = gameLenSecs / 24;
+    std::string mins = std::to_string((60 / secsPerHour) * (secs % secsPerHour));
+    std::string hours = std::to_string(secs / secsPerHour);
+    if (secs / secsPerHour >= 24)
+    {
+        gameEnd();
+    }
     if (mins.size() <= 1)
         mins = "0" + mins;
     if (hours.size() <= 1)
@@ -162,6 +168,45 @@ void LGame::update()
     }
     pointsTextOpp->setText("POINTS: " + std::to_string(players[1].getPoints()));
     moneyTextOpp->setText("MONEY: " + std::to_string(players[1].getMoney()));
+}
+
+void LGame::gameEnd()
+{
+    GameEndMessage gameEndMessage;
+    gameEndMessage.points = players[0].getPoints();
+    gameEndMessage.money = players[0].getMoney();
+    gameEndMessage.health = players[0].getHealth();
+    int bytesUsed = serialize(&gameEndMessage, buf);
+
+    sendto(sockfd, buf, bytesUsed, 0, (const struct sockaddr *)&theirAddr,
+           sizeof(theirAddr));
+
+    unsigned int len = sizeof(theirAddr);
+    int type;
+    Message *msg;
+    do
+    {
+        int n;
+        do
+        {
+            n = recvfrom(sockfd, (char *)recBuf, 512, MSG_WAITALL, (struct sockaddr *)&theirAddr, &len);
+        } while (n == -1);
+        msg = deserialize(recBuf);
+    } while (msg->type != 4);
+    GameResultMessage *gameResultMessage = dynamic_cast<GameResultMessage *>(msg);
+    if (gameResultMessage->won)
+    {
+        std::cout << "YOU WON!" << std::endl;
+    }
+    else
+    {
+        std::cout << "YOU LOST!" << std::endl;
+    }
+    std::cout << "Going back to main menu in 5 secs..." << std::endl;
+    delete msg;
+    SDL_Delay(5000);
+    MainMenu *mainMenu = new MainMenu(window, sockfd, theirAddr);
+    window.setCurrScreen(mainMenu);
 }
 
 void LGame::render(SDL_Renderer *renderer)

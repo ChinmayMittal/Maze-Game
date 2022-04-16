@@ -8,3 +8,4 @@ const int secondPerHealthDecreasewithYulu = 5;
 const int taskStatusBarWidth = 100;
 const int gyPadding = 8;
 const int tasksVPWidth = 240;
+const int gameLenSecs = 48;

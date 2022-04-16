@@ -59,7 +59,7 @@ private:
     LTexture tilesTexture;
     LTexture ashTexture;
     LTexture dogTexture;
-    LTexture profTexture ; 
+    LTexture profTexture;
 
     TileAtlas tileAtlas;
 
@@ -72,6 +72,7 @@ private:
     void initTasks();
     bool setTiles();
     void initEntities();
+    void gameEnd();
 
     LTimer globalTime;
     Text *nameText;
@@ -87,6 +88,8 @@ private:
     Text *tasksText;
 
     std::vector<Text *> taskTexts;
+
+    bool gameEnded = false;
 
 public:
     LGame(LWindow &window, std::string playerName, std::string opponentName, int &sockfd, sockaddr_in &theiraddr);
