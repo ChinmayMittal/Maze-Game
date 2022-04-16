@@ -66,11 +66,13 @@ void LGame::update()
 {
     camera = {camera.x, camera.y, window.getWidth(), window.getHeight()};
     // Move the dot
-    for( int i = 0 ; i < players.size() ; i ++ ){
-        players[i].move() ; 
+    for (int i = 0; i < players.size(); i++)
+    {
+        players[i].move();
     }
-    for( int i = 0 ; i < NPCs.size() ; i ++ ){
-        NPCs[i].move() ; 
+    for (int i = 0; i < NPCs.size(); i++)
+    {
+        NPCs[i].move();
     }
     SDL_Rect playerBox = players[0].getBox();
     // std::cout << "After move " << playerBox.y << std::endl;
@@ -79,8 +81,9 @@ void LGame::update()
     int tileType = tiles[tileY * mTilesX + tileX].getType();
     // std::cout << "Tiletype " << tileType << std::endl;
     // stores the prompt text to be displayed
-    for( int i = 0 ; i < NPCs.size() ; i ++ ) {
-        SDL_Rect NPCbox = NPCs[i].getBox() ; 
+    for (int i = 0; i < NPCs.size(); i++)
+    {
+        SDL_Rect NPCbox = NPCs[i].getBox();
         int NPCtileX = (NPCbox.x + NPCbox.w / 2) / mTileWidth;
         int NPCtileY = (NPCbox.y + NPCbox.h / 2) / mTileHeight ; 
         std::cout << NPCtileX << " " << NPCtileY << "\n" ; 
@@ -105,10 +108,7 @@ void LGame::update()
     int secsPerHour = gameLenSecs / 24;
     std::string mins = std::to_string((60 / secsPerHour) * (secs % secsPerHour));
     std::string hours = std::to_string(secs / secsPerHour);
-    if (secs / secsPerHour >= 24)
-    {
-        gameEnd();
-    }
+
     if (mins.size() <= 1)
         mins = "0" + mins;
     if (hours.size() <= 1)
@@ -137,6 +137,7 @@ void LGame::update()
     gameUpdateMsg.money = players[0].getMoney();
     gameUpdateMsg.points = players[0].getPoints();
     gameUpdateMsg.health = players[0].getHealth();
+    std::cout << "Sending health " << gameUpdateMsg.health << std::endl;
     int bytesUsed = serialize(&gameUpdateMsg, buf);
 
     sendto(sockfd, buf, bytesUsed, 0, (const struct sockaddr *)&theirAddr,
@@ -160,6 +161,7 @@ void LGame::update()
             players[1].setPoints(updateMsg->points);
             players[1].setMoney(updateMsg->money);
             players[1].setHealth(updateMsg->health);
+            std::cout << "Receiving health " << gameUpdateMsg.health << std::endl;
         }
         delete msg;
     }
@@ -169,6 +171,10 @@ void LGame::update()
     }
     pointsTextOpp->setText("POINTS: " + std::to_string(players[1].getPoints()));
     moneyTextOpp->setText("MONEY: " + std::to_string(players[1].getMoney()));
+    if (secs / secsPerHour >= 24)
+    {
+        gameEnd();
+    }
 }
 
 void LGame::gameEnd()
@@ -266,6 +272,7 @@ void LGame::render(SDL_Renderer *renderer)
 
     offset += healthText->getWidth();
     SDL_SetRenderDrawColor(renderer, 0xFF, 0x00, 0x00, 0xFF);
+
     fillRect = {offset, 2 * gyPadding + gyRenderOffset, (players[1].getHealth() * (gMaxPlayerHealth) / mMaxPlayerHealth), gyRenderOffset};
     SDL_RenderFillRect(renderer, &fillRect);
     outlineRect = {offset, 2 * gyPadding + gyRenderOffset, gMaxPlayerHealth, gyRenderOffset};
@@ -323,13 +330,14 @@ void LGame::render(SDL_Renderer *renderer)
 void LGame::cleanUp()
 {
     window.restore();
-    for( int i = 0 ; i < players.size() ; i ++ )
+    for (int i = 0; i < players.size(); i++)
     {
-        players[i].cleanUp() ; 
+        players[i].cleanUp();
     }
     tiles[0].cleanUp();
-    for( int i = 0 ; i < NPCs.size() ; i ++ ){
-        NPCs[i].cleanUp() ; 
+    for (int i = 0; i < NPCs.size(); i++)
+    {
+        NPCs[i].cleanUp();
     }
     delete timeText;
     delete healthText;
@@ -415,10 +423,11 @@ bool LGame::initObjs()
 
     Player ash(ashTexture, *this, 32, 32, 3, 1, 2, 0);
     players.push_back(ash);
-    int numberOfNPCs = 5 ; 
-    for( int i = 0 ; i < numberOfNPCs ; i ++ ){
-        NPC dog(dogTexture, "dog" + std::to_string(i+1), *this, 32, 32, 1, 3, 2, 0);
-        NPC prof(profTexture, "prof" + std::to_string(i+1), *this, 42, 32, 3, 2, 0, 1);
+    int numberOfNPCs = 5;
+    for (int i = 0; i < numberOfNPCs; i++)
+    {
+        NPC dog(dogTexture, "dog" + std::to_string(i + 1), *this, 32, 32, 1, 3, 2, 0);
+        NPC prof(profTexture, "prof" + std::to_string(i + 1), *this, 42, 32, 3, 2, 0, 1);
         NPCs.push_back(dog);
         NPCs.push_back(prof);
     }
@@ -1041,12 +1050,11 @@ void LGame::replaceTask(int task)
     taskTexts[index]->setText(t.second);
 }
 
-int LGame :: getTileType( int x , int y ) 
+int LGame ::getTileType(int x, int y)
 {
     int tileX = x / mTileWidth;
     int tileY = y / mTileHeight;
-    // std :: cout << x << " " << tileX << "\n" ; 
-    // std :: cout << y << " " << tileY << "\n" ;     
+    // std :: cout << x << " " << tileX << "\n" ;
+    // std :: cout << y << " " << tileY << "\n" ;
     return tiles[tileY * mTilesX + tileX].getType();
-
 }

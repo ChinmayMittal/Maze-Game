@@ -58,8 +58,8 @@ int serialize(Message *msg, char *data)
         q++;
         bytesUsed += 7 * sizeof(int);
         float *p = (float *)q;
-        *q = msgGameUpdate->health;
-        q++;
+        *p = msgGameUpdate->health;
+        p++;
         bytesUsed += sizeof(float);
         char *r = (char *)q;
         *r = '\0';
