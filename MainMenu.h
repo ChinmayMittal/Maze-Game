@@ -27,16 +27,16 @@ private:
     LTexture buttonBg;
     LTexture buttonBgHighlighted;
     LTexture buttonBgClicked;
-    int sockfd;
+    int &sockfd;
     // struct sockaddr_in myAddr;
-    struct sockaddr_in theirAddr;
+    struct sockaddr_in &theirAddr;
     char buf[512];
     char recBuf[512];
     void initSocket();
     bool waiting = false;
 
 public:
-    MainMenu(LWindow &window, std::string serverIp);
+    MainMenu(LWindow &window, int &sockfd, sockaddr_in &theiraddr);
     void handleEvent(SDL_Event &e);
     void update();
     void render(SDL_Renderer *renderer);

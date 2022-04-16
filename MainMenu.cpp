@@ -18,7 +18,7 @@
 #include "MessageStructs.h"
 #include "constants.h"
 
-MainMenu::MainMenu(LWindow &window, std::string serverIp) : LScreen(window), serverIp(serverIp)
+MainMenu::MainMenu(LWindow &window, int &sockfd, sockaddr_in &theiraddr) : LScreen(window), sockfd(sockfd), theirAddr(theiraddr)
 {
     window.loadTexture(buttonBg, "resources/ButtonBG.png");
     window.loadTexture(buttonBgHighlighted, "resources/ButtonBGHighlighted.png");
@@ -47,30 +47,11 @@ MainMenu::MainMenu(LWindow &window, std::string serverIp) : LScreen(window), ser
     textInputs.push_back(nameInput);
 
     waitingText = new Text(window, "", font, {0, 0, 0, 255});
-    initSocket();
+    // initSocket();
 }
 
 void MainMenu::initSocket()
 {
-
-    if ((sockfd = socket(AF_INET, SOCK_DGRAM, 0)) < 0)
-    {
-        perror("socket creation failed");
-    }
-
-    fcntl(sockfd, F_SETFL, O_NONBLOCK);
-
-    // memset(&myAddr, 0, sizeof(myAddr));
-    memset(&theirAddr, 0, sizeof(theirAddr));
-
-    // myAddr.sin_family = AF_INET; // IPv4
-    // myAddr.sin_addr.s_addr = INADDR_ANY;
-    // myAddr.sin_port = htons(2000);
-
-    theirAddr.sin_family = AF_INET;
-    theirAddr.sin_port = htons(8080);
-    // theirAddr.sin_addr.s_addr = INADDR_ANY;
-    inet_pton(AF_INET, serverIp.c_str(), &(theirAddr.sin_addr.s_addr));
 }
 
 void MainMenu::sendGameReq()
@@ -126,7 +107,7 @@ void MainMenu::update()
         if (msg->type == 1)
         {
             GameBeginMessage *beginMsg = dynamic_cast<GameBeginMessage *>(msg);
-            LGame *myGame = new LGame(window, textInputs[0]->getText(), beginMsg->opponentName, serverIp);
+            LGame *myGame = new LGame(window, textInputs[0]->getText(), beginMsg->opponentName, sockfd, theirAddr);
             window.setCurrScreen(myGame);
         }
         delete msg;

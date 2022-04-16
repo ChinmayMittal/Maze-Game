@@ -70,7 +70,7 @@ private:
     Text *prompText;
 
 public:
-    LGame(LWindow &window, std::string playerName, std::string opponentName, std::string serverIp);
+    LGame(LWindow &window, std::string playerName, std::string opponentName, int &sockfd, sockaddr_in &theiraddr);
     void handleEvent(SDL_Event &e);
     void update();
     void render(SDL_Renderer *renderer);

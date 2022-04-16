@@ -100,16 +100,21 @@ int main()
         case 2:
         {
             auto itr = opponents.find(cliaddr.sin_addr.s_addr);
-            // std::cout << "Received from " << cliaddr.sin_addr.s_addr << std::endl;
+            // std::cout << "Received from " << inet_ntoa(cliaddr.sin_addr) << std::endl;
 
             if (itr != opponents.end())
             {
                 // std::cout << "Iterator first: " << itr->first << " second: " << itr->second << std::endl;
                 cliaddr.sin_addr.s_addr = itr->second;
-                sendto(sockfd, buffer, n, 0, (const struct sockaddr *)&cliaddr,
-                       sizeof(cliaddr));
-
-                // std::cout << "Sent to " << cliaddr.sin_addr.s_addr << std::endl;
+                int e;
+                e = sendto(sockfd, buffer, n, 0, (const struct sockaddr *)&cliaddr,
+                           sizeof(cliaddr));
+                // std::cout << e << std::endl;
+                if (e == -1)
+                {
+                    fprintf(stderr, "socket() failed: %s\n", strerror(errno));
+                }
+                // std::cout << "Sent to " << inet_ntoa(cliaddr.sin_addr) << std::endl;
             }
             break;
         }

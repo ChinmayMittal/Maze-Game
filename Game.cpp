@@ -21,7 +21,7 @@
 #include <netdb.h>
 #include "MessageStructs.h"
 
-LGame::LGame(LWindow &window, std::string playerName, std::string opponentName, std::string serverIp) : LScreen(window), playerName(playerName), opponentName(opponentName), serverIp(serverIp)
+LGame::LGame(LWindow &window, std::string playerName, std::string opponentName, int &sockfd, sockaddr_in &theiraddr) : LScreen(window), playerName(playerName), opponentName(opponentName), sockfd(sockfd), theirAddr(theiraddr)
 {
     std::cout << "Name: " << playerName << " Opponent: " << opponentName << std::endl;
     backGroundMusic = Mix_LoadMUS("resources/music.mpeg");
@@ -29,7 +29,7 @@ LGame::LGame(LWindow &window, std::string playerName, std::string opponentName, 
     Mix_PlayChannel(-1, introMusic, 0);
     Mix_PlayMusic(backGroundMusic, -1);
     initObjs();
-    initSocket();
+    // initSocket();
 }
 
 void LGame::initSocket()
@@ -129,13 +129,14 @@ void LGame::update()
 
     unsigned int len = sizeof(theirAddr);
     int n = recvfrom(sockfd, (char *)recBuf, 512, MSG_WAITALL, (struct sockaddr *)&theirAddr, &len);
+
+    // std::cout << n << std::endl;
     if (n != -1)
     {
+        std::cout << "Received!" << std::endl;
         Message *msg = deserialize(recBuf);
         if (msg->type == 2)
         {
-
-            // std::cout << "Received!" << std::endl;
             GameUpdateMessage *updateMsg = dynamic_cast<GameUpdateMessage *>(msg);
             players[1].setCoords(updateMsg->x, updateMsg->y);
             players[1].setVel(updateMsg->velX, updateMsg->velY);
@@ -145,6 +146,10 @@ void LGame::update()
             players[1].setHealth(updateMsg->health);
         }
         delete msg;
+    }
+    else
+    {
+        fprintf(stderr, "socket() failed: %s\n", strerror(errno));
     }
 }
 
@@ -220,6 +225,7 @@ void LGame::cleanUp()
     Mix_FreeMusic(backGroundMusic);
     Mix_FreeChunk(introMusic);
     backGroundMusic = NULL;
+    close(sockfd);
 }
 
 bool LGame::initObjs()
