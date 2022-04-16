@@ -29,91 +29,18 @@ struct GameBeginMessage : Message
     std::string opponentName;
 };
 
-int serialize(Message *msg, char *data)
+struct GameUpdateMessage : Message
 {
-    int bytesUsed = 0;
-    int *q = (int *)data;
-    *q = msg->type;
-    q++;
-    bytesUsed += sizeof(int);
-    switch (msg->type)
+    GameUpdateMessage()
     {
-    case 0:
-    {
-        NewClientMessage *msgNewClient = dynamic_cast<NewClientMessage *>(msg);
-        char *p = (char *)q;
-        for (int i = 0; i < msgNewClient->name.length(); i++)
-        {
-            *p = msgNewClient->name[i];
-            p++;
-            bytesUsed++;
-        }
-        *p = '\0';
-        p++;
-        bytesUsed++;
-        break;
+        type = 2;
     }
-    case 1:
-    {
-        GameBeginMessage *msgGameBegin = dynamic_cast<GameBeginMessage *>(msg);
-        char *p = (char *)q;
-        for (int i = 0; i < msgGameBegin->opponentName.length(); i++)
-        {
-            *p = msgGameBegin->opponentName[i];
-            p++;
-            bytesUsed++;
-        }
-        *p = '\0';
-        p++;
-        bytesUsed++;
-        break;
-    }
-    }
-    return bytesUsed;
-}
+    int x, y, velX, velY, moveFactor, money, points;
+    float health;
+};
 
-Message *deserialize(char *data)
-{
-    int *q = (int *)data;
-    int type = *q;
-    q++;
-    switch (type)
-    {
-    case 0:
-    {
-        NewClientMessage *msgNewClient = new NewClientMessage();
-        char *p = (char *)q;
-        // int j = 0;
-        // while (p[j] != 0)
-        // {
-        //     std::cout << p[j];
-        //     j++;
-        // }
-        int nameLen = strlen(p);
-        for (int i = 0; i < nameLen; i++)
-        {
-            msgNewClient->name += *p;
-            p++;
-        }
-        return msgNewClient;
-    }
-    case 1:
-    {
-        GameBeginMessage *msgGameBegin = new GameBeginMessage();
-        char *p = (char *)q;
-        int nameLen = strlen(p);
-        for (int i = 0; i < nameLen; i++)
-        {
-            msgGameBegin->opponentName += *p;
-            p++;
-        }
-        return msgGameBegin;
-    }
-    default:
-    {
-        return NULL;
-    }
-    }
-}
+int serialize(Message *msg, char *data);
+
+Message *deserialize(char *data);
 
 #endif

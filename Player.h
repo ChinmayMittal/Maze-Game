@@ -3,7 +3,7 @@
 
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_image.h>
-#include<SDL2/SDL_mixer.h>
+#include <SDL2/SDL_mixer.h>
 #include "Tile.h"
 #include "MyTexture.h"
 #include "Renderable.h"
@@ -12,8 +12,7 @@
 #include "Timer.h"
 #include "utilities.h"
 #include <string>
-#include"Animation.h"
-
+#include "Animation.h"
 
 class LGame;
 
@@ -46,45 +45,49 @@ public:
     SDL_Rect getBox();
     int getXVel();
     int getYVel();
+    int getMoveFactor();
     int getHealth();
     int getMoney();
     int getPoints();
-    void setHealth( float h);
+    void setHealth(float h);
     void setPoints(int p);
     void setMoney(int m);
     void setMoveFactor(int factor);
     void update();
     void toggleYulu();
-    LGame& getGame() ; 
+    LGame &getGame();
     void setLastTileType(int tileType);
     int getLastTileType();
-    std :: string  getHostelName() ; 
-    void resetHealth() ; 
+    std ::string getHostelName();
+    void resetHealth();
     bool hasYulu();
-    LTimer& getCurrentTaskTimer() ; 
-    int getCurrentTaskTime() ; 
-    void setCurrentTaskTime( int t ) ; 
-    bool isBusy() ; 
-    void updateStateParameters( playerStateUpdate s ) ; 
-    void setUpdateStateParameters( playerStateUpdate s ) ;
-    bool hadLunch() ; 
-    bool hadBreakFast() ; 
-    bool hadDinner() ;  
-    void setBreakfast( bool b) ; 
-    void setLunch( bool l ) ; 
-    void setDinner( bool d) ; 
-    std :: string getTaskText() ; 
-    void  setTaskText( std::string s ) ; 
-    void setTaskAnimation( Animation *a) ; 
-    int music = 0 ; 
+    LTimer &getCurrentTaskTimer();
+    int getCurrentTaskTime();
+    void setCurrentTaskTime(int t);
+    bool isBusy();
+    void updateStateParameters(playerStateUpdate s);
+    void setUpdateStateParameters(playerStateUpdate s);
+    bool hadLunch();
+    bool hadBreakFast();
+    bool hadDinner();
+    void setBreakfast(bool b);
+    void setLunch(bool l);
+    void setDinner(bool d);
+    std ::string getTaskText();
+    void setTaskText(std::string s);
+    void setTaskAnimation(Animation *a);
+    void setCoords(int x, int y);
+    void setVel(int velX, int velY);
+    int music = 0;
+
 private:
     // Collision box of the dot
 
     LGame &mGame;
     SDL_Rect mBox;
     LTexture &mTexture;
-    Animation* taskAnimation ; 
-    bool hasTaskAnimation ; 
+    Animation *taskAnimation;
+    bool hasTaskAnimation;
     // bool touchesWall(std::vector<Tile> tiles);
     int playerHeight, playerWidth;
     int right, top, left, bottom;
@@ -92,9 +95,9 @@ private:
     char direction;
     int numOfAnimationImages;
     int animationSpeed = 12;
-    int  money, points;
-    float health ; 
-    std :: string hostelName ; 
+    int money, points;
+    float health;
+    std ::string hostelName;
     std::vector<SDL_Rect> playerImages;
     // Maximum axis velocity of the dot
     int velocity;
@@ -103,14 +106,14 @@ private:
     int mVelX, mVelY;
     int lastTileType = -1;
     LTimer yuluTimer;
-    LTimer healthTimer ; 
-    LTimer currentTaskTimer ; 
-    int currentTaskTime ; 
-    playerStateUpdate updateState ; 
-    bool breakfast , lunch, dinner ; 
-    std::string taskText ; 
-    Mix_Chunk* mCollisionMusic ; 
-    Mix_Chunk* mMovementMusic ; 
+    LTimer healthTimer;
+    LTimer currentTaskTimer;
+    int currentTaskTime;
+    playerStateUpdate updateState;
+    bool breakfast, lunch, dinner;
+    std::string taskText;
+    Mix_Chunk *mCollisionMusic;
+    Mix_Chunk *mMovementMusic;
 };
 
 #endif

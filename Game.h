@@ -15,11 +15,30 @@
 #include "Entity.h"
 #include "Timer.h"
 #include "Text.h"
+#include <string>
+#include <stdio.h>
+#include <stdlib.h>
+#include <unistd.h>
+#include <errno.h>
+#include <sys/types.h>
+#include <sys/socket.h>
+#include <netinet/in.h>
+#include <arpa/inet.h>
+#include <fcntl.h>
+#include <netdb.h>
 
 class LGame : public LScreen
 {
 private:
+    std::string serverIp;
     std::string playerName, opponentName;
+
+    int sockfd;
+    struct sockaddr_in theirAddr;
+    char buf[512];
+    char recBuf[512];
+    void initSocket();
+
     std::vector<Tile> tiles;
     std::vector<Player> players;
     std::vector<Entity> entities;
@@ -51,7 +70,7 @@ private:
     Text *prompText;
 
 public:
-    LGame(LWindow &window, std::string playerName, std::string opponentName);
+    LGame(LWindow &window, std::string playerName, std::string opponentName, std::string serverIp);
     void handleEvent(SDL_Event &e);
     void update();
     void render(SDL_Renderer *renderer);
@@ -65,10 +84,10 @@ public:
     Animation *burgerAnimation;
     Animation *icecreamAnimation;
     Animation *hotDogAnimation;
-    Animation *tennisAnimation ; 
-    Animation *basketballAnimation ; 
+    Animation *tennisAnimation;
+    Animation *basketballAnimation;
     LTimer getTimer();
-    Mix_Music* backGroundMusic ; 
+    Mix_Music *backGroundMusic;
 };
 
 #endif

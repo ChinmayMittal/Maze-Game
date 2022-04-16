@@ -76,6 +76,11 @@ void MainMenu::initSocket()
 void MainMenu::sendGameReq()
 {
     std::string playerName = textInputs[0]->getText();
+    if (playerName == "")
+    {
+        waitingText->setText("Please enter a valid name.");
+        return;
+    }
     int i = 0;
     while (playerName[i] == ' ' || playerName[i] == '\n')
     {
@@ -121,7 +126,7 @@ void MainMenu::update()
         if (msg->type == 1)
         {
             GameBeginMessage *beginMsg = dynamic_cast<GameBeginMessage *>(msg);
-            LGame *myGame = new LGame(window, textInputs[0]->getText(), beginMsg->opponentName);
+            LGame *myGame = new LGame(window, textInputs[0]->getText(), beginMsg->opponentName, serverIp);
             window.setCurrScreen(myGame);
         }
         delete msg;

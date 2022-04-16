@@ -9,13 +9,47 @@
 #include "Screen.h"
 #include "Entity.h"
 #include <functional>
+#include <stdio.h>
+#include <stdlib.h>
+#include <unistd.h>
+#include <errno.h>
+#include <sys/types.h>
+#include <sys/socket.h>
+#include <netinet/in.h>
+#include <arpa/inet.h>
+#include <fcntl.h>
+#include <netdb.h>
+#include "MessageStructs.h"
 
-LGame::LGame(LWindow &window, std::string playerName, std::string opponentName) : LScreen(window), playerName(playerName), opponentName(opponentName)
+LGame::LGame(LWindow &window, std::string playerName, std::string opponentName, std::string serverIp) : LScreen(window), playerName(playerName), opponentName(opponentName), serverIp(serverIp)
 {
     std::cout << "Name: " << playerName << " Opponent: " << opponentName << std::endl;
-    backGroundMusic = Mix_LoadMUS("resources/music.mpeg") ; 
-    Mix_PlayMusic( backGroundMusic, -1 );
+    backGroundMusic = Mix_LoadMUS("resources/music.mpeg");
+    Mix_PlayMusic(backGroundMusic, -1);
     initObjs();
+    initSocket();
+}
+
+void LGame::initSocket()
+{
+    if ((sockfd = socket(AF_INET, SOCK_DGRAM, 0)) < 0)
+    {
+        perror("socket creation failed");
+    }
+
+    fcntl(sockfd, F_SETFL, O_NONBLOCK);
+
+    // memset(&myAddr, 0, sizeof(myAddr));
+    memset(&theirAddr, 0, sizeof(theirAddr));
+
+    // myAddr.sin_family = AF_INET; // IPv4
+    // myAddr.sin_addr.s_addr = INADDR_ANY;
+    // myAddr.sin_port = htons(2000);
+
+    theirAddr.sin_family = AF_INET;
+    theirAddr.sin_port = htons(8080);
+    // theirAddr.sin_addr.s_addr = INADDR_ANY;
+    inet_pton(AF_INET, serverIp.c_str(), &(theirAddr.sin_addr.s_addr));
 }
 
 void LGame::handleEvent(SDL_Event &e)
@@ -33,6 +67,7 @@ void LGame::update()
     camera = {camera.x, camera.y, window.getWidth(), window.getHeight()};
     // Move the dot
     players[0].move();
+    players[1].move();
 
     SDL_Rect playerBox = players[0].getBox();
     // std::cout << "After move " << playerBox.y << std::endl;
@@ -75,6 +110,39 @@ void LGame::update()
     else
     {
         prompText->setText(displayText);
+    }
+
+    GameUpdateMessage gameUpdateMsg;
+    gameUpdateMsg.x = players[0].getBox().x;
+    gameUpdateMsg.y = players[0].getBox().y;
+    gameUpdateMsg.velX = players[0].getXVel();
+    gameUpdateMsg.velY = players[0].getYVel();
+    gameUpdateMsg.moveFactor = players[0].getMoveFactor();
+    gameUpdateMsg.money = players[0].getMoney();
+    gameUpdateMsg.points = players[0].getPoints();
+    gameUpdateMsg.health = players[0].getHealth();
+    int bytesUsed = serialize(&gameUpdateMsg, buf);
+    sendto(sockfd, buf, bytesUsed, 0, (const struct sockaddr *)&theirAddr,
+           sizeof(theirAddr));
+
+    unsigned int len = sizeof(theirAddr);
+    int n = recvfrom(sockfd, (char *)recBuf, 512, MSG_WAITALL, (struct sockaddr *)&theirAddr, &len);
+    if (n != -1)
+    {
+        Message *msg = deserialize(recBuf);
+        if (msg->type == 2)
+        {
+
+            // std::cout << "Received!" << std::endl;
+            GameUpdateMessage *updateMsg = dynamic_cast<GameUpdateMessage *>(msg);
+            players[1].setCoords(updateMsg->x, updateMsg->y);
+            players[1].setVel(updateMsg->velX, updateMsg->velY);
+            players[1].setMoveFactor(updateMsg->moveFactor);
+            players[1].setPoints(updateMsg->points);
+            players[1].setMoney(updateMsg->money);
+            players[1].setHealth(updateMsg->health);
+        }
+        delete msg;
     }
 }
 
@@ -143,10 +211,11 @@ void LGame::render(SDL_Renderer *renderer)
 void LGame::cleanUp()
 {
     players[0].cleanUp();
+    players[1].cleanUp();
     tiles[0].cleanUp();
     delete timeText;
     delete sleepingAnimation;
-    Mix_FreeMusic(backGroundMusic );
+    Mix_FreeMusic(backGroundMusic);
     backGroundMusic = NULL;
 }
 
@@ -162,8 +231,8 @@ bool LGame::initObjs()
     LTexture *burgerAnimationTexture = new LTexture();
     LTexture *hotdogAnimationTexture = new LTexture();
     LTexture *icecreamAnimationTexture = new LTexture();
-    LTexture *tennisAnimationTexture = new LTexture() ; 
-    LTexture* basketBallAnimationTexture = new LTexture() ;
+    LTexture *tennisAnimationTexture = new LTexture();
+    LTexture *basketBallAnimationTexture = new LTexture();
     if (!window.loadTexture(*sleepingAnimationTexture, "resources/sleeping.png"))
     {
         printf("Failed to load sleeping texture!\n");
@@ -198,11 +267,14 @@ bool LGame::initObjs()
     burgerAnimation = new Animation(*burgerAnimationTexture, 32, 32);
     hotDogAnimation = new Animation(*hotdogAnimationTexture, 32, 32);
     icecreamAnimation = new Animation(*icecreamAnimationTexture, 32, 32);
-    basketballAnimation = new Animation(*basketBallAnimationTexture,32,32) ; 
-    tennisAnimation = new Animation(*tennisAnimationTexture,32,32) ; 
+    basketballAnimation = new Animation(*basketBallAnimationTexture, 32, 32);
+    tennisAnimation = new Animation(*tennisAnimationTexture, 32, 32);
 
     Player ash(ashTexture, *this, 32, 32, 3, 1, 2, 0);
     players.push_back(ash);
+
+    Player opponent(ashTexture, *this, 32, 32, 3, 1, 2, 0);
+    players.push_back(opponent);
 
     camera = {0, 0, window.getWidth(), window.getHeight()};
 
@@ -326,6 +398,7 @@ bool LGame::setTiles()
 
     return true;
 }
+
 std::function<void(Player &player, std::string &displayText)> getTextPromptFunc(std ::string a)
 {
     return [=](Player &player, std::string &displayText)
@@ -427,7 +500,7 @@ void LGame::initEntities()
                     displayText = "" ; });
     Entity no_movement("no_movement", [&](Player &player, std::string &displayText)
                        { 
-                           player.moveBy(-player.getXVel(), -player.getYVel());
+                           player.moveBy(-player.getXVel() * player.getMoveFactor(), -player.getYVel() * player.getMoveFactor());
                            displayText = "" ; });
 
     Entity yulu(
@@ -471,26 +544,25 @@ void LGame::initEntities()
     Entity zanskar("zanskar", getHostelCollideFunc("zanskar"), getHostelEventListener("zanskar"));
     Entity volleyball("volleyball", [&](Player &player, std::string &displayText)
                       { displayText = "volleyball"; });
-    Entity tennis("tennis", getTextPromptFunc("PRESS T TO PLAY TENNIS") , 
-                                               [&](SDL_Event &e, Player &player)
-                   {
-                       if (e.type == SDL_KEYDOWN && e.key.repeat == 0)
-                       {
-                           switch (e.key.keysym.sym)
-                           {
-                           case SDLK_t:
-                                   player.setTaskText("playing tennis... ");
-                                   player.setTaskAnimation(player.getGame().tennisAnimation);
-                                   player.setCurrentTaskTime(5000);
-                                   player.getCurrentTaskTimer().start();
-                                   player.setUpdateStateParameters({0,
-                                                                    0,
-                                                                    0});
-                               break;
-                           }
-                       }
-                   }
-                        );
+    Entity tennis("tennis", getTextPromptFunc("PRESS T TO PLAY TENNIS"),
+                  [&](SDL_Event &e, Player &player)
+                  {
+                      if (e.type == SDL_KEYDOWN && e.key.repeat == 0)
+                      {
+                          switch (e.key.keysym.sym)
+                          {
+                          case SDLK_t:
+                              player.setTaskText("playing tennis... ");
+                              player.setTaskAnimation(player.getGame().tennisAnimation);
+                              player.setCurrentTaskTime(5000);
+                              player.getCurrentTaskTimer().start();
+                              player.setUpdateStateParameters({0,
+                                                               0,
+                                                               0});
+                              break;
+                          }
+                      }
+                  });
     Entity swimming_pool("swimming_pool", [&](Player &player, std::string &displayText)
                          { displayText = "swimming_pool"; });
     Entity oat("oat", [&](Player &player, std::string &displayText)
@@ -547,26 +619,25 @@ void LGame::initEntities()
                { displayText = "sac"; });
     Entity foot("foot", [&](Player &player, std::string &displayText)
                 { displayText = "foot"; });
-    Entity basketball("basketball" , getTextPromptFunc("PRESS B TO PLAY BASKTEBALL") , 
-                           [&](SDL_Event &e, Player &player)
-                   {
-                       if (e.type == SDL_KEYDOWN && e.key.repeat == 0)
-                       {
-                           switch (e.key.keysym.sym)
-                           {
-                           case SDLK_b:
-                                   player.setTaskText("having hotdog... ");
-                                   player.setTaskAnimation(player.getGame().basketballAnimation);
-                                   player.setCurrentTaskTime(3000);
-                                   player.getCurrentTaskTimer().start();
-                                   player.setUpdateStateParameters({0,
-                                                                    0,
-                                                                    0});
-                               break;
-                           }
-                       }
-                   }
-    );
+    Entity basketball("basketball", getTextPromptFunc("PRESS B TO PLAY BASKTEBALL"),
+                      [&](SDL_Event &e, Player &player)
+                      {
+                          if (e.type == SDL_KEYDOWN && e.key.repeat == 0)
+                          {
+                              switch (e.key.keysym.sym)
+                              {
+                              case SDLK_b:
+                                  player.setTaskText("having hotdog... ");
+                                  player.setTaskAnimation(player.getGame().basketballAnimation);
+                                  player.setCurrentTaskTime(3000);
+                                  player.getCurrentTaskTimer().start();
+                                  player.setUpdateStateParameters({0,
+                                                                   0,
+                                                                   0});
+                                  break;
+                              }
+                          }
+                      });
     Entity athletic("athletic", [&](Player &player, std::string &displayText)
                     { displayText = "athletic"; });
     Entity cricket("cricket", [&](Player &player, std::string &displayText)

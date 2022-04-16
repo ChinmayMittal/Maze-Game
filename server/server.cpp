@@ -9,6 +9,7 @@
 #include <fcntl.h>
 #include <netdb.h>
 #include <iostream>
+#include <map>
 #include "../MessageStructs.h"
 
 int main()
@@ -21,6 +22,8 @@ int main()
     struct sockaddr_in servaddr, cliaddr, waitaddr;
     bool waiting = false;
     std::string waitingName;
+
+    std::map<in_addr_t, in_addr_t> opponents;
 
     // Creating socket file descriptor
     if ((sockfd = socket(AF_INET, SOCK_DGRAM, 0)) < 0)
@@ -64,6 +67,8 @@ int main()
         {
             NewClientMessage *newClientMsg = dynamic_cast<NewClientMessage *>(msg);
             std::cout << "New client: " << newClientMsg->name << std::endl;
+
+            std::cout << "Client IP: " << inet_ntoa(cliaddr.sin_addr) << std::endl;
             if (!waiting)
             {
                 waitaddr = cliaddr;
@@ -78,14 +83,33 @@ int main()
                 int bytesUsed = serialize(&gameBeginMessage, msgBuffer);
                 sendto(sockfd, msgBuffer, bytesUsed, 0, (const struct sockaddr *)&cliaddr,
                        sizeof(cliaddr));
-
+                std::cout << "Sending to " << cliaddr.sin_addr.s_addr << std::endl;
                 gameBeginMessage.opponentName = newClientMsg->name;
                 bytesUsed = serialize(&gameBeginMessage, msgBuffer);
                 sendto(sockfd, msgBuffer, bytesUsed, 0, (const struct sockaddr *)&waitaddr,
                        sizeof(waitaddr));
+                std::cout << "Sending to " << waitaddr.sin_addr.s_addr << std::endl;
+                opponents.insert(std::pair<in_addr_t, in_addr_t>(cliaddr.sin_addr.s_addr, waitaddr.sin_addr.s_addr));
+                opponents.insert(std::pair<in_addr_t, in_addr_t>(waitaddr.sin_addr.s_addr, cliaddr.sin_addr.s_addr));
 
                 waiting = false;
                 waitingName = "";
+            }
+            break;
+        }
+        case 2:
+        {
+            auto itr = opponents.find(cliaddr.sin_addr.s_addr);
+            // std::cout << "Received from " << cliaddr.sin_addr.s_addr << std::endl;
+
+            if (itr != opponents.end())
+            {
+                // std::cout << "Iterator first: " << itr->first << " second: " << itr->second << std::endl;
+                cliaddr.sin_addr.s_addr = itr->second;
+                sendto(sockfd, buffer, n, 0, (const struct sockaddr *)&cliaddr,
+                       sizeof(cliaddr));
+
+                // std::cout << "Sent to " << cliaddr.sin_addr.s_addr << std::endl;
             }
             break;
         }

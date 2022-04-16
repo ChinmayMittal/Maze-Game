@@ -1,6 +1,6 @@
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_image.h>
-#include<SDL2/SDL_mixer.h>
+#include <SDL2/SDL_mixer.h>
 #include "Player.h"
 #include "Tile.h"
 #include "MyTexture.h"
@@ -9,29 +9,28 @@
 #include <iostream>
 #include <string>
 #include <vector>
-#include<time.h>
-#include<stdlib.h>
-#include"constants.h"
+#include <time.h>
+#include <stdlib.h>
+#include "constants.h"
 
-
-std :: vector < std :: string >  hostelNames{ "nilgiri" , "kara" , "aravali" , "jwala" , "kumaon" , "vindy" , "satpura" , "udai_girnar" , "himadri" , "kailash" } ;
+std ::vector<std ::string> hostelNames{"nilgiri", "kara", "aravali", "jwala", "kumaon", "vindy", "satpura", "udai_girnar", "himadri", "kailash"};
 
 Player ::Player(LTexture &myTexture, LGame &game, int playerHeight, int playerWidth, int right, int left, int top, int bottom) : mTexture(myTexture), mGame(game)
 {
     // Initialize the collision box
-    mCollisionMusic = Mix_LoadWAV("resources/collision.wav") ; 
-    mMovementMusic  = Mix_LoadWAV("resources/collision.wav") ; 
+    mCollisionMusic = Mix_LoadWAV("resources/collision.wav");
+    mMovementMusic = Mix_LoadWAV("resources/collision.wav");
     mBox.x = 32 * 7;
     mBox.y = 0;
     mBox.w = playerWidth;
     mBox.h = playerHeight;
-    taskAnimation = NULL  ; 
+    taskAnimation = NULL;
     srand(time(0));
-    hostelName = hostelNames[rand()%hostelNames.size()];
-    hostelName = "nilgiri" ; // for testing  
-    currentTaskTime = 0 ; 
-    currentTaskTimer = LTimer() ; 
-    updateState = { 0.0 , 0 , 0 } ; 
+    hostelName = hostelNames[rand() % hostelNames.size()];
+    hostelName = "nilgiri"; // for testing
+    currentTaskTime = 0;
+    currentTaskTimer = LTimer();
+    updateState = {0.0, 0, 0};
     // Initialize the velocity
     mVelX = 0;
     mVelY = 0;
@@ -48,13 +47,13 @@ Player ::Player(LTexture &myTexture, LGame &game, int playerHeight, int playerWi
     this->health = 80;
     this->money = 100;
     this->points = 0;
-    breakfast = lunch = dinner = false ; 
-    taskText = "" ; 
-    hasTaskAnimation = false ; 
+    breakfast = lunch = dinner = false;
+    taskText = "";
+    hasTaskAnimation = false;
     int numberOfimages = myTexture.getWidth() / playerWidth;
     playerImages.resize(4 * numberOfimages);
     this->numOfAnimationImages = numberOfimages;
-    healthTimer.start() ; 
+    healthTimer.start();
     for (int col = 0; col < numberOfimages; col++)
     {
         // right image in column col
@@ -86,12 +85,13 @@ Player ::Player(LTexture &myTexture, LGame &game, int playerHeight, int playerWi
 
 void Player::handleEvent(SDL_Event &e)
 {
-    if(isBusy() ) {
-        return ; 
-        mVelX = mVelY = 0 ; 
-        mframes = 0 ; 
-        direction = 'D' ; 
-    }  
+    if (isBusy())
+    {
+        return;
+        mVelX = mVelY = 0;
+        mframes = 0;
+        direction = 'D';
+    }
     // If a key was pressed
     if (e.type == SDL_KEYDOWN && e.key.repeat == 0)
     {
@@ -152,23 +152,23 @@ void Player::handleEvent(SDL_Event &e)
 
 void Player::move()
 {
-    if( !isBusy())
+    if (!isBusy())
     {
         // Move the dot left or right
-        mBox.x += mVelX * moveFactor; 
+        mBox.x += mVelX * moveFactor;
         // std::cout << "After move: " << mBox.x << std::endl;
-        bool movement = true ; 
-        if( mVelX == 0 and mVelY == 0 )
+        bool movement = true;
+        if (mVelX == 0 and mVelY == 0)
         {
-            movement = false ; 
+            movement = false;
         }
         // If the dot went too far to the left or right or touched a wall
         if ((mBox.x < 0) || (mBox.x + playerWidth > mGame.getLevelWidth()) /* || touchesWall(mBox, tiles) */)
         {
             // move back
             mBox.x -= mVelX * moveFactor;
-            Mix_PlayChannel( -1, mCollisionMusic, 0 );
-            movement = false ; 
+            Mix_PlayChannel(-1, mCollisionMusic, 0);
+            movement = false;
         }
 
         // Move the dot up or down
@@ -179,17 +179,19 @@ void Player::move()
         {
             // move back
             mBox.y -= mVelY * moveFactor;
-            Mix_PlayChannel( -1, mCollisionMusic, 0 );
-            movement = false ;
+            Mix_PlayChannel(-1, mCollisionMusic, 0);
+            movement = false;
         }
-        Mix_Volume( -1, 5 );
+        Mix_Volume(-1, 5);
 
-        if( movement ) {
-            music += 1 ; 
-            music = music % 5 ; 
-            if(music == 0 )Mix_PlayChannel( -1 , mMovementMusic , 0 ) ; 
+        if (movement)
+        {
+            music += 1;
+            music = music % 5;
+            if (music == 0)
+                Mix_PlayChannel(-1, mMovementMusic, 0);
         }
-        Mix_Volume( -1, MIX_MAX_VOLUME );
+        Mix_Volume(-1, MIX_MAX_VOLUME);
     }
 }
 
@@ -252,22 +254,26 @@ int Player::render(SDL_Renderer *renderer, SDL_Rect &camera)
     {
         offset = mframes / animationSpeed;
     }
-    if( isBusy() and hasTaskAnimation){
-        taskAnimation->setBox( mBox.x , mBox.y ) ; 
-        taskAnimation->render( renderer , camera ) ; 
-    }else{
+    if (isBusy() and hasTaskAnimation)
+    {
+        taskAnimation->setBox(mBox.x, mBox.y);
+        taskAnimation->render(renderer, camera);
+    }
+    else
+    {
         mTexture.render(renderer, mBox.x - camera.x, mBox.y - camera.y, &playerImages[dimension + offset]);
     }
     mframes = (mframes + 1) % (numOfAnimationImages * animationSpeed);
-    if( isBusy()) mframes = 0 ; 
+    if (isBusy())
+        mframes = 0;
     return 0;
 }
 
 void Player::cleanUp()
 {
     mTexture.free();
-    Mix_FreeChunk( mCollisionMusic ) ; 
-    Mix_FreeChunk( mMovementMusic ) ; 
+    Mix_FreeChunk(mCollisionMusic);
+    Mix_FreeChunk(mMovementMusic);
 }
 
 void Player::setVelocity(int vel)
@@ -282,7 +288,8 @@ void Player::setVelocity(int vel)
 void Player::setHealth(float h)
 {
     health = h;
-    if( health > gMaxPlayerHealth ) health = gMaxPlayerHealth ; 
+    if (health > gMaxPlayerHealth)
+        health = gMaxPlayerHealth;
 }
 
 void Player ::setMoney(int m)
@@ -307,12 +314,17 @@ SDL_Rect Player::getBox()
 
 int Player::getXVel()
 {
-    return mVelX * moveFactor;
+    return mVelX;
 }
 
 int Player::getYVel()
 {
-    return mVelY * moveFactor;
+    return mVelY;
+}
+
+int Player::getMoveFactor()
+{
+    return moveFactor;
 }
 
 int Player ::getHealth()
@@ -330,9 +342,10 @@ int Player ::getPoints()
     return points;
 }
 
-std::string Player :: getHostelName(){
+std::string Player ::getHostelName()
+{
 
-    return hostelName ; 
+    return hostelName;
 }
 
 void Player::update()
@@ -355,28 +368,34 @@ void Player::update()
         moveFactor = 1;
     }
 
-    if( healthTimer.isStarted() and hasYulu()){
-        if (healthTimer.getTicks() / 1000 >= secondPerHealthDecreasewithYulu ){
-            health -= 1 ; 
-            healthTimer.stop() ; 
-            healthTimer.start() ; 
+    if (healthTimer.isStarted() and hasYulu())
+    {
+        if (healthTimer.getTicks() / 1000 >= secondPerHealthDecreasewithYulu)
+        {
+            health -= 1;
+            healthTimer.stop();
+            healthTimer.start();
         }
-    }else if( healthTimer.isStarted() ) {
-        if (healthTimer.getTicks() / 1000 >= secondPerHealthDecrease ){
-            health -= 1 ; 
-            healthTimer.stop() ; 
-            healthTimer.start() ; 
+    }
+    else if (healthTimer.isStarted())
+    {
+        if (healthTimer.getTicks() / 1000 >= secondPerHealthDecrease)
+        {
+            health -= 1;
+            healthTimer.stop();
+            healthTimer.start();
         }
     }
 
-    if( currentTaskTimer.getTicks() > currentTaskTime){
-        currentTaskTime = 0  ; 
-        currentTaskTimer.stop() ; 
-        updateStateParameters( updateState) ; 
-        updateState = { 0.0 , 0 , 0 } ; 
-        taskText = "" ; 
-        hasTaskAnimation = false ; 
-        // update player stats 
+    if (currentTaskTimer.getTicks() > currentTaskTime)
+    {
+        currentTaskTime = 0;
+        currentTaskTimer.stop();
+        updateStateParameters(updateState);
+        updateState = {0.0, 0, 0};
+        taskText = "";
+        hasTaskAnimation = false;
+        // update player stats
     }
 }
 
@@ -385,15 +404,15 @@ void Player::toggleYulu()
     if (yuluTimer.isStarted())
     {
         yuluTimer.stop();
-        health -= ( ( healthTimer.getTicks()/1000.0)/secondPerHealthDecreasewithYulu) ; 
+        health -= ((healthTimer.getTicks() / 1000.0) / secondPerHealthDecreasewithYulu);
     }
     else
     {
         yuluTimer.start();
-        health -= ( ( healthTimer.getTicks()/1000.0)/secondPerHealthDecrease) ; 
+        health -= ((healthTimer.getTicks() / 1000.0) / secondPerHealthDecrease);
     }
-    healthTimer.stop() ; 
-    healthTimer.start() ; 
+    healthTimer.stop();
+    healthTimer.start();
 }
 
 void Player::setLastTileType(int tileType)
@@ -411,88 +430,109 @@ bool Player::hasYulu()
     return yuluTimer.isStarted();
 }
 
-LGame& Player :: getGame( )
+LGame &Player ::getGame()
 {
-    return mGame ; 
+    return mGame;
 }
 
 void Player::resetHealth()
 {
-    health = gMaxPlayerHealth ; 
+    health = gMaxPlayerHealth;
 }
 
-
-LTimer& Player :: getCurrentTaskTimer()
+LTimer &Player ::getCurrentTaskTimer()
 {
-    return currentTaskTimer ; 
+    return currentTaskTimer;
 }
 
-int Player :: getCurrentTaskTime()
+int Player ::getCurrentTaskTime()
 {
-    return currentTaskTime ; 
+    return currentTaskTime;
 }
 
-void  Player::setCurrentTaskTime( int t )
+void Player::setCurrentTaskTime(int t)
 {
-    currentTaskTime = t ; 
+    currentTaskTime = t;
 }
 
 bool Player::isBusy()
 {
-    if(  currentTaskTimer.isStarted() and (currentTaskTimer.getTicks() < currentTaskTime)){
-        return true ; 
-    }else{
-        return false ; 
+    if (currentTaskTimer.isStarted() and (currentTaskTimer.getTicks() < currentTaskTime))
+    {
+        return true;
+    }
+    else
+    {
+        return false;
     }
 }
 
-void Player::updateStateParameters( playerStateUpdate s)
+void Player::updateStateParameters(playerStateUpdate s)
 {
-    setHealth( getHealth() + s.health ) ; 
-    setPoints( getPoints() + s.points) ; 
-    setMoney( getMoney() + s.money ) ; 
+    setHealth(getHealth() + s.health);
+    setPoints(getPoints() + s.points);
+    setMoney(getMoney() + s.money);
 }
 
-void Player::setUpdateStateParameters( playerStateUpdate s ) 
+void Player::setUpdateStateParameters(playerStateUpdate s)
 {
-    updateState = s ; 
+    updateState = s;
 }
 
-bool Player :: hadBreakFast(){
-    return breakfast ; 
-}
-
-void Player :: setBreakfast( bool b ){
-    breakfast = b ; 
-}
-
-bool Player :: hadLunch(){
-    return lunch ; 
-}
-
-void Player :: setLunch ( bool l ){
-    lunch = l ; 
-}
-
-bool Player :: hadDinner(){
-    return dinner ; 
-}
-
-void Player :: setDinner( bool d ){
-    dinner = d ; 
-}
-
-std:: string Player :: getTaskText()
+bool Player ::hadBreakFast()
 {
-    return taskText; 
+    return breakfast;
 }
 
-void Player :: setTaskText( std :: string s)
+void Player ::setBreakfast(bool b)
 {
-    taskText = s ; 
+    breakfast = b;
 }
 
-void Player::setTaskAnimation( Animation *a) {
-    taskAnimation = a ; 
-    hasTaskAnimation = true ; 
-} 
+bool Player ::hadLunch()
+{
+    return lunch;
+}
+
+void Player ::setLunch(bool l)
+{
+    lunch = l;
+}
+
+bool Player ::hadDinner()
+{
+    return dinner;
+}
+
+void Player ::setDinner(bool d)
+{
+    dinner = d;
+}
+
+std::string Player ::getTaskText()
+{
+    return taskText;
+}
+
+void Player ::setTaskText(std ::string s)
+{
+    taskText = s;
+}
+
+void Player::setTaskAnimation(Animation *a)
+{
+    taskAnimation = a;
+    hasTaskAnimation = true;
+}
+
+void Player::setCoords(int x, int y)
+{
+    mBox.x = x;
+    mBox.y = y;
+}
+
+void Player::setVel(int velX, int velY)
+{
+    mVelX = velX;
+    mVelY = velY;
+}
