@@ -2,7 +2,7 @@
 CXX = g++
 
 #OBJS specifies which files to compile as part of the project
-OBJS = Button.o collision.o Game.o main.o MainMenu.o MessageStructs.o MyTexture.o MyWindow.o Player.o Screen.o Text.o TextInput.o Tile.o TileAtlas.o Timer.o SoundEffect.o Entity.o Animation.o # SearchOpponent.o
+OBJS = Button.o collision.o Game.o main.o MainMenu.o MessageStructs.o MyTexture.o MyWindow.o Player.o Screen.o Text.o TextInput.o Tile.o TileAtlas.o Timer.o SoundEffect.o Entity.o Animation.o NPC.o # SearchOpponent.o
 
 #COMPILER_FLAGS specifies the additional compilation options we're using
 # -w suppresses all warnings
@@ -24,7 +24,7 @@ Button.o: MyWindow.h
 
 collision.o: 
 
-Game.o: Tile.h Player.h MyTexture.h TileAtlas.h TileAtlas.h Renderable.h Entity.h Text.h Timer.h Screen.h constants.h MyWindow.h
+Game.o: Tile.h Player.h MyTexture.h TileAtlas.h TileAtlas.h Renderable.h Entity.h Text.h Timer.h Screen.h constants.h MyWindow.h NPC.o
 
 main.o: MyWindow.h Game.h MainMenu.h
 
@@ -58,6 +58,7 @@ Entity.o: Player.h
 
 Animation.o: Renderable.h MyTexture.h
 
+NPC.o: Renderable.h Game.h MyTexture.h
 
 
 Server: server/server.cpp MessageStructs.cpp
