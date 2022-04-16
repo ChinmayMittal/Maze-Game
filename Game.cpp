@@ -236,9 +236,9 @@ bool LGame::initObjs()
         printf("Failed to load ash texture!\n");
         return false;
     }
-    if (!window.loadTexture( profTexture, "resources/ash.bmp"))
+    if (!window.loadTexture( dogTexture, "resources/dog.png"))
     {
-        printf("Failed to load prof texture!\n");
+        printf("Failed to load dog texture!\n");
         return false;
     }
     LTexture *sleepingAnimationTexture = new LTexture();
@@ -286,8 +286,8 @@ bool LGame::initObjs()
 
     Player ash(ashTexture, *this, 32, 32, 3, 1, 2, 0);
     players.push_back(ash);
-    NPC prof( profTexture , *this , 32 , 32 , 3 , 1 , 2 , 0) ; 
-    NPCs.push_back( prof ) ; 
+    NPC dog( dogTexture , *this , 32 , 32 , 1 , 3 , 2 , 0) ; 
+    NPCs.push_back( dog ) ; 
     Player opponent(ashTexture, *this, 32, 32, 3, 1, 2, 0);
     players.push_back(opponent);
 
