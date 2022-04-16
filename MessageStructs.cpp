@@ -67,6 +67,37 @@ int serialize(Message *msg, char *data)
         bytesUsed++;
         break;
     }
+    case 3:
+    {
+        GameEndMessage *msgGameEnd = dynamic_cast<GameEndMessage *>(msg);
+        *q = msgGameEnd->points;
+        q++;
+        *q = msgGameEnd->money;
+        q++;
+        bytesUsed += 2 * sizeof(int);
+        float *p = (float *)q;
+        *q = msgGameEnd->health;
+        q++;
+        bytesUsed += sizeof(float);
+        char *r = (char *)q;
+        *r = '\0';
+        r++;
+        bytesUsed++;
+        break;
+    }
+    case 4:
+    {
+        GameResultMessage *msgGameResult = dynamic_cast<GameResultMessage *>(msg);
+        bool *p = (bool *)q;
+        *p = msgGameResult->won;
+        p++;
+        bytesUsed += sizeof(bool);
+        char *r = (char *)p;
+        *r = '\0';
+        r++;
+        bytesUsed++;
+        break;
+    }
     }
     return bytesUsed;
 }
@@ -129,6 +160,26 @@ Message *deserialize(char *data)
         msgGameUpdate->health = *p;
         p++;
         return msgGameUpdate;
+    }
+    case 3:
+    {
+        GameEndMessage *msgGameEnd = new GameEndMessage();
+        msgGameEnd->points = *q;
+        q++;
+        msgGameEnd->money = *q;
+        q++;
+        float *p = (float *)q;
+        msgGameEnd->health = *p;
+        p++;
+        return msgGameEnd;
+    }
+    case 4:
+    {
+        GameResultMessage *msgGameResult = new GameResultMessage();
+        bool *p = (bool *)q;
+        msgGameResult->won = *p;
+        p++;
+        return msgGameResult;
     }
     default:
     {
