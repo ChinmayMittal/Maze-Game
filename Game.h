@@ -36,7 +36,7 @@ private:
     std::vector<std::pair<int, std::string>> currTasks;
     int tasksNum = 2;
 
-    std::string serverIp;
+    // std::string serverIp;
     std::string playerName, opponentName;
 
     int &sockfd;
@@ -73,12 +73,19 @@ private:
     void initEntities();
 
     LTimer globalTime;
+    Text *nameText;
+    Text *oppText;
     Text *timeText;
     Text *healthText;
     Text *moneyText;
     Text *pointsText;
+    Text *moneyTextOpp;
+    Text *pointsTextOpp;
     // for instructions on object collision
     Text *prompText;
+    Text *tasksText;
+
+    std::vector<Text *> taskTexts;
 
 public:
     LGame(LWindow &window, std::string playerName, std::string opponentName, int &sockfd, sockaddr_in &theiraddr);

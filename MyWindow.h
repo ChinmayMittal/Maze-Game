@@ -1,7 +1,7 @@
 #ifndef WINDOW_H
 #define WINDOW_H
 
-#include <SDL2/SDL.h> 
+#include <SDL2/SDL.h>
 #include <SDL2/SDL_image.h>
 #include <vector>
 #include <string>
@@ -37,6 +37,9 @@ public:
 
     void setCurrScreen(LScreen *screen);
     LScreen *getCurrScreen();
+
+    void maximize();
+    void restore();
 
 private:
     bool initLibs();

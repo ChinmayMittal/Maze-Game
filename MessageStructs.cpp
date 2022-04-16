@@ -57,10 +57,10 @@ int serialize(Message *msg, char *data)
         *q = msgGameUpdate->points;
         q++;
         bytesUsed += 7 * sizeof(int);
-        // float *p = (float *)q;
-        // *q = msgGameUpdate->health;
-        // q++;
-        // bytesUsed += sizeof(float);
+        float *p = (float *)q;
+        *q = msgGameUpdate->health;
+        q++;
+        bytesUsed += sizeof(float);
         char *r = (char *)q;
         *r = '\0';
         r++;
@@ -125,9 +125,9 @@ Message *deserialize(char *data)
         q++;
         msgGameUpdate->points = *q;
         q++;
-        // float *p = (float *)q;
-        // msgGameUpdate->health = *p;
-        // p++;
+        float *p = (float *)q;
+        msgGameUpdate->health = *p;
+        p++;
         return msgGameUpdate;
     }
     default:

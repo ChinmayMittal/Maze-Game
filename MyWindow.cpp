@@ -306,3 +306,13 @@ LScreen *LWindow::getCurrScreen()
 {
     return mCurrScreen;
 }
+
+void LWindow::maximize()
+{
+    SDL_MaximizeWindow(mWindow);
+}
+
+void LWindow::restore()
+{
+    SDL_RestoreWindow(mWindow);
+}
