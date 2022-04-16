@@ -53,6 +53,8 @@ public:
     void setPoints(int p);
     void setMoney(int m);
     void setMoveFactor(int factor);
+    void setCoords(int x, int y);
+    void setVel(int velX, int velY);
     void update();
     void toggleYulu();
     LGame &getGame();
