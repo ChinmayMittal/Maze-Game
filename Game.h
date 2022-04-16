@@ -39,6 +39,8 @@ private:
     char recBuf[512];
     void initSocket();
 
+    bool firstTime = true;
+
     std::vector<Tile> tiles;
     std::vector<Player> players;
     std::vector<Entity> entities;
