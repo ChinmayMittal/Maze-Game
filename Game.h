@@ -59,6 +59,7 @@ private:
     LTexture tilesTexture;
     LTexture ashTexture;
     LTexture dogTexture;
+    LTexture profTexture ; 
 
     TileAtlas tileAtlas;
 
