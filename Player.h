@@ -77,6 +77,7 @@ public:
     void  setTaskText( std::string s ) ; 
     void setTaskAnimation( Animation *a) ; 
     int music = 0 ; 
+    void resetPlayer() ; 
 private:
     // Collision box of the dot
 

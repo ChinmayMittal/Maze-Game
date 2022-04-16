@@ -84,6 +84,19 @@ Player ::Player(LTexture &myTexture, LGame &game, int playerHeight, int playerWi
     }
 }
 
+void Player :: resetPlayer()
+{
+    mVelX = 0;
+    mVelY = 0;
+    moveFactor = 1 ; 
+    mframes = 0 ; 
+    mBox = { 0 , 0 } ; 
+    currentTaskTime = 0; 
+    currentTaskTimer.stop() ; 
+    direction = 'D' ; 
+    updateState = { 0, 0, 0} ; 
+}
+
 void Player::handleEvent(SDL_Event &e)
 {
     if(isBusy() ) {
@@ -377,6 +390,13 @@ void Player::update()
         taskText = "" ; 
         hasTaskAnimation = false ; 
         // update player stats 
+    }
+    if( health < 0 ) {
+        resetPlayer() ; 
+        // send to hospital 
+        mBox.x = 26*32 ; 
+        mBox.y = 64*32 ; 
+        health = gMaxPlayerHealth ; 
     }
 }
 
