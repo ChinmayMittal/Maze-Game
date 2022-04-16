@@ -1022,3 +1022,13 @@ void LGame::replaceTask(int task)
     currTasks[index] = t;
     taskTexts[index]->setText(t.second);
 }
+
+int LGame :: getTileType( int x , int y ) 
+{
+    int tileX = x / mTileWidth;
+    int tileY = y / mTileHeight;
+    // std :: cout << x << " " << tileX << "\n" ; 
+    // std :: cout << y << " " << tileY << "\n" ;     
+    return tiles[tileY * mTilesX + tileX].getType();
+
+}
