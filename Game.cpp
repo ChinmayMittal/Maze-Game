@@ -19,6 +19,7 @@
 #include <arpa/inet.h>
 #include <fcntl.h>
 #include <netdb.h>
+#include <algorithm>
 #include "MessageStructs.h"
 
 LGame::LGame(LWindow &window, std::string playerName, std::string opponentName, int &sockfd, sockaddr_in &theiraddr) : LScreen(window), playerName(playerName), opponentName(opponentName), sockfd(sockfd), theirAddr(theiraddr)
@@ -29,29 +30,23 @@ LGame::LGame(LWindow &window, std::string playerName, std::string opponentName, 
     Mix_PlayChannel(-1, introMusic, 0);
     Mix_PlayMusic(backGroundMusic, -1);
     initObjs();
+    initTasks();
     // initSocket();
 }
 
-void LGame::initSocket()
+void LGame::initTasks()
 {
-    if ((sockfd = socket(AF_INET, SOCK_DGRAM, 0)) < 0)
+    for (int i = 0; i < tasksNum; i++)
     {
-        perror("socket creation failed");
+        std::vector<std::pair<int, std::string>>::iterator it;
+        std::pair<int, std::string> t;
+        do
+        {
+            t = allTasks[rand() % allTasks.size()];
+            it = std::find(currTasks.begin(), currTasks.end(), t);
+        } while (it != currTasks.end());
+        currTasks.push_back(t);
     }
-
-    fcntl(sockfd, F_SETFL, O_NONBLOCK);
-
-    // memset(&myAddr, 0, sizeof(myAddr));
-    memset(&theirAddr, 0, sizeof(theirAddr));
-
-    // myAddr.sin_family = AF_INET; // IPv4
-    // myAddr.sin_addr.s_addr = INADDR_ANY;
-    // myAddr.sin_port = htons(2000);
-
-    theirAddr.sin_family = AF_INET;
-    theirAddr.sin_port = htons(8080);
-    // theirAddr.sin_addr.s_addr = INADDR_ANY;
-    inet_pton(AF_INET, serverIp.c_str(), &(theirAddr.sin_addr.s_addr));
 }
 
 void LGame::handleEvent(SDL_Event &e)
@@ -450,9 +445,12 @@ std ::function<void(SDL_Event &e, Player &player)> getHostelEventListener(std ::
                     player.getCurrentTaskTimer().start();
                     player.setTaskText("resting ... ");
                     player.setTaskAnimation(player.getGame().sleepingAnimation);
-                    player.setUpdateStateParameters({gMaxPlayerHealth,
-                                                     0,
-                                                     0});
+                    player.setUpdateStateParameters({
+                        gMaxPlayerHealth,
+                        0,
+                        0,
+                        0,
+                    });
                 }
                 break;
             case SDLK_b:
@@ -463,6 +461,7 @@ std ::function<void(SDL_Event &e, Player &player)> getHostelEventListener(std ::
                     player.setCurrentTaskTime(3000);
                     player.getCurrentTaskTimer().start();
                     player.setUpdateStateParameters({30,
+                                                     0,
                                                      0,
                                                      0});
                 }
@@ -476,6 +475,7 @@ std ::function<void(SDL_Event &e, Player &player)> getHostelEventListener(std ::
                     player.getCurrentTaskTimer().start();
                     player.setUpdateStateParameters({30,
                                                      0,
+                                                     0,
                                                      0});
                 }
                 break;
@@ -487,6 +487,7 @@ std ::function<void(SDL_Event &e, Player &player)> getHostelEventListener(std ::
                     player.setCurrentTaskTime(3000);
                     player.getCurrentTaskTimer().start();
                     player.setUpdateStateParameters({30,
+                                                     0,
                                                      0,
                                                      0});
                 }
@@ -569,6 +570,7 @@ void LGame::initEntities()
                               player.getCurrentTaskTimer().start();
                               player.setUpdateStateParameters({0,
                                                                0,
+                                                               0,
                                                                0});
                               break;
                           }
@@ -594,6 +596,7 @@ void LGame::initEntities()
                                    player.getCurrentTaskTimer().start();
                                    player.setUpdateStateParameters({20,
                                                                     -20,
+                                                                    0,
                                                                     0});
                                }
                                break;
@@ -618,6 +621,7 @@ void LGame::initEntities()
                                     player.setTaskAnimation(player.getGame().icecreamAnimation);
                                     player.setUpdateStateParameters({10,
                                                                      -10,
+                                                                     0,
                                                                      0});
                                 }
                                 break;
@@ -638,21 +642,56 @@ void LGame::initEntities()
                               switch (e.key.keysym.sym)
                               {
                               case SDLK_b:
-                                  player.setTaskText("having hotdog... ");
+                                  player.setTaskText("playing basketball... ");
                                   player.setTaskAnimation(player.getGame().basketballAnimation);
                                   player.setCurrentTaskTime(3000);
                                   player.getCurrentTaskTimer().start();
-                                  player.setUpdateStateParameters({0,
+                                  player.setUpdateStateParameters({-5,
                                                                    0,
-                                                                   0});
+                                                                   0,
+                                                                   10});
                                   break;
                               }
                           }
                       });
-    Entity athletic("athletic", [&](Player &player, std::string &displayText)
-                    { displayText = "athletic"; });
-    Entity cricket("cricket", [&](Player &player, std::string &displayText)
-                   { displayText = "cricket"; });
+
+    Entity athletic("athletic", getTextPromptFunc("PRESS A TO DO ATHLETICS"), [&](SDL_Event &e, Player &player)
+                    {
+                          if (e.type == SDL_KEYDOWN && e.key.repeat == 0)
+                          {
+                              switch (e.key.keysym.sym)
+                              {
+                              case SDLK_a:
+                                  player.setTaskText("doing athletics... ");
+                                  //player.setTaskAnimation(player.getGame().basketballAnimation);
+                                  player.setCurrentTaskTime(3000);
+                                  player.getCurrentTaskTimer().start();
+                                  player.setUpdateStateParameters({-5,
+                                                                   0,
+                                                                   0,
+                                                                   10});
+                                  break;
+                              }
+                          } });
+
+    Entity cricket("cricket", getTextPromptFunc("PRESS C TO PLAY CRICKET"), [&](SDL_Event &e, Player &player)
+                   {
+                          if (e.type == SDL_KEYDOWN && e.key.repeat == 0)
+                          {
+                              switch (e.key.keysym.sym)
+                              {
+                              case SDLK_c:
+                                  player.setTaskText("playing cricket... ");
+                                  //player.setTaskAnimation(player.getGame().basketballAnimation);
+                                  player.setCurrentTaskTime(3000);
+                                  player.getCurrentTaskTimer().start();
+                                  player.setUpdateStateParameters({-5,
+                                                                   0,
+                                                                   0,
+                                                                   10});
+                                  break;
+                              }
+                          } });
     Entity lhc("lhc", [&](Player &player, std::string &displayText)
                { displayText = "lhc"; });
     Entity police("police", [&](Player &player, std::string &displayText)
@@ -682,6 +721,7 @@ void LGame::initEntities()
                                     player.setUpdateStateParameters({
                                         20 , 
                                         -20 , 
+                                        0,
                                         0 
                                     }) ;  
                                 }
@@ -775,4 +815,64 @@ int LGame::getWindowHeight()
 LTimer LGame ::getTimer()
 {
     return globalTime;
+}
+
+bool LGame::hasTask(std::pair<int, std::string> task)
+{
+    std::vector<std::pair<int, std::string>>::iterator it;
+    it = std::find(currTasks.begin(), currTasks.end(), task);
+    return it != currTasks.end();
+}
+
+bool LGame::hasTask(int task)
+{
+    for (int i = 0; i < currTasks.size(); i++)
+    {
+        if (currTasks[i].first == task)
+        {
+            return true;
+        }
+    }
+    return false;
+}
+
+void LGame::replaceTask(std::pair<int, std::string> task)
+{
+    std::vector<std::pair<int, std::string>>::iterator it;
+    it = std::find(currTasks.begin(), currTasks.end(), task);
+    int index = it - currTasks.begin();
+    std::vector<std::pair<int, std::string>>::iterator it2;
+    std::pair<int, std::string> t;
+    do
+    {
+        t = allTasks[rand() % allTasks.size()];
+        it2 = std::find(currTasks.begin(), currTasks.end(), t);
+    } while (it2 != currTasks.end());
+    currTasks[index] = t;
+}
+
+void LGame::replaceTask(int task)
+{
+    int index = -1;
+    for (int i = 0; i < currTasks.size(); i++)
+    {
+        if (currTasks[i].first == task)
+        {
+            index = i;
+            break;
+        }
+    }
+    if (index == -1)
+    {
+        return;
+    }
+
+    std::vector<std::pair<int, std::string>>::iterator it2;
+    std::pair<int, std::string> t;
+    do
+    {
+        t = allTasks[rand() % allTasks.size()];
+        it2 = std::find(currTasks.begin(), currTasks.end(), t);
+    } while (it2 != currTasks.end());
+    currTasks[index] = t;
 }

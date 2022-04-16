@@ -3,6 +3,8 @@
 #include <fstream>
 #include <iostream>
 #include <sstream>
+#include <random>
+#include <time.h>
 
 #include "MyWindow.h"
 #include "Game.h"
@@ -15,6 +17,7 @@ const int SCREEN_HEIGHT = 480;
 
 int main(int argc, char *args[])
 {
+	srand(time(0));
 	std::string serverIp = "192.168.227.10";
 	if (argc > 1)
 	{

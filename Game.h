@@ -26,10 +26,15 @@
 #include <arpa/inet.h>
 #include <fcntl.h>
 #include <netdb.h>
+#include <vector>
 
 class LGame : public LScreen
 {
 private:
+    const std::vector<std::pair<int, std::string>> allTasks = {std::pair<int, std::string>(27, "Play Basketball"), std::pair<int, std::string>(28, "Do Athletics"), std::pair<int, std::string>(29, "Play Cricket")};
+    std::vector<std::pair<int, std::string>> currTasks;
+    int tasksNum = 2;
+
     std::string serverIp;
     std::string playerName, opponentName;
 
@@ -60,6 +65,7 @@ private:
     int mTileHeight;
     int mMaxPlayerHealth;
     bool initObjs();
+    void initTasks();
     bool setTiles();
     void initEntities();
 
@@ -91,6 +97,10 @@ public:
     LTimer getTimer();
     Mix_Music *backGroundMusic;
     Mix_Chunk *introMusic;
+    bool hasTask(std::pair<int, std::string> task);
+    bool hasTask(int task);
+    void replaceTask(std::pair<int, std::string> task);
+    void replaceTask(int task);
 };
 
 #endif

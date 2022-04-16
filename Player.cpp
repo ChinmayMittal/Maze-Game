@@ -12,6 +12,7 @@
 #include <time.h>
 #include <stdlib.h>
 #include "constants.h"
+#include <algorithm>
 
 std ::vector<std ::string> hostelNames{"nilgiri", "kara", "aravali", "jwala", "kumaon", "vindy", "satpura", "udai_girnar", "himadri", "kailash"};
 
@@ -30,7 +31,7 @@ Player ::Player(LTexture &myTexture, LGame &game, int playerHeight, int playerWi
     hostelName = "nilgiri"; // for testing
     currentTaskTime = 0;
     currentTaskTimer = LTimer();
-    updateState = {0.0, 0, 0};
+    updateState = {0.0, 0, 0, 0};
     // Initialize the velocity
     mVelX = 0;
     mVelY = 0;
@@ -93,7 +94,7 @@ void Player ::resetPlayer()
     currentTaskTime = 0;
     currentTaskTimer.stop();
     direction = 'D';
-    updateState = {0, 0, 0};
+    updateState = {0, 0, 0, 0};
 }
 
 void Player::handleEvent(SDL_Event &e)
@@ -407,7 +408,7 @@ void Player::update()
         currentTaskTime = 0;
         currentTaskTimer.stop();
         updateStateParameters(updateState);
-        updateState = {0.0, 0, 0};
+        updateState = {0.0, 0, 0, 0};
         taskText = "";
         hasTaskAnimation = false;
         // update player stats
@@ -495,6 +496,11 @@ void Player::updateStateParameters(playerStateUpdate s)
     setHealth(getHealth() + s.health);
     setPoints(getPoints() + s.points);
     setMoney(getMoney() + s.money);
+    if (mGame.hasTask(lastTileType))
+    {
+        setPoints(getPoints() + s.pointsIfTask);
+        mGame.replaceTask(lastTileType);
+    }
 }
 
 void Player::setUpdateStateParameters(playerStateUpdate s)
