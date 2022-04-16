@@ -115,7 +115,7 @@ public:
     bool hasTask(int task);
     void replaceTask(std::pair<int, std::string> task);
     void replaceTask(int task);
-    int getTileType( int x , int y ) ; 
+    int getTileType(int x, int y);
 };
 
 #endif

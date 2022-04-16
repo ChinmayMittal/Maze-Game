@@ -64,7 +64,7 @@ void LGame::handleEvent(SDL_Event &e)
 
 void LGame::update()
 {
-    camera = {camera.x, camera.y, window.getWidth(), window.getHeight()};
+    camera = {camera.x, camera.y, window.getWidth() - tasksVPWidth, window.getHeight() - 3 * gyRenderOffset - 5 * gyPadding};
     // Move the dot
     for (int i = 0; i < players.size(); i++)
     {
@@ -85,10 +85,11 @@ void LGame::update()
     {
         SDL_Rect NPCbox = NPCs[i].getBox();
         int NPCtileX = (NPCbox.x + NPCbox.w / 2) / mTileWidth;
-        int NPCtileY = (NPCbox.y + NPCbox.h / 2) / mTileHeight ; 
-        std::cout << NPCtileX << " " << NPCtileY << "\n" ; 
-        if( (( tileX >= NPCtileX-1 ) && (tileX <=  NPCtileX+1  )) && (( tileY >= NPCtileY-1 ) && (tileY <=  NPCtileY+1  ))){
-            std :: cout << "collision with " << NPCs[i].getName() << "\n"  ; 
+        int NPCtileY = (NPCbox.y + NPCbox.h / 2) / mTileHeight;
+        std::cout << NPCtileX << " " << NPCtileY << "\n";
+        if (((tileX >= NPCtileX - 1) && (tileX <= NPCtileX + 1)) && ((tileY >= NPCtileY - 1) && (tileY <= NPCtileY + 1)))
+        {
+            std ::cout << "collision with " << NPCs[i].getName() << "\n";
         }
     }
     entities[tileType].collided(players[0], displayText);
@@ -435,7 +436,7 @@ bool LGame::initObjs()
     Player opponent(ashTexture, *this, 32, 32, 3, 1, 2, 0);
     players.push_back(opponent);
 
-    camera = {0, 0, window.getWidth(), window.getHeight()};
+    camera = {0, 0, window.getWidth() - tasksVPWidth, window.getHeight() - 3 * gyRenderOffset - 5 * gyPadding};
 
     if (!window.loadTexture(tilesTexture, "resources/tileset.png"))
     {
