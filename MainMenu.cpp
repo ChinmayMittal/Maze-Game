@@ -116,6 +116,9 @@ void MainMenu::update()
 
 void MainMenu::render(SDL_Renderer *renderer)
 {
+    SDL_Rect defViewport = {0, 0, window.getWidth(), window.getHeight()};
+    SDL_RenderSetViewport(renderer, &defViewport);
+
     SDL_SetRenderDrawColor(renderer, 3, 211, 252, 255);
     SDL_RenderClear(renderer);
     for (int i = 0; i < buttons.size(); i++)

@@ -90,7 +90,7 @@ void Player ::resetPlayer()
     mVelY = 0;
     moveFactor = 1;
     mframes = 0;
-    mBox = {0, 0};
+    // mBox = {0, 0};
     currentTaskTime = 0;
     currentTaskTimer.stop();
     direction = 'D';

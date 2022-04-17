@@ -91,12 +91,12 @@ int main()
                 int bytesUsed = serialize(&gameBeginMessage, msgBuffer);
                 sendto(sockfd, msgBuffer, bytesUsed, 0, (const struct sockaddr *)&cliaddr,
                        sizeof(cliaddr));
-                std::cout << "Sending to " << cliaddr.sin_addr.s_addr << std::endl;
+                // std::cout << "Sending to " << cliaddr.sin_addr.s_addr << std::endl;
                 gameBeginMessage.opponentName = newClientMsg->name;
                 bytesUsed = serialize(&gameBeginMessage, msgBuffer);
                 sendto(sockfd, msgBuffer, bytesUsed, 0, (const struct sockaddr *)&waitaddr,
                        sizeof(waitaddr));
-                std::cout << "Sending to " << waitaddr.sin_addr.s_addr << std::endl;
+                // std::cout << "Sending to " << waitaddr.sin_addr.s_addr << std::endl;
                 opponents.insert(std::pair<in_addr_t, in_addr_t>(cliaddr.sin_addr.s_addr, waitaddr.sin_addr.s_addr));
                 opponents.insert(std::pair<in_addr_t, in_addr_t>(waitaddr.sin_addr.s_addr, cliaddr.sin_addr.s_addr));
 

@@ -45,8 +45,6 @@ private:
     char recBuf[512];
     void initSocket();
 
-    bool firstTime = true;
-
     std::vector<Tile> tiles;
     std::vector<Player> players;
     std::vector<Entity> entities;
@@ -86,10 +84,15 @@ private:
     // for instructions on object collision
     Text *prompText;
     Text *tasksText;
+    Text *winText;
+    Text *loseText;
+    Text *pressAnyKey;
 
     std::vector<Text *> taskTexts;
 
     bool gameEnded = false;
+    bool waitingEnd = false;
+    bool result = false;
 
 public:
     LGame(LWindow &window, std::string playerName, std::string opponentName, int &sockfd, sockaddr_in &theiraddr);

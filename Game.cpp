@@ -26,7 +26,7 @@
 LGame::LGame(LWindow &window, std::string playerName, std::string opponentName, int &sockfd, sockaddr_in &theiraddr) : LScreen(window), playerName(playerName), opponentName(opponentName), sockfd(sockfd), theirAddr(theiraddr)
 {
     window.maximize();
-    std::cout << "Name: " << playerName << " Opponent: " << opponentName << std::endl;
+    // std::cout << "Name: " << playerName << " Opponent: " << opponentName << std::endl;
     backGroundMusic = Mix_LoadMUS("resources/music.mpeg");
     introMusic = Mix_LoadWAV("resources/intro.wav");
     Mix_PlayChannel(-1, introMusic, 0);
@@ -54,6 +54,29 @@ void LGame::initTasks()
 
 void LGame::handleEvent(SDL_Event &e)
 {
+    if (waitingEnd)
+    {
+        return;
+    }
+
+    if (gameEnded)
+    {
+        switch (e.type)
+        {
+        case SDL_KEYDOWN:
+        {
+            MainMenu *mainMenu = new MainMenu(window, sockfd, theirAddr);
+            window.setCurrScreen(mainMenu);
+            break;
+        }
+        default:
+        {
+            break;
+        }
+        }
+        return;
+    }
+
     players[0].handleEvent(e);
     int lastTileType = players[0].getLastTileType();
     if (lastTileType != -1)
@@ -64,6 +87,31 @@ void LGame::handleEvent(SDL_Event &e)
 
 void LGame::update()
 {
+
+    if (gameEnded)
+    {
+        return;
+    }
+
+    if (waitingEnd)
+    {
+
+        unsigned int len = sizeof(theirAddr);
+        int n = recvfrom(sockfd, (char *)recBuf, 512, MSG_WAITALL, (struct sockaddr *)&theirAddr, &len);
+        if (n != -1)
+        {
+            Message *msg = deserialize(recBuf);
+            if (msg->type == 4)
+            {
+                GameResultMessage *gameResultMessage = dynamic_cast<GameResultMessage *>(msg);
+                result = gameResultMessage->won;
+                gameEnded = true;
+            }
+            delete msg;
+        }
+        return;
+    }
+
     camera = {camera.x, camera.y, window.getWidth() - tasksVPWidth, window.getHeight() - 3 * gyRenderOffset - 5 * gyPadding};
     // Move the dot
     for (int i = 0; i < players.size(); i++)
@@ -86,7 +134,7 @@ void LGame::update()
         SDL_Rect NPCbox = NPCs[i].getBox();
         int NPCtileX = (NPCbox.x + NPCbox.w / 2) / mTileWidth;
         int NPCtileY = (NPCbox.y + NPCbox.h / 2) / mTileHeight;
-        std::cout << NPCtileX << " " << NPCtileY << "\n";
+        // std::cout << NPCtileX << " " << NPCtileY << "\n";
         if (((tileX >= NPCtileX - 1) && (tileX <= NPCtileX + 1)) && ((tileY >= NPCtileY - 1) && (tileY <= NPCtileY + 1)))
         {
             std ::cout << "collision with " << NPCs[i].getName() << "\n";
@@ -138,7 +186,7 @@ void LGame::update()
     gameUpdateMsg.money = players[0].getMoney();
     gameUpdateMsg.points = players[0].getPoints();
     gameUpdateMsg.health = players[0].getHealth();
-    std::cout << "Sending health " << gameUpdateMsg.health << std::endl;
+    // std::cout << "Sending health " << gameUpdateMsg.health << std::endl;
     int bytesUsed = serialize(&gameUpdateMsg, buf);
 
     sendto(sockfd, buf, bytesUsed, 0, (const struct sockaddr *)&theirAddr,
@@ -162,7 +210,7 @@ void LGame::update()
             players[1].setPoints(updateMsg->points);
             players[1].setMoney(updateMsg->money);
             players[1].setHealth(updateMsg->health);
-            std::cout << "Receiving health " << gameUpdateMsg.health << std::endl;
+            // std::cout << "Receiving health " << gameUpdateMsg.health << std::endl;
         }
         delete msg;
     }
@@ -172,9 +220,11 @@ void LGame::update()
     }
     pointsTextOpp->setText("POINTS: " + std::to_string(players[1].getPoints()));
     moneyTextOpp->setText("MONEY: " + std::to_string(players[1].getMoney()));
+
     if (secs / secsPerHour >= 24)
     {
         gameEnd();
+        return;
     }
 }
 
@@ -189,32 +239,9 @@ void LGame::gameEnd()
     sendto(sockfd, buf, bytesUsed, 0, (const struct sockaddr *)&theirAddr,
            sizeof(theirAddr));
 
-    unsigned int len = sizeof(theirAddr);
-    int type;
-    Message *msg;
-    do
-    {
-        int n;
-        do
-        {
-            n = recvfrom(sockfd, (char *)recBuf, 512, MSG_WAITALL, (struct sockaddr *)&theirAddr, &len);
-        } while (n == -1);
-        msg = deserialize(recBuf);
-    } while (msg->type != 4);
-    GameResultMessage *gameResultMessage = dynamic_cast<GameResultMessage *>(msg);
-    if (gameResultMessage->won)
-    {
-        std::cout << "YOU WON!" << std::endl;
-    }
-    else
-    {
-        std::cout << "YOU LOST!" << std::endl;
-    }
-    std::cout << "Going back to main menu in 5 secs..." << std::endl;
-    delete msg;
-    SDL_Delay(5000);
-    MainMenu *mainMenu = new MainMenu(window, sockfd, theirAddr);
-    window.setCurrScreen(mainMenu);
+    players[0].resetPlayer();
+    players[1].resetPlayer();
+    waitingEnd = true;
 }
 
 void LGame::render(SDL_Renderer *renderer)
@@ -325,6 +352,22 @@ void LGame::render(SDL_Renderer *renderer)
     for (int i = 0; i < taskTexts.size(); i++)
     {
         taskTexts[i]->render(renderer, 8, (16 + maxHeight) * i + 20 + tasksText->getHeight() + 16);
+    }
+
+    if (gameEnded)
+    {
+        SDL_Rect defViewport = {0, 0, window.getWidth(), window.getHeight()};
+        SDL_RenderSetViewport(renderer, &defViewport);
+        if (result)
+        {
+            winText->render(renderer, (window.getWidth() - winText->getWidth()) / 2, (window.getHeight() - winText->getHeight()) / 2);
+            pressAnyKey->render(renderer, (window.getWidth() - pressAnyKey->getWidth()) / 2, (window.getHeight() + winText->getHeight()) / 2 + 32);
+        }
+        else
+        {
+            loseText->render(renderer, (window.getWidth() - loseText->getWidth()) / 2, (window.getHeight() - loseText->getHeight()) / 2);
+            pressAnyKey->render(renderer, (window.getWidth() - pressAnyKey->getWidth()) / 2, (window.getHeight() + loseText->getHeight()) / 2 + 32);
+        }
     }
 }
 
@@ -461,6 +504,7 @@ bool LGame::initObjs()
     SDL_Color txtColor = {0, 0, 0, 255};
     TTF_Font *font = TTF_OpenFont("resources/FrostbiteBossFight-dL0Z.ttf", 28);
     TTF_Font *fontSmall = TTF_OpenFont("resources/FrostbiteBossFight-dL0Z.ttf", 26);
+    TTF_Font *fontLarge = TTF_OpenFont("resources/FrostbiteBossFight-dL0Z.ttf", 32);
 
     timeText = new Text(window, "00:00", font, txtColor);
     healthText = new Text(window, "HEALTH: ", font, txtColor);
@@ -471,6 +515,9 @@ bool LGame::initObjs()
     nameText = new Text(window, playerName, font, txtColor);
     oppText = new Text(window, opponentName, font, txtColor);
     tasksText = new Text(window, "TASKS", font, txtColor);
+    winText = new Text(window, "YOU WON!", fontLarge, txtColor);
+    loseText = new Text(window, "YOU LOST!", fontLarge, txtColor);
+    pressAnyKey = new Text(window, "Press any key to go back to main menu", font, txtColor);
 
     for (int i = 0; i < tasksNum; i++)
     {
@@ -492,8 +539,7 @@ bool LGame::initObjs()
     {
         renderables.push_back(&NPCs[i]);
     }
-    std::cout << "OBJECTS INITIALIZED"
-              << "\n";
+    // std::cout << "OBJECTS INITIALIZED" << "\n";
     globalTime.start();
     return true;
 }
