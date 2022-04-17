@@ -421,6 +421,11 @@ bool LGame::initObjs()
         printf("Failed to load ash texture!\n");
         return false;
     }
+    if (!window.loadTexture(ash2Texture, "resources/ash2.bmp"))
+    {
+        printf("Failed to load ash2 texture!\n");
+        return false;
+    }    
     if (!window.loadTexture(dogTexture, "resources/dog.png"))
     {
         printf("Failed to load dog texture!\n");
@@ -485,7 +490,7 @@ bool LGame::initObjs()
         NPCs.push_back(prof);
     }
 
-    Player opponent(ashTexture, *this, 32, 32, 3, 1, 2, 0);
+    Player opponent(ash2Texture, *this, 32, 32, 3, 1, 2, 0);
     players.push_back(opponent);
 
     camera = {0, 0, window.getWidth() - tasksVPWidth, window.getHeight() - 3 * gyRenderOffset - 5 * gyPadding};
