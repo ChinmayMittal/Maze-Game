@@ -140,7 +140,7 @@ void LGame::update()
             //std ::cout << "collision with " << NPCs[i].getName() << "\n";
             NPCs[i].setCoolDown(7000);
             if(NPCs[i].getName().substr(0,3) == "dog"){
-                {-5,
+                players[0].changeStateParameters({-5,
                    0,
                  0});
             }
