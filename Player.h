@@ -69,6 +69,7 @@ public:
     bool isBusy();
     void updateStateParameters(playerStateUpdate s);
     void setUpdateStateParameters(playerStateUpdate s);
+    void changeStateParameters( playerStateUpdate s) ; 
     bool hadLunch();
     bool hadBreakFast();
     bool hadDinner();

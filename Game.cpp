@@ -135,9 +135,14 @@ void LGame::update()
         int NPCtileX = (NPCbox.x + NPCbox.w / 2) / mTileWidth;
         int NPCtileY = (NPCbox.y + NPCbox.h / 2) / mTileHeight;
         // std::cout << NPCtileX << " " << NPCtileY << "\n";
-        if (((tileX >= NPCtileX - 1) && (tileX <= NPCtileX + 1)) && ((tileY >= NPCtileY - 1) && (tileY <= NPCtileY + 1)))
+        if (((tileX >= NPCtileX - 1) && (tileX <= NPCtileX + 1)) && ((tileY >= NPCtileY - 1) && (tileY <= NPCtileY + 1)) && !NPCs[i].isBusy() && !players[0].isBusy())
         {
             std ::cout << "collision with " << NPCs[i].getName() << "\n";
+            NPCs[i].setCoolDown(7000);
+            players[0].changeStateParameters(
+                {0,
+                 0,
+                 -1});
         }
     }
     entities[tileType].collided(players[0], displayText);
@@ -146,6 +151,10 @@ void LGame::update()
     players[0].setCamera(camera);
 
     players[0].update();
+    for (int i = 0; i < NPCs.size(); i++)
+    {
+        NPCs[i].update();
+    }
     SDL_Rect playerBoxNew = players[0].getBox();
     int newTileX = (playerBoxNew.x + playerBoxNew.w / 2) / mTileWidth;
     int newTileY = (playerBoxNew.y + playerBoxNew.h / 2) / mTileHeight;

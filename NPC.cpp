@@ -36,6 +36,8 @@ NPC :: NPC(LTexture &myTexture, std::string nameOfNPC , LGame &game, int NPCHeig
     mframes = 0 ; 
     this -> numOfAnimationImages = myTexture.getWidth() / NPCWidth ;
     NPCImages.resize( numOfAnimationImages*4); 
+    coolDownTime = 0 ; 
+    coolDownTimer = LTimer() ; 
     for (int col = 0; col < numOfAnimationImages; col++)
     {
         // right image in column col
@@ -72,6 +74,7 @@ SDL_Rect NPC::getBox()
 
 int NPC::render(SDL_Renderer *renderer, SDL_Rect &camera)
 {
+ 
     if (mVelX < 0)
     {
         direction = 'L';
@@ -116,13 +119,15 @@ int NPC::render(SDL_Renderer *renderer, SDL_Rect &camera)
 
     mTexture.render(renderer, mBox.x - camera.x, mBox.y - camera.y, &NPCImages[dimension + offset]);
 
-    mframes = (mframes + 1) % (numOfAnimationImages * animationSpeed);
+    if(!isBusy()) mframes = (mframes + 1) % (numOfAnimationImages * animationSpeed);
     return 0;
 }
 
 void NPC::move()
 {
     // std :: cout << mBox.x << " " << mBox.y << " "<< mVelX << " " << mVelY << "\n"  ; 
+    if( isBusy()) return ; 
+    // std::cout << coolDownTimer.isStarted() << "\n" ;
     mBox.x += mVelX ;
     bool boxFlipped = false ; 
     if ((mBox.x < 0) || (mBox.x + NPCWidth > mGame.getLevelWidth()) )
@@ -213,4 +218,31 @@ void NPC::switchDirection()
 std::string NPC::getName()
 {
     return name ; 
+}
+
+bool NPC::isBusy()
+{
+    if( coolDownTimer.isStarted() and coolDownTimer.getTicks() <= coolDownTime){
+        return true ;
+    }else{
+        return false ; 
+    }
+}
+
+void NPC::setCoolDown( int t)
+{
+    coolDownTime = t ;
+    coolDownTimer.start() ;
+    mframes = 0 ; 
+    direction = 'D' ; 
+    mVelX = 0 ; 
+    mVelY = velocity ;   
+}
+
+void NPC::update()
+{
+    if( coolDownTimer.isStarted() and coolDownTimer.getTicks() > coolDownTime){
+        coolDownTime = 0 ; 
+        coolDownTimer.stop() ; 
+    }
 }

@@ -6,6 +6,7 @@
 #include<string>
 #include"Renderable.h"
 #include"MyTexture.h"
+#include "Timer.h"
 
 class LGame;
 
@@ -20,6 +21,9 @@ class NPC : public Renderable
         SDL_Rect getBox() ; 
         void switchDirection() ;
         std::string getName() ;  
+        bool isBusy() ; 
+        void update() ; 
+        void setCoolDown( int t ) ; 
     private:
         LGame &mGame ; 
         std::string name ; 
@@ -36,6 +40,8 @@ class NPC : public Renderable
         int mVelX , mVelY ; 
         int changeSpeed ; 
         int current ; 
+        LTimer coolDownTimer ; 
+        int coolDownTime ; 
 
 } ;
 
