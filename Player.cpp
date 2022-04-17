@@ -60,7 +60,7 @@ Player ::Player(LTexture &myTexture, LGame &game, int playerHeight, int playerWi
     this->bottom = bottom;
     this->mframes = 0;
     this->health = 80;
-    this->money = 100;
+    this->money = gMaxPlayerMoney;
     this->points = 0;
     breakfast = lunch = dinner = false;
     taskText = "";
@@ -387,7 +387,7 @@ void Player::update()
         if (yuluTimer.getTicks() / 1000 >= 2)
         {
             // std::cout << ((yuluTimer.getTicks() / 1000) - 50) << std::endl;
-            money -= 2;
+            money -= 4;
             yuluTimer.stop();
             yuluTimer.start();
             // std::cout << money << std::endl;
@@ -434,11 +434,12 @@ void Player::update()
         mBox.x = 26 * 32;
         mBox.y = 64 * 32;
         health = gMaxPlayerHealth;
+        points -= 10;
     }
     if (money < 0)
     {
         points -= 10;
-        money = 100;
+        money = gMaxPlayerMoney;
     }
 }
 
