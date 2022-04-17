@@ -14,7 +14,7 @@
 #include "constants.h"
 #include <algorithm>
 #include <map>
-#include<utility>
+#include <utility>
 
 std ::vector<std ::string> hostelNames{"nilgiri", "kara", "aravali", "jwala", "kumaon", "vindy", "satpura", "udai_girnar", "himadri", "kailash"};
 
@@ -26,23 +26,23 @@ Player ::Player(LTexture &myTexture, LGame &game, int playerHeight, int playerWi
     mBox.w = playerWidth;
     mBox.h = playerHeight;
     taskAnimation = NULL;
-    std::map< std::string , std::pair< int , int > > hostels ; 
-    hostels["nilgiri"] = { 15*32 , 7*32 } ; 
-    hostels["aravali"] = { 47*32 , 7*32} ; 
-    hostels["kara"] = {31*32,7*32 } ; 
-    hostels["jwala"] ={64*32 , 7*32} ; 
-    hostels["kumaon"] = { 63*32 , 18*32} ;  
-    hostels["vindy"] = { 63*32 , 29*32} ;  
-    hostels["satpura"] = { 63*32, 40*32} ;  
-    hostels["shivalik"] = { 45*32 , 51*32} ;  
-    hostels["zanskar"] = { 27*32 , 51*32} ;  
-    hostels["himadri"] = {16*32 , 104*32} ; 
-    hostels["kailash"] = {16*32 , 104*32} ;  
-    hostels["udai_girnar"] = { 63*32 , 51*32} ;   
+    std::map<std::string, std::pair<int, int>> hostels;
+    hostels["nilgiri"] = {15 * 32, 7 * 32};
+    hostels["aravali"] = {47 * 32, 7 * 32};
+    hostels["kara"] = {31 * 32, 7 * 32};
+    hostels["jwala"] = {64 * 32, 7 * 32};
+    hostels["kumaon"] = {63 * 32, 18 * 32};
+    hostels["vindy"] = {63 * 32, 29 * 32};
+    hostels["satpura"] = {63 * 32, 40 * 32};
+    hostels["shivalik"] = {45 * 32, 51 * 32};
+    hostels["zanskar"] = {27 * 32, 51 * 32};
+    hostels["himadri"] = {16 * 32, 104 * 32};
+    hostels["kailash"] = {16 * 32, 104 * 32};
+    hostels["udai_girnar"] = {63 * 32, 51 * 32};
     hostelName = hostelNames[rand() % hostelNames.size()];
     // hostelName = "nilgiri"; // for testing
-    mBox.x = hostels[hostelName].first ; 
-    mBox.y = hostels[hostelName].second ; 
+    mBox.x = hostels[hostelName].first;
+    mBox.y = hostels[hostelName].second;
     currentTaskTime = 0;
     currentTaskTimer = LTimer();
     updateState = {0.0, 0, 0, 0};
@@ -435,6 +435,11 @@ void Player::update()
         mBox.y = 64 * 32;
         health = gMaxPlayerHealth;
     }
+    if (money < 0)
+    {
+        points -= 10;
+        money = 100;
+    }
 }
 
 void Player::toggleYulu()
@@ -505,7 +510,7 @@ bool Player::isBusy()
     }
 }
 
-void Player::changeStateParameters( playerStateUpdate s)
+void Player::changeStateParameters(playerStateUpdate s)
 {
     setHealth(getHealth() + s.health);
     setPoints(getPoints() + s.points);
