@@ -173,6 +173,9 @@ int main()
             numBytes = serialize(&gameResP2, msgBuffer);
             sendto(sockfd, msgBuffer, numBytes, 0, (const struct sockaddr *)&otherAddr,
                    sizeof(otherAddr));
+            p1Ended = false;
+            p2Ended = false;
+            waiting = false;
         }
     }
 }
