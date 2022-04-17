@@ -112,6 +112,7 @@ public:
     Animation *hotDogAnimation;
     Animation *tennisAnimation;
     Animation *basketballAnimation;
+    Animation* footballAnimation ; 
     LTimer getTimer();
     Mix_Music *backGroundMusic;
     Mix_Chunk *introMusic;
