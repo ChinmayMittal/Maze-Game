@@ -17,6 +17,7 @@ Button::Button(int x, int y, int w, int h, SDL_Color bgColor, LWindow &window, s
 void Button::render(SDL_Renderer *renderer)
 {
     bool renderDefault = true;
+    // std::cout << "IN RENDER" << std::endl;
 
     if (centerX)
     {
@@ -31,6 +32,7 @@ void Button::render(SDL_Renderer *renderer)
         int newY = y - (newH - h) / 2;
         clickTexture->render(renderer, newX, newY);
         renderDefault = false;
+        // std::cout << "HERE2" << std::endl;
     }
 
     else if (highlighted)
@@ -57,6 +59,8 @@ void Button::render(SDL_Renderer *renderer)
         if (tex != NULL)
         {
             tex->render(renderer, x, y);
+
+            // std::cout << x << " " << y << std::endl;
         }
         else
         {
@@ -149,4 +153,14 @@ int Button::getWidth()
 int Button::getHeight()
 {
     return h;
+}
+
+void Button::setX(int x)
+{
+    this->x = x;
+}
+
+void Button::setY(int y)
+{
+    this->y = y;
 }

@@ -23,10 +23,12 @@ MainMenu::MainMenu(LWindow &window, int &sockfd, sockaddr_in &theiraddr) : LScre
     window.loadTexture(buttonBg, "resources/ButtonBG.png");
     window.loadTexture(buttonBgHighlighted, "resources/ButtonBGHighlighted.png");
     window.loadTexture(buttonBgClicked, "resources/ButtonBGClicked.png");
+
+    int x = (window.getWidth() - buttonBg.getWidth()) / 2;
+    int y = (window.getHeight() - buttonBg.getHeight()) / 2;
     int w = buttonBg.getWidth();
     int h = buttonBg.getHeight();
-    int x = (window.getWidth() - w) / 2;
-    int y = (window.getHeight() - h) / 2;
+
     SDL_Color txtColor = {2, 10, 255, 255};
     TTF_Font *font = TTF_OpenFont("resources/FrostbiteBossFight-dL0Z.ttf", 28);
 
@@ -99,6 +101,16 @@ void MainMenu::handleEvent(SDL_Event &e)
 
 void MainMenu::update()
 {
+
+    int x = (window.getWidth() - buttonBg.getWidth()) / 2;
+    int y = (window.getHeight() - buttonBg.getHeight()) / 2;
+
+    buttons[0]->setX(x);
+    buttons[0]->setY(y);
+
+    textInputs[0]->setX(x);
+    textInputs[0]->setY(y - 40 - 20);
+
     unsigned int len = sizeof(theirAddr);
     int n = recvfrom(sockfd, (char *)recBuf, 512, MSG_WAITALL, (struct sockaddr *)&theirAddr, &len);
     if (n != -1)
@@ -118,9 +130,11 @@ void MainMenu::render(SDL_Renderer *renderer)
 {
     SDL_Rect defViewport = {0, 0, window.getWidth(), window.getHeight()};
     SDL_RenderSetViewport(renderer, &defViewport);
+    // std::cout << window.getHeight() << std::endl;
 
     SDL_SetRenderDrawColor(renderer, 3, 211, 252, 255);
     SDL_RenderClear(renderer);
+
     for (int i = 0; i < buttons.size(); i++)
     {
         buttons[i]->render(renderer);

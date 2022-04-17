@@ -24,5 +24,7 @@ public:
     void setCenterX(bool centerX);
     void handleEvent(SDL_Event &e);
     std::string getText();
+    void setX(int x);
+    void setY(int y);
 };
 #endif

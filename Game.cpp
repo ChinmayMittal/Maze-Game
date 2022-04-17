@@ -54,7 +54,7 @@ void LGame::initTasks()
 
 void LGame::handleEvent(SDL_Event &e)
 {
-    if (waitingEnd)
+    if (waitingEnd && !gameEnded)
     {
         return;
     }

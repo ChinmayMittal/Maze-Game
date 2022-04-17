@@ -37,6 +37,8 @@ public:
     void setOnClickListener(std::function<void(LWindow &window)> f);
     int getX();
     int getY();
+    void setX(int x);
+    void setY(int y);
     int getWidth();
     int getHeight();
 };

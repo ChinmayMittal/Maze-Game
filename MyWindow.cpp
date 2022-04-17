@@ -129,6 +129,7 @@ void LWindow::handleEvent(SDL_Event &e)
             mWidth = e.window.data1;
             mHeight = e.window.data2;
             SDL_RenderPresent(mRenderer);
+            // std::cout << "HERE" << std::endl;
             break;
 
         // Repaint on exposure

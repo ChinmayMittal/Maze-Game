@@ -102,6 +102,16 @@ void TextInput::handleEvent(SDL_Event &e)
     }
 }
 
+void TextInput::setX(int x)
+{
+    this->x = x;
+}
+
+void TextInput::setY(int y)
+{
+    this->y = y;
+}
+
 std::string TextInput::getText()
 {
     return mText.getText();
