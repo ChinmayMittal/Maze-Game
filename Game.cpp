@@ -421,6 +421,11 @@ bool LGame::initObjs()
         printf("Failed to load ash texture!\n");
         return false;
     }
+    if (!window.loadTexture(ash2Texture, "resources/ash2.bmp"))
+    {
+        printf("Failed to load ash2 texture!\n");
+        return false;
+    }    
     if (!window.loadTexture(dogTexture, "resources/dog.png"))
     {
         printf("Failed to load dog texture!\n");
@@ -437,6 +442,7 @@ bool LGame::initObjs()
     LTexture *icecreamAnimationTexture = new LTexture();
     LTexture *tennisAnimationTexture = new LTexture();
     LTexture *basketBallAnimationTexture = new LTexture();
+    LTexture *footBallAnimationTexture = new LTexture() ; 
     if (!window.loadTexture(*sleepingAnimationTexture, "resources/sleeping.png"))
     {
         printf("Failed to load sleeping texture!\n");
@@ -467,13 +473,17 @@ bool LGame::initObjs()
         printf("Failed to load basketball texture!\n");
         return false;
     }
+    if( !window.loadTexture(*footBallAnimationTexture , "resources/football.png")){
+        printf("Failed to load football texture!\n");
+        return false;        
+    }
     sleepingAnimation = new Animation(*sleepingAnimationTexture, 32, 32);
     burgerAnimation = new Animation(*burgerAnimationTexture, 32, 32);
     hotDogAnimation = new Animation(*hotdogAnimationTexture, 32, 32);
     icecreamAnimation = new Animation(*icecreamAnimationTexture, 32, 32);
     basketballAnimation = new Animation(*basketBallAnimationTexture, 32, 32);
     tennisAnimation = new Animation(*tennisAnimationTexture, 32, 32);
-
+    footballAnimation = new Animation(*footBallAnimationTexture,32,32) ; 
     Player ash(ashTexture, *this, 32, 32, 3, 1, 2, 0);
     players.push_back(ash);
     int numberOfNPCs = 5;
@@ -485,7 +495,7 @@ bool LGame::initObjs()
         NPCs.push_back(prof);
     }
 
-    Player opponent(ashTexture, *this, 32, 32, 3, 1, 2, 0);
+    Player opponent(ash2Texture, *this, 32, 32, 3, 1, 2, 0);
     players.push_back(opponent);
 
     camera = {0, 0, window.getWidth() - tasksVPWidth, window.getHeight() - 3 * gyRenderOffset - 5 * gyPadding};
@@ -859,8 +869,27 @@ void LGame::initEntities()
                 { displayText = "shop"; });
     Entity sac("sac", [&](Player &player, std::string &displayText)
                { displayText = "sac"; });
-    Entity foot("foot", [&](Player &player, std::string &displayText)
-                { displayText = "foot"; });
+    Entity foot("foot", getTextPromptFunc("PRESS F to PLAY FOOTBALL") , 
+                          [&](SDL_Event &e, Player &player)
+                      {
+                          if (e.type == SDL_KEYDOWN && e.key.repeat == 0)
+                          {
+                              switch (e.key.keysym.sym)
+                              {
+                              case SDLK_f:
+                                  player.setTaskText("playing basketball... ");
+                                  player.setTaskAnimation(player.getGame().footballAnimation);
+                                  player.setCurrentTaskTime(3000);
+                                  player.getCurrentTaskTimer().start();
+                                  player.setUpdateStateParameters({-5,
+                                                                   0,
+                                                                   0,
+                                                                   10});
+                                  break;
+                              }
+                          }
+                      }    
+                 );
     Entity basketball("basketball", getTextPromptFunc("PRESS B TO PLAY BASKTEBALL"),
                       [&](SDL_Event &e, Player &player)
                       {

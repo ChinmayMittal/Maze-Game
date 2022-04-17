@@ -9,7 +9,7 @@ OBJS = Button.o collision.o Game.o main.o MainMenu.o MessageStructs.o MyTexture.
 COMPILER_FLAGS = -g
 
 #LINKER_FLAGS specifies the libraries we're linking against
-LINKER_FLAGS = -lSDL2 -lSDL2_image -lSDL2_ttf -lSDL2_mixer -lSDL2_net
+LINKER_FLAGS = -lSDL2 -lSDL2_image -lSDL2_ttf -lSDL2_mixer
 
 #OBJ_NAME specifies the name of our exectuable
 OBJ_NAME = experiment.out
@@ -28,7 +28,7 @@ Game.o: Tile.h Player.h MyTexture.h TileAtlas.h TileAtlas.h Renderable.h Entity.
 
 main.o: MyWindow.h Game.h MainMenu.h
 
-MainMenu.o: Screen.h Game.h TextInput.h SearchOpponent.h MyWindow.h Button.h
+MainMenu.o: Screen.h Game.h TextInput.h MyWindow.h Button.h
 
 MessageStructs.o: MessageStructs.h
 
@@ -39,8 +39,6 @@ MyWindow.o: MyTexture.h Text.h Renderable.h constants.h Screen.h
 Player.o:	Tile.h MyTexture.h Renderable.h MyWindow.h SoundEffect.h Timer.h utilities.h Animation.h constants.h Game.h
 
 Screen.o: MyWindow.h 
-
-#SearchOpponent.o: MyWindow.h MessageStructs.h Game.h Screen.h
 
 Text.o: MyTexture.h MyWindow.h
 

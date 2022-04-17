@@ -58,6 +58,7 @@ private:
     LTexture ashTexture;
     LTexture dogTexture;
     LTexture profTexture;
+    LTexture ash2Texture;
 
     TileAtlas tileAtlas;
 
@@ -111,6 +112,7 @@ public:
     Animation *hotDogAnimation;
     Animation *tennisAnimation;
     Animation *basketballAnimation;
+    Animation* footballAnimation ; 
     LTimer getTimer();
     Mix_Music *backGroundMusic;
     Mix_Chunk *introMusic;

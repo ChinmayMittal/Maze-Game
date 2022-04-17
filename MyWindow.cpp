@@ -2,7 +2,6 @@
 #include <SDL2/SDL_image.h>
 #include <SDL2/SDL_ttf.h>
 #include <SDL2/SDL_mixer.h>
-#include <SDL2/SDL_net.h>
 #include <vector>
 #include <sstream>
 #include <string>
@@ -233,11 +232,6 @@ bool LWindow::initLibs()
     }
     Mix_AllocateChannels(32);
 
-    if (SDLNet_Init() < 0)
-    {
-        fprintf(stderr, "SDLNet_Init: %s\n", SDLNet_GetError());
-        return false;
-    }
 
     return true;
 }
