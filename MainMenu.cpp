@@ -78,8 +78,14 @@ void MainMenu::sendGameReq()
     NewClientMessage newClientMsg;
     newClientMsg.name = playerName;
     int bytesUsed = serialize(&newClientMsg, buf);
-    sendto(sockfd, buf, bytesUsed, 0, (const struct sockaddr *)&theirAddr,
-           sizeof(theirAddr));
+    int x = sendto(sockfd, buf, bytesUsed, 0, (const struct sockaddr *)&theirAddr,
+                   sizeof(theirAddr));
+    if (x == -1)
+    {
+        fprintf(stderr, "socket() failed: %s\n", strerror(errno));
+    }
+
+    // std::cout << x << std::endl;
     waitingText->setText("Searching for opponent...");
     waiting = true;
 }

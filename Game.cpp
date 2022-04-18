@@ -430,7 +430,6 @@ void LGame::cleanUp()
     Mix_FreeMusic(backGroundMusic);
     Mix_FreeChunk(introMusic);
     backGroundMusic = NULL;
-    close(sockfd);
 }
 
 bool LGame::initObjs()
