@@ -80,6 +80,7 @@ private:
     LTexture dogTexture;
     LTexture profTexture;
     LTexture ash2Texture;
+    LTexture robberTexture ; 
 
     TileAtlas tileAtlas;
 
