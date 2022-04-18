@@ -464,7 +464,12 @@ bool LGame::initObjs()
     {
         printf("Failed to load robber texture!\n");
         return false;
-    }    
+    }   
+    if (!window.loadTexture(yuluTexture, "resources/yulu.png"))
+    {
+        printf("Failed to load yulu texture!\n");
+        return false;
+    }         
     LTexture *sleepingAnimationTexture = new LTexture();
     LTexture *burgerAnimationTexture = new LTexture();
     LTexture *hotdogAnimationTexture = new LTexture();
@@ -514,7 +519,7 @@ bool LGame::initObjs()
     basketballAnimation = new Animation(*basketBallAnimationTexture, 32, 32);
     tennisAnimation = new Animation(*tennisAnimationTexture, 32, 32);
     footballAnimation = new Animation(*footBallAnimationTexture, 32, 32);
-    Player ash(ashTexture, *this, 32, 32, 3, 1, 2, 0);
+    Player ash(ashTexture, yuluTexture, *this, 32, 32, 3, 1, 2, 0);
     players.push_back(ash);
     int numberOfNPCs = 5;
     for (int i = 0; i < numberOfNPCs; i++)
@@ -527,7 +532,7 @@ bool LGame::initObjs()
         NPCs.push_back( robber) ; 
     }
 
-    Player opponent(ash2Texture, *this, 32, 32, 3, 1, 2, 0);
+    Player opponent(ash2Texture, yuluTexture , *this, 32, 32, 3, 1, 2, 0);
     players.push_back(opponent);
 
     camera = {0, 0, window.getWidth() - tasksVPWidth, window.getHeight() - 3 * gyRenderOffset - 5 * gyPadding};
