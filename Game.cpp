@@ -425,7 +425,7 @@ bool LGame::initObjs()
     {
         printf("Failed to load ash2 texture!\n");
         return false;
-    }    
+    }
     if (!window.loadTexture(dogTexture, "resources/dog.png"))
     {
         printf("Failed to load dog texture!\n");
@@ -442,7 +442,7 @@ bool LGame::initObjs()
     LTexture *icecreamAnimationTexture = new LTexture();
     LTexture *tennisAnimationTexture = new LTexture();
     LTexture *basketBallAnimationTexture = new LTexture();
-    LTexture *footBallAnimationTexture = new LTexture() ; 
+    LTexture *footBallAnimationTexture = new LTexture();
     if (!window.loadTexture(*sleepingAnimationTexture, "resources/sleeping.png"))
     {
         printf("Failed to load sleeping texture!\n");
@@ -473,9 +473,10 @@ bool LGame::initObjs()
         printf("Failed to load basketball texture!\n");
         return false;
     }
-    if( !window.loadTexture(*footBallAnimationTexture , "resources/football.png")){
+    if (!window.loadTexture(*footBallAnimationTexture, "resources/football.png"))
+    {
         printf("Failed to load football texture!\n");
-        return false;        
+        return false;
     }
     sleepingAnimation = new Animation(*sleepingAnimationTexture, 32, 32);
     burgerAnimation = new Animation(*burgerAnimationTexture, 32, 32);
@@ -483,7 +484,7 @@ bool LGame::initObjs()
     icecreamAnimation = new Animation(*icecreamAnimationTexture, 32, 32);
     basketballAnimation = new Animation(*basketBallAnimationTexture, 32, 32);
     tennisAnimation = new Animation(*tennisAnimationTexture, 32, 32);
-    footballAnimation = new Animation(*footBallAnimationTexture,32,32) ; 
+    footballAnimation = new Animation(*footBallAnimationTexture, 32, 32);
     Player ash(ashTexture, *this, 32, 32, 3, 1, 2, 0);
     players.push_back(ash);
     int numberOfNPCs = 5;
@@ -656,7 +657,7 @@ std::function<void(Player &player, std::string &displayText)> getHostelCollideFu
         if (player.getHostelName() == hostelName)
         {
             displayText = "YOUR HOSTEL,  ";
-            displayText += " B-BreakFast  L-Lunch  D-Dinner  R-REST";
+            displayText += " B-BreakFast  L-Lunch  D-Dinner  Space-REST";
         }
         else
         {
@@ -674,7 +675,7 @@ std ::function<void(SDL_Event &e, Player &player)> getHostelEventListener(std ::
         {
             switch (e.key.keysym.sym)
             {
-            case SDLK_r:
+            case SDLK_SPACE:
                 // create rest task if player is not busy
                 if (!player.isBusy())
                 {
@@ -761,10 +762,10 @@ void LGame::initEntities()
         //     // std::cout << "Toggled" << std::endl;
         // }
         if(player.hasYulu()){
-            displayText = "Press y to release yulu";
+            displayText = "Press space to release yulu";
         }else
         {
-            displayText = "Press y to take yulu";
+            displayText = "Press space to take yulu";
         } },
         [&](SDL_Event &e, Player &player)
         {
@@ -772,7 +773,7 @@ void LGame::initEntities()
             {
                 switch (e.key.keysym.sym)
                 {
-                case SDLK_y:
+                case SDLK_SPACE:
                     player.toggleYulu();
                     break;
                 }
@@ -791,48 +792,112 @@ void LGame::initEntities()
     Entity kailash("kailash", getHostelCollideFunc("kailash"), getHostelEventListener("kailash"));
     Entity shivalik("shivalik", getHostelCollideFunc("shivalik"), getHostelEventListener("shivalik"));
     Entity zanskar("zanskar", getHostelCollideFunc("zanskar"), getHostelEventListener("zanskar"));
-    Entity volleyball("volleyball", [&](Player &player, std::string &displayText)
-                      { displayText = "volleyball"; });
-    Entity tennis("tennis", getTextPromptFunc("PRESS T TO PLAY TENNIS"),
+    Entity volleyball(
+        "volleyball", [&](Player &player, std::string &displayText)
+        { displayText = "Press space to play volleyball"; },
+        [&](SDL_Event &e, Player &player)
+        {
+            if (e.type == SDL_KEYDOWN && e.key.repeat == 0)
+            {
+                switch (e.key.keysym.sym)
+                {
+                case SDLK_SPACE:
+                    player.setTaskText("playing volleyball... ");
+                    // player.setTaskAnimation(player.getGame().tennisAnimation);
+                    player.setCurrentTaskTime(5000);
+                    player.getCurrentTaskTimer().start();
+                    player.setUpdateStateParameters({-5,
+                                                     0,
+                                                     0,
+                                                     10});
+                    break;
+                }
+            }
+        });
+
+    Entity tennis("tennis", getTextPromptFunc("Press space to play tennis"),
                   [&](SDL_Event &e, Player &player)
                   {
                       if (e.type == SDL_KEYDOWN && e.key.repeat == 0)
                       {
                           switch (e.key.keysym.sym)
                           {
-                          case SDLK_t:
+                          case SDLK_SPACE:
                               player.setTaskText("playing tennis... ");
                               player.setTaskAnimation(player.getGame().tennisAnimation);
                               player.setCurrentTaskTime(5000);
                               player.getCurrentTaskTimer().start();
-                              player.setUpdateStateParameters({0,
+                              player.setUpdateStateParameters({-5,
                                                                0,
                                                                0,
-                                                               0});
+                                                               10});
                               break;
                           }
                       }
                   });
-    Entity swimming_pool("swimming_pool", [&](Player &player, std::string &displayText)
-                         { displayText = "swimming_pool"; });
-    Entity oat("oat", [&](Player &player, std::string &displayText)
-               { displayText = "oat"; });
-    Entity hot_dog("hot_dog", getTextPromptFunc("PRESS H for HOTDOG"),
+
+    Entity swimming_pool(
+        "swimming_pool", [&](Player &player, std::string &displayText)
+        { displayText = "Press space to swim"; },
+        [&](SDL_Event &e, Player &player)
+        {
+            if (e.type == SDL_KEYDOWN && e.key.repeat == 0)
+            {
+                switch (e.key.keysym.sym)
+                {
+                case SDLK_SPACE:
+                    player.setTaskText("swimming... ");
+                    // player.setTaskAnimation(player.getGame().tennisAnimation);
+                    player.setCurrentTaskTime(5000);
+                    player.getCurrentTaskTimer().start();
+                    player.setUpdateStateParameters({-5,
+                                                     0,
+                                                     0,
+                                                     10});
+                    break;
+                }
+            }
+        });
+
+    Entity oat(
+        "oat", [&](Player &player, std::string &displayText)
+        { displayText = "Press space to perform"; },
+        [&](SDL_Event &e, Player &player)
+        {
+            if (e.type == SDL_KEYDOWN && e.key.repeat == 0)
+            {
+                switch (e.key.keysym.sym)
+                {
+                case SDLK_SPACE:
+                    player.setTaskText("performing... ");
+                    // player.setTaskAnimation(player.getGame().tennisAnimation);
+                    player.setCurrentTaskTime(7000);
+                    player.getCurrentTaskTimer().start();
+                    player.setUpdateStateParameters({-5,
+                                                     40,
+                                                     0,
+                                                     0});
+                    break;
+                }
+            }
+        });
+
+    Entity hot_dog("hot_dog", getTextPromptFunc("Press space to buy hotdog (40 Rs.)"),
                    [&](SDL_Event &e, Player &player)
                    {
                        if (e.type == SDL_KEYDOWN && e.key.repeat == 0)
                        {
                            switch (e.key.keysym.sym)
                            {
-                           case SDLK_h:
-                               if (player.getMoney() > 20)
+                           case SDLK_SPACE:
+                               if (player.getMoney() > 40)
                                {
                                    player.setTaskText("having hotdog... ");
                                    player.setTaskAnimation(player.getGame().hotDogAnimation);
-                                   player.setCurrentTaskTime(3000);
+                                   player.setCurrentTaskTime(8000);
                                    player.getCurrentTaskTimer().start();
                                    player.setUpdateStateParameters({20,
-                                                                    -20,
+                                                                    -40,
                                                                     0,
                                                                     0});
                                }
@@ -840,23 +905,25 @@ void LGame::initEntities()
                            }
                        }
                    });
+
     Entity gas("gas", [&](Player &player, std::string &displayText)
-               { displayText = "gas"; });
-    Entity icecream("icecream", getTextPromptFunc("PRESS I for ICECREAM"),
+               { displayText = "Gas Station"; });
+
+    Entity icecream("icecream", getTextPromptFunc("Press space to buy icecream (10 Rs.)"),
                     [&](SDL_Event &e, Player &player)
                     {
                         if (e.type == SDL_KEYDOWN && e.key.repeat == 0)
                         {
                             switch (e.key.keysym.sym)
                             {
-                            case SDLK_i:
+                            case SDLK_SPACE:
                                 if (player.getMoney() > 10)
                                 {
                                     player.setTaskText("having icecream... ");
-                                    player.setCurrentTaskTime(5000);
+                                    player.setCurrentTaskTime(3000);
                                     player.getCurrentTaskTimer().start();
                                     player.setTaskAnimation(player.getGame().icecreamAnimation);
-                                    player.setUpdateStateParameters({10,
+                                    player.setUpdateStateParameters({5,
                                                                      -10,
                                                                      0,
                                                                      0});
@@ -865,21 +932,53 @@ void LGame::initEntities()
                             }
                         }
                     });
-    Entity shop("shop", [&](Player &player, std::string &displayText)
-                { displayText = "shop"; });
-    Entity sac("sac", [&](Player &player, std::string &displayText)
-               { displayText = "sac"; });
-    Entity foot("foot", getTextPromptFunc("PRESS F to PLAY FOOTBALL") , 
-                          [&](SDL_Event &e, Player &player)
-                      {
+
+    Entity shop(
+        "shop", [&](Player &player, std::string &displayText)
+        { 
+            if(player.getMoney() > 20){
+                displayText = "Press space to buy stationery";
+            }
+            else{
+                displayText = "You need at least 20 rupees to buy stationery.";
+
+            } },
+        [&](SDL_Event &e, Player &player)
+        {
+            if (e.type == SDL_KEYDOWN && e.key.repeat == 0)
+            {
+                switch (e.key.keysym.sym)
+                {
+                case SDLK_SPACE:
+                    if (player.getMoney() > 20)
+                    {
+                        player.setTaskText("Buying stationery... ");
+                        player.setCurrentTaskTime(5000);
+                        player.getCurrentTaskTimer().start();
+                        // player.setTaskAnimation(player.getGame().icecreamAnimation);
+                        player.setUpdateStateParameters({0,
+                                                         -20,
+                                                         0,
+                                                         10});
+                    }
+                    break;
+                }
+            }
+        });
+
+    Entity sac(
+        "sac", [&](Player &player, std::string &displayText)
+        { displayText = "Press space to dance"; },
+        [&](SDL_Event &e, Player &player)
+        {
                           if (e.type == SDL_KEYDOWN && e.key.repeat == 0)
                           {
                               switch (e.key.keysym.sym)
                               {
-                              case SDLK_f:
-                                  player.setTaskText("playing basketball... ");
-                                  player.setTaskAnimation(player.getGame().footballAnimation);
-                                  player.setCurrentTaskTime(3000);
+                              case SDLK_SPACE:
+                                  player.setTaskText("dancing... ");
+                                  //player.setTaskAnimation(player.getGame().basketballAnimation);
+                                  player.setCurrentTaskTime(5000);
                                   player.getCurrentTaskTimer().start();
                                   player.setUpdateStateParameters({-5,
                                                                    0,
@@ -887,20 +986,40 @@ void LGame::initEntities()
                                                                    10});
                                   break;
                               }
-                          }
-                      }    
-                 );
-    Entity basketball("basketball", getTextPromptFunc("PRESS B TO PLAY BASKTEBALL"),
+                          } });
+
+    Entity foot("foot", getTextPromptFunc("Press space to play football"),
+                [&](SDL_Event &e, Player &player)
+                {
+                    if (e.type == SDL_KEYDOWN && e.key.repeat == 0)
+                    {
+                        switch (e.key.keysym.sym)
+                        {
+                        case SDLK_SPACE:
+                            player.setTaskText("playing football... ");
+                            player.setTaskAnimation(player.getGame().footballAnimation);
+                            player.setCurrentTaskTime(5000);
+                            player.getCurrentTaskTimer().start();
+                            player.setUpdateStateParameters({-5,
+                                                             0,
+                                                             0,
+                                                             10});
+                            break;
+                        }
+                    }
+                });
+
+    Entity basketball("basketball", getTextPromptFunc("Press space to play basketball"),
                       [&](SDL_Event &e, Player &player)
                       {
                           if (e.type == SDL_KEYDOWN && e.key.repeat == 0)
                           {
                               switch (e.key.keysym.sym)
                               {
-                              case SDLK_b:
+                              case SDLK_SPACE:
                                   player.setTaskText("playing basketball... ");
                                   player.setTaskAnimation(player.getGame().basketballAnimation);
-                                  player.setCurrentTaskTime(3000);
+                                  player.setCurrentTaskTime(5000);
                                   player.getCurrentTaskTimer().start();
                                   player.setUpdateStateParameters({-5,
                                                                    0,
@@ -911,16 +1030,16 @@ void LGame::initEntities()
                           }
                       });
 
-    Entity athletic("athletic", getTextPromptFunc("PRESS A TO DO ATHLETICS"), [&](SDL_Event &e, Player &player)
+    Entity athletic("athletic", getTextPromptFunc("Press space to do athletics"), [&](SDL_Event &e, Player &player)
                     {
                           if (e.type == SDL_KEYDOWN && e.key.repeat == 0)
                           {
                               switch (e.key.keysym.sym)
                               {
-                              case SDLK_a:
+                              case SDLK_SPACE:
                                   player.setTaskText("doing athletics... ");
                                   //player.setTaskAnimation(player.getGame().basketballAnimation);
-                                  player.setCurrentTaskTime(3000);
+                                  player.setCurrentTaskTime(5000);
                                   player.getCurrentTaskTimer().start();
                                   player.setUpdateStateParameters({-5,
                                                                    0,
@@ -930,16 +1049,16 @@ void LGame::initEntities()
                               }
                           } });
 
-    Entity cricket("cricket", getTextPromptFunc("PRESS C TO PLAY CRICKET"), [&](SDL_Event &e, Player &player)
+    Entity cricket("cricket", getTextPromptFunc("Press space to play cricket"), [&](SDL_Event &e, Player &player)
                    {
                           if (e.type == SDL_KEYDOWN && e.key.repeat == 0)
                           {
                               switch (e.key.keysym.sym)
                               {
-                              case SDLK_c:
+                              case SDLK_SPACE:
                                   player.setTaskText("playing cricket... ");
                                   //player.setTaskAnimation(player.getGame().basketballAnimation);
-                                  player.setCurrentTaskTime(3000);
+                                  player.setCurrentTaskTime(5000);
                                   player.getCurrentTaskTimer().start();
                                   player.setUpdateStateParameters({-5,
                                                                    0,
@@ -948,21 +1067,165 @@ void LGame::initEntities()
                                   break;
                               }
                           } });
-    Entity lhc("lhc", [&](Player &player, std::string &displayText)
-               { displayText = "lhc"; });
-    Entity police("police", [&](Player &player, std::string &displayText)
-                  { displayText = "police"; });
-    Entity main_building("main_building", [&](Player &player, std::string &displayText)
-                         { displayText = "main_building"; });
-    Entity biotech_dept("biotech_dept", [&](Player &player, std::string &displayText)
-                        { displayText = "biotech_dept"; });
-    Entity library("library", [&](Player &player, std::string &displayText)
-                   { displayText = "library"; });
-    Entity coffee("coffee", [&](Player &player, std::string &displayText)
-                  { displayText = "coffee"; });
-    Entity hospital("hospital", [&](Player &player, std::string &displayText)
-                    { displayText = "hospital"; });
-    Entity burger("burger", getTextPromptFunc("PRESS B for BURGER"), [&](SDL_Event &e, Player &player)
+    Entity lhc(
+        "lhc", [&](Player &player, std::string &displayText)
+        { displayText = "Press space to attend class"; },
+        [&](SDL_Event &e, Player &player)
+        {
+                          if (e.type == SDL_KEYDOWN && e.key.repeat == 0)
+                          {
+                              switch (e.key.keysym.sym)
+                              {
+                              case SDLK_SPACE:
+                                  player.setTaskText("attending class... ");
+                                  //player.setTaskAnimation(player.getGame().basketballAnimation);
+                                  player.setCurrentTaskTime(5000);
+                                  player.getCurrentTaskTimer().start();
+                                  player.setUpdateStateParameters({-5,
+                                                                   0,
+                                                                   0,
+                                                                   10});
+                                  break;
+                              }
+                          } });
+
+    Entity police(
+        "police", [&](Player &player, std::string &displayText)
+        { displayText = "Press space to get ID card"; },
+        [&](SDL_Event &e, Player &player)
+        {
+                          if (e.type == SDL_KEYDOWN && e.key.repeat == 0)
+                          {
+                              switch (e.key.keysym.sym)
+                              {
+                              case SDLK_SPACE:
+                                  player.setTaskText("Getting the ID card... ");
+                                  //player.setTaskAnimation(player.getGame().basketballAnimation);
+                                  player.setCurrentTaskTime(5000);
+                                  player.getCurrentTaskTimer().start();
+                                  player.setUpdateStateParameters({-5,
+                                                                   0,
+                                                                   0,
+                                                                   10});
+                                  break;
+                              }
+                          } });
+
+    Entity main_building(
+        "main_building", [&](Player &player, std::string &displayText)
+        { displayText = "Press space to get documents verified"; },
+        [&](SDL_Event &e, Player &player)
+        {
+                          if (e.type == SDL_KEYDOWN && e.key.repeat == 0)
+                          {
+                              switch (e.key.keysym.sym)
+                              {
+                              case SDLK_SPACE:
+                                  player.setTaskText("Getting documents verified... ");
+                                  //player.setTaskAnimation(player.getGame().basketballAnimation);
+                                  player.setCurrentTaskTime(5000);
+                                  player.getCurrentTaskTimer().start();
+                                  player.setUpdateStateParameters({-5,
+                                                                   0,
+                                                                   0,
+                                                                   10});
+                                  break;
+                              }
+                          } });
+
+    Entity biotech_dept(
+        "biotech_dept", [&](Player &player, std::string &displayText)
+        { displayText = "Press space to meet professor"; },
+        [&](SDL_Event &e, Player &player)
+        {
+                          if (e.type == SDL_KEYDOWN && e.key.repeat == 0)
+                          {
+                              switch (e.key.keysym.sym)
+                              {
+                              case SDLK_SPACE:
+                                  player.setTaskText("Meeting professor... ");
+                                  //player.setTaskAnimation(player.getGame().basketballAnimation);
+                                  player.setCurrentTaskTime(5000);
+                                  player.getCurrentTaskTimer().start();
+                                  player.setUpdateStateParameters({-5,
+                                                                   0,
+                                                                   0,
+                                                                   10});
+                                  break;
+                              }
+                          } });
+
+    Entity library(
+        "library", [&](Player &player, std::string &displayText)
+        { displayText = "Press space to study"; },
+        [&](SDL_Event &e, Player &player)
+        {
+                          if (e.type == SDL_KEYDOWN && e.key.repeat == 0)
+                          {
+                              switch (e.key.keysym.sym)
+                              {
+                              case SDLK_SPACE:
+                                  player.setTaskText("Studying... ");
+                                  //player.setTaskAnimation(player.getGame().basketballAnimation);
+                                  player.setCurrentTaskTime(5000);
+                                  player.getCurrentTaskTimer().start();
+                                  player.setUpdateStateParameters({-5,
+                                                                   0,
+                                                                   0,
+                                                                   10});
+                                  break;
+                              }
+                          } });
+
+    Entity coffee(
+        "coffee", [&](Player &player, std::string &displayText)
+        { displayText = "Press space to buy coffee (10 Rs.)"; },
+        [&](SDL_Event &e, Player &player)
+        {
+                          if (e.type == SDL_KEYDOWN && e.key.repeat == 0)
+                          {
+                              switch (e.key.keysym.sym)
+                              {
+                              case SDLK_SPACE:
+                              if(player.getMoney() > 10){
+                                  player.setTaskText("playing cricket... ");
+                                  //player.setTaskAnimation(player.getGame().basketballAnimation);
+                                  player.setCurrentTaskTime(3000);
+                                  player.getCurrentTaskTimer().start();
+                                  player.setUpdateStateParameters({5,
+                                                                   -10,
+                                                                   0,
+                                                                   0});
+                                  break;
+                              }
+                              }
+                          } });
+
+    Entity hospital(
+        "hospital", [&](Player &player, std::string &displayText)
+        { displayText = "Press space to regenerate health (5 Rs.)"; },
+        [&](SDL_Event &e, Player &player)
+        {
+                          if (e.type == SDL_KEYDOWN && e.key.repeat == 0)
+                          {
+                              switch (e.key.keysym.sym)
+                              {
+                              case SDLK_SPACE:
+                              if(player.getMoney() > 5){
+                                  player.setTaskText("Getting treated... ");
+                                  //player.setTaskAnimation(player.getGame().basketballAnimation);
+                                  player.setCurrentTaskTime(10000);
+                                  player.getCurrentTaskTimer().start();
+                                  player.setUpdateStateParameters({gMaxPlayerHealth,
+                                                                   -5,
+                                                                   0,
+                                                                   0});
+                                  break;
+                              }
+                              }
+                          } });
+
+    Entity burger("burger", getTextPromptFunc("Press space to buy burger (20 Rs.)"), [&](SDL_Event &e, Player &player)
                   {
                         if (e.type == SDL_KEYDOWN && e.key.repeat == 0)
                         {
@@ -970,12 +1233,12 @@ void LGame::initEntities()
                             {
                             case SDLK_b:
                                 if(player.getMoney() > 20 ) {
-                                    player.setTaskText("having burger... ") ; 
+                                    player.setTaskText("Having burger... ") ; 
                                     player.setCurrentTaskTime(6000) ; 
                                     player.getCurrentTaskTimer().start() ;
                                     player.setTaskAnimation( player.getGame().burgerAnimation ) ; 
                                     player.setUpdateStateParameters({
-                                        20 , 
+                                        10 , 
                                         -20 , 
                                         0,
                                         0 
@@ -984,18 +1247,166 @@ void LGame::initEntities()
                                 break;
                             }
                         } });
-    Entity vegetable_shop("vegetable_shop", [&](Player &player, std::string &displayText)
-                          { displayText = "vegetable_shop"; });
-    Entity bread_shop("bread_shop", [&](Player &player, std::string &displayText)
-                      { displayText = "bread_shop"; });
-    Entity hardware_shop("hardware_shop", [&](Player &player, std::string &displayText)
-                         { displayText = "hardware_shop"; });
-    Entity barber("barber", [&](Player &player, std::string &displayText)
-                  { displayText = "barber"; });
-    Entity pharmacy("pharmacy", [&](Player &player, std::string &displayText)
-                    { displayText = "pharmacy"; });
-    Entity beverage_shop("beverage_shop", [&](Player &player, std::string &displayText)
-                         { displayText = "beverage_shop"; });
+
+    Entity vegetable_shop(
+        "vegetable_shop", [&](Player &player, std::string &displayText)
+        { if(player.getMoney() > 20){ 
+            displayText = "Press space to buy vegetables"; }
+            else{
+                displayText = "You need to have at least 20 rupees to buy vegetables";
+            } },
+        [&](SDL_Event &e, Player &player)
+        {
+                          if (e.type == SDL_KEYDOWN && e.key.repeat == 0)
+                          {
+                              switch (e.key.keysym.sym)
+                              {
+                              case SDLK_SPACE:
+                              if(player.getMoney() > 20){
+                                  player.setTaskText("buying vegetables... ");
+                                  //player.setTaskAnimation(player.getGame().basketballAnimation);
+                                  player.setCurrentTaskTime(5000);
+                                  player.getCurrentTaskTimer().start();
+                                  player.setUpdateStateParameters({0,
+                                                                   -20,
+                                                                   0,
+                                                                   10});
+                                  break;
+                              }
+                              }
+                          } });
+
+    Entity bread_shop(
+        "bread_shop", [&](Player &player, std::string &displayText)
+        { if(player.getMoney() > 20){ 
+            displayText = "Press space to buy bread"; }
+            else{
+                displayText = "You need to have at least 20 rupees to buy bread";
+            } },
+        [&](SDL_Event &e, Player &player)
+        {
+                          if (e.type == SDL_KEYDOWN && e.key.repeat == 0)
+                          {
+                              switch (e.key.keysym.sym)
+                              {
+                              case SDLK_SPACE:
+                              if(player.getMoney() > 20){
+                                  player.setTaskText("buying bread... ");
+                                  //player.setTaskAnimation(player.getGame().basketballAnimation);
+                                  player.setCurrentTaskTime(5000);
+                                  player.getCurrentTaskTimer().start();
+                                  player.setUpdateStateParameters({0,
+                                                                   -20,
+                                                                   0,
+                                                                   10});
+                                  break;
+                              }
+                              }
+                          } });
+
+    Entity hardware_shop(
+        "hardware_shop", [&](Player &player, std::string &displayText)
+        { if(player.getMoney() > 20){ 
+            displayText = "Press space to buy tools"; }
+            else{
+                displayText = "You need to have at least 20 rupees to buy tools";
+            } },
+        [&](SDL_Event &e, Player &player)
+        {
+                          if (e.type == SDL_KEYDOWN && e.key.repeat == 0)
+                          {
+                              switch (e.key.keysym.sym)
+                              {
+                              case SDLK_SPACE:
+                              if(player.getMoney() > 20){
+                                  player.setTaskText("buying tools... ");
+                                  //player.setTaskAnimation(player.getGame().basketballAnimation);
+                                  player.setCurrentTaskTime(5000);
+                                  player.getCurrentTaskTimer().start();
+                                  player.setUpdateStateParameters({0,
+                                                                   -20,
+                                                                   0,
+                                                                   10});
+                                  break;
+                              }
+                              }
+                          } });
+
+    Entity barber(
+        "barber", [&](Player &player, std::string &displayText)
+        { if(player.getMoney() > 20){ 
+            displayText = "Press space to get a haircut"; }
+            else{
+                displayText = "You need to have at least 20 rupees to get a haircut";
+            } },
+        [&](SDL_Event &e, Player &player)
+        {
+                          if (e.type == SDL_KEYDOWN && e.key.repeat == 0)
+                          {
+                              switch (e.key.keysym.sym)
+                              {
+                              case SDLK_SPACE:
+                              if(player.getMoney() > 20){
+                                  player.setTaskText("Getting a haircut... ");
+                                  //player.setTaskAnimation(player.getGame().basketballAnimation);
+                                  player.setCurrentTaskTime(5000);
+                                  player.getCurrentTaskTimer().start();
+                                  player.setUpdateStateParameters({0,
+                                                                   -20,
+                                                                   0,
+                                                                   10});
+                                  break;
+                              }
+                              }
+                          } });
+
+    Entity pharmacy(
+        "pharmacy", [&](Player &player, std::string &displayText)
+        { displayText = "Press space to buy medicines (Rs. 40)"; },
+        [&](SDL_Event &e, Player &player)
+        {
+                          if (e.type == SDL_KEYDOWN && e.key.repeat == 0)
+                          {
+                              switch (e.key.keysym.sym)
+                              {
+                              case SDLK_SPACE:
+                              if(player.getMoney() > 40){
+                                  player.setTaskText("buying medicines... ");
+                                  //player.setTaskAnimation(player.getGame().basketballAnimation);
+                                  player.setCurrentTaskTime(8000);
+                                  player.getCurrentTaskTimer().start();
+                                  player.setUpdateStateParameters({20,
+                                                                   -40,
+                                                                   0,
+                                                                   0});
+                                  break;
+                              }
+                              }
+                          } });
+
+    Entity beverage_shop(
+        "beverage_shop", [&](Player &player, std::string &displayText)
+        { displayText = "Press space to buy a beverage (Rs. 20)"; },
+        [&](SDL_Event &e, Player &player)
+        {
+                          if (e.type == SDL_KEYDOWN && e.key.repeat == 0)
+                          {
+                              switch (e.key.keysym.sym)
+                              {
+                              case SDLK_SPACE:
+                              if(player.getMoney() > 20){
+                                  player.setTaskText("drinking a beverage... ");
+                                  //player.setTaskAnimation(player.getGame().basketballAnimation);
+                                  player.setCurrentTaskTime(8000);
+                                  player.getCurrentTaskTimer().start();
+                                  player.setUpdateStateParameters({10,
+                                                                   -20,
+                                                                   0,
+                                                                   0});
+                                  break;
+                              }
+                              }
+                          } });
 
     entities.push_back(road);
     entities.push_back(grass);
