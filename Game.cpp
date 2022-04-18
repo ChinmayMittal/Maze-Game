@@ -65,9 +65,12 @@ void LGame::handleEvent(SDL_Event &e)
         {
         case SDL_KEYDOWN:
         {
-            MainMenu *mainMenu = new MainMenu(window, sockfd, theirAddr);
-            window.setCurrScreen(mainMenu);
-            break;
+            if (e.key.keysym.sym == SDLK_SPACE)
+            {
+                MainMenu *mainMenu = new MainMenu(window, sockfd, theirAddr);
+                window.setCurrScreen(mainMenu);
+                break;
+            }
         }
         default:
         {
@@ -311,7 +314,23 @@ void LGame::render(SDL_Renderer *renderer)
 
     nameText->render(renderer, window.getWidth() - offset / 2, gyPadding);
 
-    timeText->render(renderer, (window.getWidth() - timeText->getWidth()) / 2, (3 * gyPadding) / 2 + gyRenderOffset - timeText->getHeight() / 2);
+    if (gameEnded)
+    {
+        if (result)
+        {
+            winText->render(renderer, (window.getWidth() - winText->getWidth()) / 2, (3 * gyPadding) / 2 + gyRenderOffset - winText->getHeight() / 2);
+            // pressAnyKey->render(renderer, (window.getWidth() - pressAnyKey->getWidth()) / 2, (window.getHeight() + winText->getHeight()) / 2 + 32);
+        }
+        else
+        {
+            loseText->render(renderer, (window.getWidth() - loseText->getWidth()) / 2, (3 * gyPadding) / 2 + gyRenderOffset - loseText->getHeight() / 2);
+            // pressAnyKey->render(renderer, (window.getWidth() - pressAnyKey->getWidth()) / 2, (window.getHeight() + loseText->getHeight()) / 2 + 32);
+        }
+    }
+    else
+    {
+        timeText->render(renderer, (window.getWidth() - timeText->getWidth()) / 2, (3 * gyPadding) / 2 + gyRenderOffset - timeText->getHeight() / 2);
+    }
 
     offset = gxTextSpacing;
     healthText->render(renderer, offset, 2 * gyPadding + gyRenderOffset);
@@ -338,16 +357,24 @@ void LGame::render(SDL_Renderer *renderer)
     viewport.w = window.getWidth();
     viewport.h = gyRenderOffset + 2 * gyPadding;
     SDL_RenderSetViewport(renderer, &viewport);
-    prompText->render(renderer, 0, gyPadding);
 
-    if (players[0].isBusy())
+    if (!gameEnded)
     {
-        SDL_SetRenderDrawColor(renderer, 0xFd, 0xb3, 0x36, 0xFF);
-        offset = taskStatusBarWidth + 10;
-        SDL_Rect fillRect = {window.getWidth() - offset, gyPadding, ((int)players[0].getCurrentTaskTimer().getTicks() * (taskStatusBarWidth)) / (players[0].getCurrentTaskTime()), gyRenderOffset};
-        SDL_RenderFillRect(renderer, &fillRect);
-        SDL_Rect outlineRect = {window.getWidth() - offset, gyPadding, taskStatusBarWidth, gyRenderOffset};
-        SDL_RenderDrawRect(renderer, &outlineRect);
+        pressAnyKey->render(renderer, 0, gyPadding);
+    }
+    else
+    {
+        prompText->render(renderer, 0, gyPadding);
+
+        if (players[0].isBusy())
+        {
+            SDL_SetRenderDrawColor(renderer, 0xFd, 0xb3, 0x36, 0xFF);
+            offset = taskStatusBarWidth + 10;
+            SDL_Rect fillRect = {window.getWidth() - offset, gyPadding, ((int)players[0].getCurrentTaskTimer().getTicks() * (taskStatusBarWidth)) / (players[0].getCurrentTaskTime()), gyRenderOffset};
+            SDL_RenderFillRect(renderer, &fillRect);
+            SDL_Rect outlineRect = {window.getWidth() - offset, gyPadding, taskStatusBarWidth, gyRenderOffset};
+            SDL_RenderDrawRect(renderer, &outlineRect);
+        }
     }
 
     viewport.x = window.getWidth() - tasksVPWidth;
@@ -370,22 +397,6 @@ void LGame::render(SDL_Renderer *renderer)
     for (int i = 0; i < taskTexts.size(); i++)
     {
         taskTexts[i]->render(renderer, 8, (16 + maxHeight) * i + 20 + tasksText->getHeight() + 16);
-    }
-
-    if (gameEnded)
-    {
-        SDL_Rect defViewport = {0, 0, window.getWidth(), window.getHeight()};
-        SDL_RenderSetViewport(renderer, &defViewport);
-        if (result)
-        {
-            winText->render(renderer, (window.getWidth() - winText->getWidth()) / 2, (window.getHeight() - winText->getHeight()) / 2);
-            pressAnyKey->render(renderer, (window.getWidth() - pressAnyKey->getWidth()) / 2, (window.getHeight() + winText->getHeight()) / 2 + 32);
-        }
-        else
-        {
-            loseText->render(renderer, (window.getWidth() - loseText->getWidth()) / 2, (window.getHeight() - loseText->getHeight()) / 2);
-            pressAnyKey->render(renderer, (window.getWidth() - pressAnyKey->getWidth()) / 2, (window.getHeight() + loseText->getHeight()) / 2 + 32);
-        }
     }
 }
 
@@ -546,7 +557,7 @@ bool LGame::initObjs()
     tasksText = new Text(window, "TASKS", font, txtColor);
     winText = new Text(window, "YOU WON!", fontLarge, txtColor);
     loseText = new Text(window, "YOU LOST!", fontLarge, txtColor);
-    pressAnyKey = new Text(window, "Press any key to go back to main menu", font, txtColor);
+    pressAnyKey = new Text(window, "Press space to go back to main menu", font, txtColor);
 
     for (int i = 0; i < tasksNum; i++)
     {
