@@ -29,12 +29,33 @@
 #include <vector>
 #include "NPC.h"
 
+typedef std::pair<int, std::string> task;
+
 class LGame : public LScreen
 {
 private:
-    const std::vector<std::pair<int, std::string>> allTasks = {std::pair<int, std::string>(27, "Play Basketball"), std::pair<int, std::string>(28, "Do Athletics"), std::pair<int, std::string>(29, "Play Cricket")};
+    const std::vector<std::pair<int, std::string>> allTasks = {
+        task(13, "Play Volleyball"),
+        task(14, "PLay Tennis"),
+        task(15, "Swim"),
+        task(22, "Buy stationery from the shop"),
+        task(25, "Attend dance practice in SAC"),
+        task(26, "PLay Football"),
+        task(27, "Play Basketball"),
+        task(28, "Do Athletics"),
+        task(29, "Play Cricket"),
+        task(30, "Attend class in LHC"),
+        task(31, "Take ID Card from security office"),
+        task(32, "Get documents verified from main building"),
+        task(33, "Meet professor in biotech building"),
+        task(34, "Go to the library to study"),
+        task(38, "Buy vegetables"),
+        task(39, "Buy bread"),
+        task(40, "Buy tools"),
+        task(41, "Get a haircut")};
+
     std::vector<std::pair<int, std::string>> currTasks;
-    int tasksNum = 2;
+    int tasksNum = 5;
 
     // std::string serverIp;
     std::string playerName, opponentName;
@@ -112,7 +133,7 @@ public:
     Animation *hotDogAnimation;
     Animation *tennisAnimation;
     Animation *basketballAnimation;
-    Animation* footballAnimation ; 
+    Animation *footballAnimation;
     LTimer getTimer();
     Mix_Music *backGroundMusic;
     Mix_Chunk *introMusic;

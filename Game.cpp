@@ -137,18 +137,20 @@ void LGame::update()
         // std::cout << NPCtileX << " " << NPCtileY << "\n";
         if (((tileX >= NPCtileX - 1) && (tileX <= NPCtileX + 1)) && ((tileY >= NPCtileY - 1) && (tileY <= NPCtileY + 1)) && !NPCs[i].isBusy() && !players[0].isBusy())
         {
-            //std ::cout << "collision with " << NPCs[i].getName() << "\n";
+            // std ::cout << "collision with " << NPCs[i].getName() << "\n";
             NPCs[i].setCoolDown(7000);
-            if(NPCs[i].getName().substr(0,3) == "dog"){
+            if (NPCs[i].getName().substr(0, 3) == "dog")
+            {
                 players[0].changeStateParameters({-5,
-                   0,
-                 0});
+                                                  0,
+                                                  0});
             }
-            else if(NPCs[i].getName().substr(0,1) == "p"){
-            players[0].changeStateParameters(
-                {0,
-                 -10,
-                 0});
+            else if (NPCs[i].getName().substr(0, 1) == "p")
+            {
+                players[0].changeStateParameters(
+                    {0,
+                     -10,
+                     0});
             }
         }
     }
@@ -530,7 +532,7 @@ bool LGame::initObjs()
 
     SDL_Color txtColor = {0, 0, 0, 255};
     TTF_Font *font = TTF_OpenFont("resources/FrostbiteBossFight-dL0Z.ttf", 28);
-    TTF_Font *fontSmall = TTF_OpenFont("resources/FrostbiteBossFight-dL0Z.ttf", 26);
+    TTF_Font *fontSmall = TTF_OpenFont("resources/FrostbiteBossFight-dL0Z.ttf", 20);
     TTF_Font *fontLarge = TTF_OpenFont("resources/FrostbiteBossFight-dL0Z.ttf", 32);
 
     timeText = new Text(window, "00:00", font, txtColor);
