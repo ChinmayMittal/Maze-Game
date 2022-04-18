@@ -23,6 +23,7 @@ Player ::Player(LTexture &myTexture, LGame &game, int playerHeight, int playerWi
     // Initialize the collision box
     mCollisionMusic = Mix_LoadWAV("resources/collision.wav");
     mMovementMusic = Mix_LoadWAV("resources/collision.wav");
+    mGrassMusic = Mix_LoadWAV("resources/grass_sound.wav");
     mBox.w = playerWidth;
     mBox.h = playerHeight;
     taskAnimation = NULL;
@@ -195,15 +196,31 @@ void Player::move()
             Mix_PlayChannel(-1, mCollisionMusic, 0);
             movement = false;
         }
-        Mix_Volume(-1, 5);
+        Mix_Volume(-1, 3);
 
         if (movement)
         {
             music += 1;
-            music = music % 5;
-            if (music == 0)
-                Mix_PlayChannel(-1, mMovementMusic, 0);
+
+            int tileType = mGame.getTileType(mBox.x + mBox.w / 2, mBox.y + mBox.h / 2);
+            if (tileType == 1)
+            {
+                music = music % 30;
+                if (music == 0)
+                {
+                    Mix_PlayChannel(-1, mGrassMusic, 0);
+                }
+            }
+            else
+            {
+                music = music % 5;
+                if (music == 0)
+                {
+                    Mix_PlayChannel(-1, mMovementMusic, 0);
+                }
+            }
         }
+
         Mix_Volume(-1, MIX_MAX_VOLUME);
     }
 }
@@ -304,6 +321,7 @@ void Player::cleanUp()
     mTexture.free();
     Mix_FreeChunk(mCollisionMusic);
     Mix_FreeChunk(mMovementMusic);
+    Mix_FreeChunk(mGrassMusic);
 }
 
 void Player::setVelocity(int vel)

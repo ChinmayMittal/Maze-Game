@@ -69,7 +69,7 @@ public:
     bool isBusy();
     void updateStateParameters(playerStateUpdate s);
     void setUpdateStateParameters(playerStateUpdate s);
-    void changeStateParameters( playerStateUpdate s) ; 
+    void changeStateParameters(playerStateUpdate s);
     bool hadLunch();
     bool hadBreakFast();
     bool hadDinner();
@@ -116,6 +116,7 @@ private:
     std::string taskText;
     Mix_Chunk *mCollisionMusic;
     Mix_Chunk *mMovementMusic;
+    Mix_Chunk *mGrassMusic;
 };
 
 #endif
