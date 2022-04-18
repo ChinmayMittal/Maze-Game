@@ -152,8 +152,13 @@ void LGame::update()
             {
                 players[0].changeStateParameters(
                     {0,
+                     0,
+                     -5});
+            }else if( NPCs[i].getName().substr(0,1) == "r"){
+                players[0].changeStateParameters(
+                    {0,
                      -10,
-                     0});
+                     0});                
             }
         }
     }
@@ -455,6 +460,16 @@ bool LGame::initObjs()
         printf("Failed to load prof texture!\n");
         return false;
     }
+    if (!window.loadTexture(robberTexture, "resources/robber.png"))
+    {
+        printf("Failed to load robber texture!\n");
+        return false;
+    }   
+    if (!window.loadTexture(yuluTexture, "resources/yulu.png"))
+    {
+        printf("Failed to load yulu texture!\n");
+        return false;
+    }         
     LTexture *sleepingAnimationTexture = new LTexture();
     LTexture *burgerAnimationTexture = new LTexture();
     LTexture *hotdogAnimationTexture = new LTexture();
@@ -504,18 +519,20 @@ bool LGame::initObjs()
     basketballAnimation = new Animation(*basketBallAnimationTexture, 32, 32);
     tennisAnimation = new Animation(*tennisAnimationTexture, 32, 32);
     footballAnimation = new Animation(*footBallAnimationTexture, 32, 32);
-    Player ash(ashTexture, *this, 32, 32, 3, 1, 2, 0);
+    Player ash(ashTexture, yuluTexture, *this, 32, 32, 3, 1, 2, 0);
     players.push_back(ash);
     int numberOfNPCs = 5;
     for (int i = 0; i < numberOfNPCs; i++)
     {
         NPC dog(dogTexture, "dog" + std::to_string(i + 1), *this, 32, 32, 1, 3, 2, 0);
         NPC prof(profTexture, "prof" + std::to_string(i + 1), *this, 42, 32, 3, 2, 0, 1);
+        NPC robber( robberTexture , "robbber" + std::to_string(i+1),*this, 40 , 30 , 2 , 1 , 3 , 0 ) ; 
         NPCs.push_back(dog);
         NPCs.push_back(prof);
+        NPCs.push_back( robber) ; 
     }
 
-    Player opponent(ash2Texture, *this, 32, 32, 3, 1, 2, 0);
+    Player opponent(ash2Texture, yuluTexture , *this, 32, 32, 3, 1, 2, 0);
     players.push_back(opponent);
 
     camera = {0, 0, window.getWidth() - tasksVPWidth, window.getHeight() - 3 * gyRenderOffset - 5 * gyPadding};

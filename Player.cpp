@@ -18,7 +18,7 @@
 
 std ::vector<std ::string> hostelNames{"nilgiri", "kara", "aravali", "jwala", "kumaon", "vindy", "satpura", "udai_girnar", "himadri", "kailash"};
 
-Player ::Player(LTexture &myTexture, LGame &game, int playerHeight, int playerWidth, int right, int left, int top, int bottom) : mTexture(myTexture), mGame(game)
+Player ::Player(LTexture &myTexture, LTexture &yuluTexture, LGame &game, int playerHeight, int playerWidth, int right, int left, int top, int bottom) : mTexture(myTexture), yuluTexture(yuluTexture), mGame(game)
 {
     // Initialize the collision box
     mCollisionMusic = Mix_LoadWAV("resources/collision.wav");
@@ -308,7 +308,8 @@ int Player::render(SDL_Renderer *renderer, SDL_Rect &camera)
     }
     else
     {
-        mTexture.render(renderer, mBox.x - camera.x, mBox.y - camera.y, &playerImages[dimension + offset]);
+        if( hasYulu())yuluTexture.render(renderer, mBox.x - camera.x, mBox.y - camera.y, &playerImages[dimension + offset]);
+        else mTexture.render(renderer, mBox.x - camera.x, mBox.y - camera.y, &playerImages[dimension + offset]);
     }
     mframes = (mframes + 1) % (numOfAnimationImages * animationSpeed);
     if (isBusy())
