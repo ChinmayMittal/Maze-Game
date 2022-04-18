@@ -49,7 +49,7 @@ Compile the code using the following command
 make
 ```
 
-To settup the server for the game we need the I.P address of the host, use the following command
+To settup the server for the game we need the IP address of the host, use the following command
 
 ```
 hostname -I
@@ -64,6 +64,8 @@ To run the game on two different PCs connected to the same network, on each PC r
 ```
 ./game.out 10.184.24.96
 ```
+
+here 10.184.24.96 is the IP address of the server found using hostname -I
 
 ----
 ### Resources Used
