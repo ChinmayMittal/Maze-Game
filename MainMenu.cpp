@@ -52,10 +52,6 @@ MainMenu::MainMenu(LWindow &window, int &sockfd, sockaddr_in &theiraddr) : LScre
     // initSocket();
 }
 
-void MainMenu::initSocket()
-{
-}
-
 void MainMenu::sendGameReq()
 {
     std::string playerName = textInputs[0]->getText();

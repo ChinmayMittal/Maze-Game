@@ -690,6 +690,12 @@ std ::function<void(SDL_Event &e, Player &player)> getHostelEventListener(std ::
 
     return [=](SDL_Event &e, Player &player)
     {
+        int secs = player.getGame().getTimer().getTicks() / 1000;
+        int secsPerHour = gameLenSecs / 24;
+        int mins = (60 / secsPerHour) * (secs % secsPerHour);
+        int hours = secs / secsPerHour;
+        int totalMins = 60 * hours + mins;
+
         if (e.type == SDL_KEYDOWN && e.key.repeat == 0 && player.getHostelName() == HostelName)
         {
             switch (e.key.keysym.sym)
@@ -711,39 +717,40 @@ std ::function<void(SDL_Event &e, Player &player)> getHostelEventListener(std ::
                 }
                 break;
             case SDLK_b:
-                if (!player.isBusy() and !player.hadBreakFast() and (player.getGame().getTimer().getTicks() < 100 * 1000))
+                if (!player.isBusy() && !player.hadBreakFast() && (totalMins >= 7 * 60 + 30 && totalMins <= 9 * 60 + 30))
                 {
                     player.setBreakfast(true);
                     player.setTaskText("having breakfast... ");
                     player.setCurrentTaskTime(3000);
                     player.getCurrentTaskTimer().start();
-                    player.setUpdateStateParameters({30,
+                    player.setUpdateStateParameters({35,
                                                      0,
                                                      0,
                                                      0});
                 }
                 break;
             case SDLK_l:
-                if (!player.isBusy() and !player.hadLunch() and (player.getGame().getTimer().getTicks() < 100 * 1000))
+                if (!player.isBusy() && !player.hadLunch() && (totalMins >= 12 * 60 && totalMins <= 14 * 60))
                 {
                     player.setLunch(true);
                     player.setTaskText("having lunch ... ");
                     player.setCurrentTaskTime(3000);
                     player.getCurrentTaskTimer().start();
-                    player.setUpdateStateParameters({30,
+                    player.setUpdateStateParameters({35,
                                                      0,
                                                      0,
                                                      0});
                 }
                 break;
+
             case SDLK_d:
-                if (!player.isBusy() and !player.hadDinner() and (player.getGame().getTimer().getTicks() < 100 * 1000))
+                if (!player.isBusy() && !player.hadDinner() && (totalMins >= 19 * 60 && totalMins <= 21 * 60))
                 {
                     player.setDinner(true);
                     player.setTaskText("having dinner... ");
                     player.setCurrentTaskTime(3000);
                     player.getCurrentTaskTimer().start();
-                    player.setUpdateStateParameters({30,
+                    player.setUpdateStateParameters({35,
                                                      0,
                                                      0,
                                                      0});
@@ -1250,7 +1257,7 @@ void LGame::initEntities()
                         {
                             switch (e.key.keysym.sym)
                             {
-                            case SDLK_b:
+                            case SDLK_SPACE:
                                 if(player.getMoney() > 20 ) {
                                     player.setTaskText("Having burger... ") ; 
                                     player.setCurrentTaskTime(6000) ; 

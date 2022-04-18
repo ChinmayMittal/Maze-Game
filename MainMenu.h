@@ -32,7 +32,6 @@ private:
     struct sockaddr_in &theirAddr;
     char buf[512];
     char recBuf[512];
-    void initSocket();
     bool waiting = false;
 
 public:
