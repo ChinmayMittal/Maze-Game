@@ -18,7 +18,7 @@ OBJ_NAME = game.out
 all : Client Server
 
 Client: $(OBJS)
-	$(CXX) -I/usr/include/SDL2 $(OBJS) $(COMPILER_FLAGS) $(LINKER_FLAGS) -o $(OBJ_NAME)
+	$(CXX) $(OBJS) $(COMPILER_FLAGS) $(LINKER_FLAGS) -o $(OBJ_NAME)
 
 Button.o: MyWindow.h
 
