@@ -116,7 +116,11 @@ int NPC::render(SDL_Renderer *renderer, SDL_Rect &camera)
         offset = mframes / animationSpeed;
     }
 
-
+    SDL_Rect fillRect = { mBox.x - camera.x -32,mBox.y - camera.y-32 , 32*3, 32*3 };
+    SDL_SetRenderDrawBlendMode(renderer, SDL_BLENDMODE_BLEND);
+    if(!isBusy())SDL_SetRenderDrawColor( renderer, 0xFF, 0x00, 0x00, 0x30 );
+    else SDL_SetRenderDrawColor( renderer, 0xFF, 0xFF, 0x00, 0x30 );         
+    SDL_RenderFillRect( renderer, &fillRect );
     mTexture.render(renderer, mBox.x - camera.x, mBox.y - camera.y, &NPCImages[dimension + offset]);
 
     if(!isBusy()) mframes = (mframes + 1) % (numOfAnimationImages * animationSpeed);
