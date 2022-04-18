@@ -1,6 +1,6 @@
 const int gyRenderOffset = 32;
 const int gMaxPlayerHealth = 100;
-const int gMaxPlayerMoney = 500;
+const int gMaxPlayerMoney = 200;
 const int gyTextOffset = 0;
 const int gxTextSpacing = 40;
 const int FPSupdatespeed = 50;
