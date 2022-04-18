@@ -21,7 +21,7 @@ class Player : public Renderable
 public:
     // Initializes the variables
 
-    Player(LTexture &myTexture, LTexture &yuluTexture , LGame &game, int playerHeight, int playerWidth, int right, int left, int top, int bottom);
+    Player(LTexture &myTexture, LTexture &yuluTexture, LGame &game, int playerHeight, int playerWidth, int right, int left, int top, int bottom);
 
     // Takes key presses and adjusts the dot's velocity
     void handleEvent(SDL_Event &e);
@@ -88,7 +88,7 @@ private:
     LGame &mGame;
     SDL_Rect mBox;
     LTexture &mTexture;
-    LTexture &yuluTexture ; 
+    LTexture &yuluTexture;
     Animation *taskAnimation;
     bool hasTaskAnimation;
     // bool touchesWall(std::vector<Tile> tiles);
@@ -118,6 +118,7 @@ private:
     Mix_Chunk *mCollisionMusic;
     Mix_Chunk *mMovementMusic;
     Mix_Chunk *mGrassMusic;
+    Mix_Chunk *mTaskCompleteMusic;
 };
 
 #endif

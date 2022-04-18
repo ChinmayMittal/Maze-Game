@@ -24,6 +24,7 @@ Player ::Player(LTexture &myTexture, LTexture &yuluTexture, LGame &game, int pla
     mCollisionMusic = Mix_LoadWAV("resources/collision.wav");
     mMovementMusic = Mix_LoadWAV("resources/collision.wav");
     mGrassMusic = Mix_LoadWAV("resources/grass_sound.wav");
+    mTaskCompleteMusic = Mix_LoadWAV("resources/taskComplete.wav");
     mBox.w = playerWidth;
     mBox.h = playerHeight;
     taskAnimation = NULL;
@@ -208,7 +209,7 @@ void Player::move()
                 music = music % 30;
                 if (music == 0)
                 {
-                    Mix_PlayChannel(-1, mGrassMusic, 0);
+                    // Mix_PlayChannel(-1, mGrassMusic, 0);
                 }
             }
             else
@@ -216,7 +217,7 @@ void Player::move()
                 music = music % 5;
                 if (music == 0)
                 {
-                    Mix_PlayChannel(-1, mMovementMusic, 0);
+                    // Mix_PlayChannel(-1, mMovementMusic, 0);
                 }
             }
         }
@@ -308,8 +309,10 @@ int Player::render(SDL_Renderer *renderer, SDL_Rect &camera)
     }
     else
     {
-        if( hasYulu())yuluTexture.render(renderer, mBox.x - camera.x, mBox.y - camera.y, &playerImages[dimension + offset]);
-        else mTexture.render(renderer, mBox.x - camera.x, mBox.y - camera.y, &playerImages[dimension + offset]);
+        if (hasYulu())
+            yuluTexture.render(renderer, mBox.x - camera.x, mBox.y - camera.y, &playerImages[dimension + offset]);
+        else
+            mTexture.render(renderer, mBox.x - camera.x, mBox.y - camera.y, &playerImages[dimension + offset]);
     }
     mframes = (mframes + 1) % (numOfAnimationImages * animationSpeed);
     if (isBusy())
@@ -323,6 +326,7 @@ void Player::cleanUp()
     Mix_FreeChunk(mCollisionMusic);
     Mix_FreeChunk(mMovementMusic);
     Mix_FreeChunk(mGrassMusic);
+    Mix_FreeChunk(mTaskCompleteMusic);
 }
 
 void Player::setVelocity(int vel)
@@ -546,6 +550,7 @@ void Player::updateStateParameters(playerStateUpdate s)
     {
         setPoints(getPoints() + s.pointsIfTask);
         mGame.replaceTask(lastTileType);
+        Mix_PlayChannel(-1, mTaskCompleteMusic, 0);
     }
 }
 
