@@ -3,14 +3,14 @@ Course Project for COP290 Design Practices, IIT Delhi 2022
 
 Group Members 
 
-1. Tanish Tuteja ( 2020CS10398 )
-2. Chinmay Mittal ( 2020CS10336 )
+1. Tanish Tuteja (2020CS10398)
+2. Chinmay Mittal (2020CS10336)
 
 ---
 
 ### Installation Instructions
 
-We have tested the game on Ubuntu(20.04.4 LTS)
+We have tested the game on Ubuntu (20.04.4 LTS)
 
 Ensure that g++ is installed on your system
 
@@ -35,10 +35,10 @@ sudo apt-get intstall libsdl2-ttf-dev
 
 4. SDL_mixer
 ```
-sudo apt-get intstall libsdl2-ttf-dev
+sudo apt-get intstall libsdl2-mixer-dev
 ```
 
-clone our repository on your system using the following command
+Clone our repository on your system using the following command
 
 ```
 git clone https://github.com/ChinmayMittal/Maze-Game.git
@@ -49,18 +49,18 @@ Compile the code using the following command
 make
 ```
 
-To settup the server for the game we need the IP address of the host, use the following command
+To setup the server for the game we need the IP address of the host. To get the IP address, use the following command
 
 ```
 hostname -I
 ```
 
-on one terminal run the server using the following command
+On one terminal, run the server using the following command
 
 ```
 ./server/server.out
 ```
-To run the game on two different PCs connected to the same network, on each PC run the following command
+Then run the game on two different PCs connected to the same network as the server, by executing the following command
 ```
 ./game.out 10.184.24.96
 ```
@@ -70,6 +70,6 @@ here 10.184.24.96 is the IP address of the server found using hostname -I
 ----
 ### Resources Used
 
-1. [ Lazy Foo Tutorials ]( https://lazyfoo.net/tutorials/SDL/ )
+1. [ Lazy Foo Tutorials ](https://lazyfoo.net/tutorials/SDL/)
 2. [ GeeksForGeeks Sockets & Networking ](https://www.geeksforgeeks.org/udp-server-client-implementation-c/)
 3. [ SDL Documentation ](https://wiki.libsdl.org/)
