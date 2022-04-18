@@ -18,7 +18,7 @@ const int SCREEN_HEIGHT = 480;
 int main(int argc, char *args[])
 {
 	srand(time(0));
-	std::string serverIp = "192.168.227.10";
+	std::string serverIp = "192.168.227.102";
 	if (argc > 1)
 	{
 		serverIp = args[1];

@@ -358,7 +358,7 @@ void LGame::render(SDL_Renderer *renderer)
     viewport.h = gyRenderOffset + 2 * gyPadding;
     SDL_RenderSetViewport(renderer, &viewport);
 
-    if (!gameEnded)
+    if (gameEnded)
     {
         pressAnyKey->render(renderer, 0, gyPadding);
     }
