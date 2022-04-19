@@ -465,7 +465,7 @@ bool LGame::initObjs()
         printf("Failed to load robber texture!\n");
         return false;
     }   
-    if (!window.loadTexture(yuluTexture, "resources/yulu.png"))
+    if (!window.loadTexture(yuluTexture, "resources/yulu.bmp"))
     {
         printf("Failed to load yulu texture!\n");
         return false;
